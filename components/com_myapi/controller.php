@@ -80,7 +80,7 @@ $formToken = JHTML::_( 'form.token' );
 
 		
 		ob_start();
-	 include(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'views'.DS.'link'.DS.'tmpl'.DS.'facebook.php');
+	 include(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'views'.DS.'link'.DS.'tmpl'.DS.'default.php');
 	
  		$html = ob_get_contents();
 		ob_end_clean();	
