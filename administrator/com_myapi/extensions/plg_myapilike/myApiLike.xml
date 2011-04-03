@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="content">
+	<name>Content - myApiLike</name>
+	<author>Thomas Welton</author>
+	<creationDate>March 2011</creationDate>
+	<copyright>Copyright (C) 2011</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>thomaswelton@me.com</authorEmail>
+	<authorUrl>http://www.myapi.co.uk</authorUrl>
+	<version>1.0</version>
+	<description>myApiLike plugin</description>
+	<files>
+		<filename plugin="myApiLike">myApiLike.php</filename>
+		<folder>like</folder>
+	</files>
+	
+	<params addPath="/plugins/content/like/">
+	
+	<param name="like_show_on" type="radio" default="all" label="Select an option" description="">
+			<option value="all">Show on all articles &lt;br/&gt;</option>
+		  	<option value="selected">Show on selected article sections and categories (select below) &lt;br/&gt;</option>
+		</param>
+		<param name="show_faces" type="radio" default="false" label="Show faces" description="">
+			<option value="false">No</option>
+		  	<option value="true">Yes</option>
+		</param>
+		<param name="layout_style" type="list" default="standard" label="Layout style" description="">
+ 	 		<option value="standard">standard</option>
+			<option value="button_count">button_count</option>
+			<option value="box_count">box_count</option>
+		</param>
+		<param name="color_scheme" type="list" default="light" label="Color scheme" description="Like button color">
+ 	 		<option value="light">light</option>
+			<option value="dark">dark</option>
+		</param>
+		<param name="verb" type="list" default="like" label="Verb to use" description="Verb to use in the button">
+ 	 		<option value="like">like</option>
+			<option value="recommend">recommend</option>
+		</param>
+		<param name="width" type="text" label="Width" description="Width for the like button" default="250" size="30" />
+		<param name="like_style" type="text" label="CSS Style" description="inline CSS for the like button, enter valid CSS seperate by semicolons like thisexample. margin-left:10px; margin-top:20px; " size="30" />
+ 		<param name="like_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="Sections - Show like Button" description="Use Ctrl-click to select more than one item.">
+			<option value="-1"></option>
+        </param>
+		
+		<param name="like_categories" type="sqlmultilistx" sql="SELECT * FROM #__categories" key_field="title" value_field="title" default="" multiple="multiple" label="Categories - Show like Button" description="Use Ctrl-click to select more than one item.">
+			<option value="-1"></option>
+        </param>
+		</params>
+	
+</install>

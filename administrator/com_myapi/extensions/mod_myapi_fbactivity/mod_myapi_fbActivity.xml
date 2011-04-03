@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="module" version="1.5">
+    <!-- Name of the Module -->
+        <name>Facebook Activity Box</name>
+ 
+    <!-- Name of the Author -->
+        <author>Thomas Welton</author> 
+ 
+    <!-- Version Date of the Module -->
+        <creationDate>March 2011</creationDate> 
+ 
+    <!-- Copyright information -->
+        <copyright>All rights reserved 2011.</copyright> 
+ 
+    <!-- License Information -->
+       <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+ 
+    <!-- Author's email address -->
+        <authorEmail>thomaswelton@me.com</authorEmail> 
+ 
+    <!-- Author's website -->
+        <authorUrl>http://www.myapi.co.uk</authorUrl> 
+ 
+    <!-- Module version number -->
+        <version>1.0</version> 
+ 
+    <!-- Description of what the module does -->
+        <description>Displays a facebook activity box</description>
+ 
+    <!-- Listing of all files that should be installed for the module to function -->
+        <files>
+        <!-- The "module" attribute signifies that this is the main controller file -->
+                <filename module="mod_myapi_fbActivity">mod_myapi_fbActivity.php</filename>
+				<filename>index.html</filename>
+        </files>
+ 
+    <!-- Optional parameters -->
+	
+	
+	<params>	
+		<param name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="Module Class Suffix" />
+		<param name="activity_width" type="text" default="180" label="Box width" description="Width of the box as a number eg 200" size="30" />
+		<param name="activity_height" type="text" default="" label="Box height" description="Height of the box as a number eg 200" size="30" />
+		
+		<param name="activity_border" type="text" default="" label="Border Color" description="Border color, eg #cccccc" size="30" />
+		
+		<param name="activity_header" type="radio" default="1" label="Show header" description="">
+		  	<option value="0">No</option>
+		  	<option value="1">Yes</option>
+		</param>
+		
+		<param name="activity_font" type="list" default="1" label="Font" description="">
+		  	<option value="arial">Arial</option>
+			<option value="lucida grande">Lucida Grande</option>
+			<option value="segoe ui">Segoe Ui</option>
+			<option value="tahoma">Tahoma</option>
+			<option value="trebuchet ms">Trebuchet ms</option>
+			<option value="verdana">Verdana</option>
+		</param>
+			
+			
+		<param name="activity_scheme" type="list" default="1" label="Color Scheme" description="">
+		  	<option value="light">Light</option>
+			<option value="dark">Dark</option>
+		</param>	
+	</params>
+		
+</install>
