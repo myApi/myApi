@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="content">
+	<name>Content - myApiComment</name>
+	<author>Thomas Welton</author>
+	<creationDate>March 2011</creationDate>
+	<copyright>Copyright (C) 2011</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>thomaswelton@me.com</authorEmail>
+	<authorUrl>http://www.myapi.co.uk</authorUrl>
+	<version>1.0</version>
+	<description>myApiComment plugin</description>
+	<files>
+		<filename plugin="myApiComment">myApiComment.php</filename>
+		<folder>comment</folder>
+	</files>
+	
+	<params addPath="/plugins/content/comment/">
+		
+		
+		
+ 		
+		
+		<param name="comments_width" type="text" default="500" label="Width of comments box" description="Width of the comments box in pixels as a number eg 500" size="10" />
+		<param name="comments_numposts" type="text" default="10" label="Number of comments to show" description="Number of comments to show as a number eg 10" size="10" />
+		<param name="comments_access" type="usergroup" default="29" label="Select the lowest user group that can comment" description="" />
+		<param name="comments_simple" type="radio" default="0" label="Simple layout" description="With the simple layout a rounded box does not appear around each post on your site.">
+			<option value="0">No</option>
+		  	<option value="1">Yes</option>
+		</param>
+		<param name="comments_reverse" type="radio" default="0" label="Reverse comment order" description="When true, reverses order of comments so the most recent one appears at the bottom of the list and the composer appears at the bottom of the page">
+			<option value="0">No</option>
+		  	<option value="1">Yes</option>
+		</param>
+		
+		<param name="comments_view_article" type="radio" default="0" label="Comment view for article layout" description="Shows either a comments box, or a link that will open a light box with the comments inside it.  The light box is useful for the blog or list layout where many articles per page are being shown">
+			<option value="0">Comments Box</option>
+		  	<option value="1">Comments Link (lightbox)</option>
+		</param>
+		<param name="comments_view_list" type="radio" default="1" label="Comment view for list layout" description="Shows either a comments box, or a link that will open a light box with the comments inside it.  The light box is useful for the blog or list layout where many articles per page are being shown">
+			<option value="0">Comments Box</option>
+		  	<option value="1">Comments Link (lightbox)</option>
+		</param>
+		<param name="comments_view_blog" type="radio" default="1" label="Comment view for blog layout" description="Shows either a comments box, or a link that will open a light box with the comments inside it.  The light box is useful for the blog or list layout where many articles per page are being shown">
+			<option value="0">Comments Box</option>
+		  	<option value="1">Comments Link (lightbox)</option>
+		</param>
+		
+		
+		<param name="comments_publish_feed" type="radio" default="1" label="Publish comment to profile" description="Indicates whether the Post comment to my Facebook profile check box is checked. If false, the user must check the check box before the comment can be published to a user's Feed. The comment must be at least 5 words in length in order to be published to Feed">
+			<option value="0">No</option>
+		  	<option value="1">Yes</option>
+		</param>
+		
+		
+		<param name="comments_show_on" type="radio" default="all" label="Select an option" description="">
+			<option value="all">Show on all articles &lt;br/&gt;</option>
+		  	<option value="selected">Show on selected article sections and categories (select below) &lt;br/&gt;</option>
+		</param>
+		
+        <param name="comment_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="Sections - Show Comments" description="Use Ctrl-click to select more than one item.">
+			<option value="-1"></option>
+        </param>
+		
+		<param name="comment_categories" type="sqlmultilistx" sql="SELECT * FROM #__categories" key_field="title" value_field="title" default="" multiple="multiple" label="Categories - Show Comments" description="Use Ctrl-click to select more than one item.">
+			<option value="-1"></option>
+        </param>
+		
+		<param name="comment_css" type="filelist" default="comment_default.css" label="Select a file" description="" directory="components/com_myapi/css/comment" filter="" exclude="" stripext="" />
+		</params>
+	
+</install>
