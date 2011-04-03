@@ -39,6 +39,7 @@ $pkg_path = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'extensions'.D
 $pkgs = array('mod_myapi_fblogin'=> array('name' => 'Facebook connect login module', 'db' => ''),
 			  'mod_myapi_fbfan'=> array('name' => 'Facebook fan box module', 'db' => ''),
 			  'mod_myapi_fbactivity'=> array('name' => 'Facebook activity box', 'db' => ''),
+			  'mod_myapi_fblive'=> array('name' => 'Facebook Live Box', 'db' => ''),
 			  'mod_myapi_fbrecommendations'=> array('name' => 'Facebook Recommendations box', 'db' => ''),
 			  'plg_myapiauth'=> array('name' => 'Authorisation plugin',  'db' => 'myApiAuth'),
 			  'plg_myapicomment'=> array('name' => 'Comment content plugin',  'db' => 'myApiComment'), 
