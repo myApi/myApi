@@ -32,324 +32,171 @@
  *****************************************************************************/
  
 
-defined('_JEXEC') or die('Restricted access');
-$doc =& JFactory::getDocument();
-global $mainframe;
-JHTML::_('behavior.formvalidation');
-$com_params = &JComponentHelper::getParams( 'com_myapi' );
-
-$button_size = $com_params->get('size');
-$button_text = $com_params->get('button_text');
-
-//redirect to different page
-	$menuitem = $com_params->get('userRedirectTo');
-	if($menuitem == '') { 
-		$menu =& JSite::getMenu();
-		$menuitem = $menu->getDefault()->id;
-	}
-	$redirect = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=$menuitem",false);
-		
-
-$redirect = base64_encode($redirect);
 ?>
-
-<script>
-
-window.addEvent('domready',function(){
-
-  $$('.myapiAjaxForm').each(function(el,index){
-	  $$('.myapiAjaxForm')[index].addEvent('submit', function(e) {
-		/**
-		 * Prevent the submit event
-		 */
-		 $ES('.button',el).each(function(el,index){
-			el.disabled = true;
-			el.innerHTML = 'Loading...';	 
-		 });
-		 
-		new Event(e).stop();
-	 
-		/**
-		 * send takes care of encoding and returns the Ajax instance.
-		 * onComplete removes the spinner from the log.
-		 */
-		this.send({
-			onComplete: function(response) {
-				var json = Json.evaluate(response);
-				var message = json.message;
-				var redirect = json.redirect;
-				parent.SqueezeBox.close();
-				parent.window.location = '<?php echo "index.php?option=com_myapi&task=frameTask"; ?>&redirect='+redirect+'&message='+message;
-			
-			}
-		});
-	});
- });
-});
-</script>
-<style type="text/css">
-
-html,body{
-	width:600px;
-	height:530px;
-	margin:0px;
-	padding:0px;
-	color:#333333;
-	font-family:Verdana, Geneva, sans-serif;
-	overflow:hidden;
-}
-body{
-	background:url(/components/com_myapi/assets/images/bg.gif) repeat-x bottom #f7f7f7;
-	position:absolute;
-}
-#poweredBy{
-	background:url(/components/com_myapi/assets/images/men.gif) no-repeat right;
-	float:left;
-	min-height:130px;
-	width:560px;
-	margin:20px;
-}
-input{
-	float:right;
-	width:100px;
-}
-a{
-	float:right;
-	color:#333333;
-}
-label{
-	float:left;
-	clear:both;
-	padding:3px;
-	width:120px;
-}
-label span{
-	vertical-align:middle;
-	padding:3px;
-	width:120px;
-}
-button{
-	float:left;
-	clear:both;
-}
-p{
-	padding-bottom:10px;
-	font-size:12px;
-	color:#333333;	
-}
-form{
-color: #333;
-float: left;
-font-family: Helvetica, Arial, sans-serif;
-font-size: 12px;
-height: 252px;
-line-height: 15px;
-margin-bottom: 0px;
-margin-left: 10px;
-margin-right: 10px;
-margin-top: 0px;
-padding:0px;
-width: 280px;
-}
-
-h1{
-	background-image: none;
-	color: #666;
-	display: block;
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 16px;
-	font-weight: bold;
-	height: 15px;
-	line-height: 15px;
-	margin-bottom: 10px;
-	margin-left: 0px;
-	margin-right: 0px;
-	margin-top: 10px;
-	padding: 0px;
-	text-align: left;
-	vertical-align: bottom;
-	width: 600px;
-}
-h2{
-	font-size:16px;
-	font:Verdana, Geneva, sans-serif;
-}
-.link{
-	text-decoration:underline;
-}
-fieldset{
+<div class="ubersearch search_profile"> 
+									<div class="result clearfix"> 
 	
-border-bottom-color: #CCC;
-border-bottom-style: solid;
-border-bottom-width: 1px;
-border-left-color: #CCC;
-border-left-style: solid;
-border-left-width: 1px;
-border-right-color: #CCC;
-border-right-style: solid;
-border-right-width: 1px;
-border-top-color: #CCC;
-border-top-style: solid;
-border-top-width: 1px;
-color: #333;
-display: block;
-font-family: Helvetica, Arial, sans-serif;
-font-size: 12px;
-height: 205px;
-line-height: 15px;
-margin-bottom: 0px;
-margin-left: 0px;
-margin-right: 0px;
-margin-top: 15px;
-overflow-x: visible;
-overflow-y: visible;
-padding-bottom: 15px;
-padding-left: 15px;
-padding-right: 15px;
-padding-top: 15px;
-width: 248px;
-	
-}
-legend{
-	
-background-color: transparent;
-background-image: none;
-background-origin: padding-box;
-border-bottom-style: none;
-border-left-style: none;
-border-right-style: none;
-border-top-style: none;
-color: #333;
-display: block;
-font-family: Helvetica, Arial, sans-serif;
-font-size: 18px;
-font-weight: bold;
-height: 15px;
-line-height: 15px;
-margin-bottom: 0px;
-margin-left: 0px;
-margin-right: 179px;
-margin-top: 0px;
-overflow-x: visible;
-overflow-y: visible;
-padding-bottom: 0px;
-padding-left: 10px;
-padding-right: 10px;
-padding-top: 0px;
-text-align: left;
-width: 49px;
-}
-#h2{
-	
-color: #333;
-display: block;
-font-family: Arial, Helvetica, sans-serif;
-font-size: 16px;
-font-weight: normal;
-height: 15px;
-line-height: 15px;
-margin-bottom: 13px;
-margin-left: 0px;
-margin-right: -20px;
-margin-top: 13px;
-overflow-x: visible;
-overflow-y: visible;
-padding-bottom: 10px;
-padding-left: 10px;
-padding-right: 10px;
-padding-top: 10px;
-text-align: left;
-vertical-align: bottom;
-width: 560px;
-}
-#poweredBy p{
-	width:245px;
-	padding:10px;
-}
-#poweredBy a{
-	text-decoration:none;
-	color:#333333;
-}
-.myapiAjaxForm{
-	width:280px;
-	margin:0px 10px 0px 10px;
-	float:left;
-}
+<?php if(!$registeredEmail): ?>
+<table class="myapi" cellspacing="5" cellpadding="5">
+  <tr > 
+   <td width="150" class="loginHeaders headers">Login</td>
+   <td width="350" class="registerHeaders headers">Register</td>
+  </tr>
+  <tr>
+   <td >
+   <p>Login with an existing account to enable Facebook Connect.</p>
+   </td>
 
-</style>
-
-<div id="formsWrapper">
-<h1>Hi <?php echo JRequest::getVar('name','','get'); ?>, login or create a new account below</h1>
-<form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
-<fieldset class="adminform">
-
-	<legend><?php echo JText::_( 'Login' ); ?></legend>
-    <p>If you already have an account with this website login with your existing user name and password to enable Facebook Connect</p>
-	
-		<label for="username"><span><?php echo JText::_('Username') ?>: </span></label>
-		<input name="username" id="username" type="text" class="inputbox" alt="username" size="10" />
-	
-		<label for="passwd"><span><?php echo JText::_('Password') ?>: </span></label>
-		<input type="password" id="passwd" name="passwd" class="inputbox" size="10" alt="password" />
-
-	<?php if(JPluginHelper::isEnabled('system', 'remember')) : ?>
-	
-		<label for="remember"><span><?php echo JText::_('Remember me') ?>: </span></label>
-		<input type="checkbox" id="remember" name="remember" class="inputbox" size="10" value="yes" alt="Remember Me" />
-	
-	<?php endif; ?>
-	
-	<button class="button" type="submit"><?php echo JText::_('LOGIN') ?></button>
-
-		<a href="<?php echo JRoute::_( 'index.php?option=com_user&view=reset' ); ?>">Forgot your password?</a>
-
-		<a href="<?php echo JRoute::_( 'index.php?option=com_user&view=remind' ); ?>">Forgot you username?</a>
+   <td>
+   <p>Create a new account using details from your Facebook profile.</p>
+  
+   </td>
+   </tr>
+   
+   <tr>
+   <td>
+   
+   
+   	<form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
+<table>
+    <tr>
+    	<td>
+			<label for="username"><span>Username</span></label>
+		</td>
+        <td>
+        	<input name="username" id="username" type="text" class="inputbox" alt="username" size="10" />
+		</td>
+    </tr>
+    <tr>
+    	<td>
+			<label for="passwd"><span>Password: </span></label>
+		</td>
+        <td>
+        	<input type="password" id="passwd" name="passwd" class="inputbox" size="10" alt="password" />
+        </td>
+    </tr>
+    <tr>
+    	<td colspan="2">
+			<button class="button" type="submit">Login</button>
+        </td>
+    </tr>
+    <tr>
+    	<td colspan="2">
+			<a href="<?php echo $forgotPass; ?>">Forgot your password?</a><br  /> <a href="<?php echo $forgotUser; ?>">Forgot your username?</a>
+        </td>
+    </tr>
+</table>
 
 
 	<input type="hidden" name="option" value="com_myapi" />
 	<input type="hidden" name="myapiFbLink" value="1" />
 	<input type="hidden" name="task" value="login" />
 	<input type="hidden" name="return" value="<?php echo $redirect; ?>" />
-	<?php echo JHTML::_( 'form.token' ); ?>
-	</fieldset>
+	<?php echo $formToken; ?>
+
 </form>
-
-<form action="index.php?option=com_myapi&task=newUser" method="post" class="myapiAjaxForm">
-<fieldset class="adminform">
-
-	<legend><?php echo JText::_( 'Register' ); ?></legend>
-    <p>Alternativley to create a new account using details from your Facebook profile enter your desired user name and password below</p>
-	<input type="hidden" name="option" value="com_myapi" />
-  	<input type="hidden" name="name" id="name" value="<?php echo JRequest::getVar('name','','get'); ?>"/>
-  
-    <label for="username"><span><?php echo JText::_('Username') ?>: </span></label>
-	<input type="text" id="username" name="username" size="10" />
-
-    
-		<label for="passwd"><span><?php echo JText::_('Password') ?>: </span></label>
-        <input type="password" id="password" name="password" size="10" />
-      
-        <label for="passwd"><span><?php echo JText::_('Confirm Password') ?>: </span></label>
-  		<input type="password"id="password2" name="password2" size="10" />
-	
-    <input type="hidden" id="pic" name="pic" value="<?php echo JRequest::getVar('pic_square','','get'); ?>" />
-    <input type="hidden" id="uid" name="uid" value="<?php echo JRequest::getVar('uid','','get'); ?>" />
-	<input type="hidden" id="email" name="email" value="<?php echo JRequest::getVar('email','','get'); ?>" />
-	<button class="button validate" type="submit"><?php echo JText::_('Register'); ?></button>
+   
+   </td>
+   <td> 
+   
+   
+<form action="index.php?option=com_myapi&task=newUser" method="post" id="myApiNewUserRegForm" class="myapiAjaxForm">
+<table class="myapi">
+          <input type="hidden" name="option" value="com_myapi" />
+        
+     <tr>
+     	<td width="120" rowspan="2"><fb:profile-pic uid="loggedinuser" facebook-logo="false" linked="false" size="s"></fb:profile-pic></td>
+        <td>When you are ready to create a new account click <?php echo (!$fbUser['liked']) ? 'the like button' : 'register';  ?> below</td>
+     
+     <tr>
+     	<td>
+        	<?php if(!$fbUser['liked']): 
+				$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+				$com_params = new JParameter( $plugin->params );
+			?>
+            	<fb:like href="http://www.facebook.com/apps/application.php?id=<?php echo $com_params->get('appId'); ?>" show_faces="false" layout="button_count" width="50"></fb:like>
+            <?php else: ?>
+            	<button class="button" type="submit">Register</button>
+            <?php endif; ?>
+        </td>
+      </tr>
+ </table>
 	<input type="hidden" name="task" value="newUser" />
 	<input type="hidden" name="id" value="0" />
 	<input type="hidden" name="gid" value="0" />
 	<input type="hidden" name="return" value="<?php echo $redirect; ?>" />
-	<?php echo JHTML::_( 'form.token' ); ?>
-    </fieldset>
+	<?php echo $formToken ?>
+
 </form>
+   
+   
+   </td>
+  </tr>
+ </table>
 
-<div id="poweredBy">
+<?php else: ?>
+<table class="myapi" cellspacing="5" cellpadding="5" width="100%">
+  <tr > 
+   <td colspan="3" class="headers">Login</td>
+  </tr>
+  <tr>
+   <td width="120"><fb:profile-pic uid="loggedinuser" facebook-logo="false" linked="false" size="s"></fb:profile-pic></td>
+   <td width="300">
+   		<p>Your email address is already registered with this site.</p>
+        <p>Please login to your account to enable facebook connect or use a different Facebook account</p>
+   
+   </td>
+   <td>
+   
+   
+   	<form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
+<table align="right">
+    <tr>
+    	<td>
+			<label for="username"><span>Username</span></label>
+		</td>
+        <td>
+        	<input name="username" id="username" type="text" class="inputbox" alt="username" size="10" />
+		</td>
+    </tr>
+    <tr>
+    	<td>
+			<label for="passwd"><span>Password: </span></label>
+		</td>
+        <td>
+        	<input type="password" id="passwd" name="passwd" class="inputbox" size="10" alt="password" />
+        </td>
+    </tr>
+    <tr>
+    	<td colspan="2">
+			<button class="button" type="submit">Login</button>
+        </td>
+    </tr>
+    <tr>
+    	<td colspan="2">
+			<a href="<?php echo $forgotPass; ?>">Forgot your password?</a><br  /> <a href="<?php echo $forgotUser; ?>">Forgot your username?</a>
+        </td>
+    </tr>
+</table>
 
-<h2>Powered by myApi</h2>
-<p>Registration and login on this web site has been made faster and easier by <a href="http://www.myapi.co.uk/"><span class="link">myApi</span>, the Facebook Connect Joomla bridge</a></p>
-<p>There is no need to worry, this website will never be able gain access to your account, or personal data you do not explicitly give it permission to use</p>
 
-</div>
+	<input type="hidden" name="option" value="com_myapi" />
+	<input type="hidden" name="myapiFbLink" value="1" />
+	<input type="hidden" name="task" value="login" />
+	<input type="hidden" name="return" value="<?php echo $redirect; ?>" />
+	<?php echo $formToken; ?>
 
-</div>
+</form>
+   
+   </td>
+  
+  </tr>
+ </table>
+<?php endif; ?>
+                                        
+                                        
+                                        
+                                        
+										<div class="clear" style="clear:both;"></div> 
+									</div> 
+								</div>
