@@ -35,16 +35,12 @@ myapi = {
 					$ES('.fb_button_text','myApiLoginWrapper')[0].innerHTML = "Connecting";
 					}catch(e){}
 					
-					var isLinkedAjax = new Ajax('index.php?option=com_myapi&task=isLinked&'+token+'=1&fbId='+uid,{
+					var isLinkedAjax = new Ajax('index.php?option=com_myapi&task=isLinked&'+token+'=1&fbId='+uid+'&return='+redirect,{
 						method: 'get',
 						onRequest: function() { 
 							
 						},
 						onComplete: function( response ) {
-							if (response == 1){
-							  //redirect to login  
-							  window.location = 'index.php?option=com_myapi&task=facebookLogin&'+token+'=1&return='+redirect;
-							}else{
 							  //redirect to link 
 							  var data = Json.evaluate(response);
 						  	  myapi.ajax.evaluate(data);
@@ -53,7 +49,7 @@ myapi = {
 							  $('fbLoginButton').disabled = false;
 							  $ES('.fb_button_text','myApiLoginWrapper')[0].innerHTML = "Connect with facebook";
 							  }catch(e){}
-							}
+							
 						}
 					}).request();	
 				}

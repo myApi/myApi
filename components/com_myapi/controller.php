@@ -228,19 +228,31 @@ $formToken = JHTML::_( 'form.token' );
 		$this->setRedirect($return,$message);
 	}
 	
-	//A function called via ajax to see is a Facebook user is linked to a Joomla user, returns true or false
+	//A function called via ajax to see is a Facebook user is linked to a Joomla user
 	function isLinked(){
 		JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
 		$db = JFactory::getDBO();
-		$query = "SELECT * FROM ".$db->nameQuote('#__myapi_users')." WHERE uid =".$db->quote(JRequest::getVar('fbId','','get'));
+		$uid = JRequest::getVar('fbId','','get');
+		$query = "SELECT userId FROM ".$db->nameQuote('#__myapi_users')." WHERE uid =".$db->quote($uid);
 		$db->setQuery($query);
 		$db->query();
 		$num_rows = $db->getNumRows();
+		$query_id = $db->loadResult();
 		if($num_rows == 0){ 
 			MyapiController::showRegisterWindow(); 
-		}else{ 
-			echo 1;
+		}else{
 			global $mainframe;
+			$options['fake_array'] = "This mainframe->login needs and array passed to it";
+			$options['uid'] = $uid;
+			$error = $mainframe->login($uid,$options);
+			if(!is_object($error)){
+				$this->syncPhoto($query_id,$uid);
+			}
+						
+			$data = array();
+			$data[] = "window.location = '".base64_decode(JRequest::getVar('return','','get'))."';";
+			echo json_encode($data);
+			
 			$mainframe->close(); 
 		}
 	}

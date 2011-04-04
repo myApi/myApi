@@ -52,7 +52,7 @@ else{
 	$redirect_login = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=".$menuitem,false);
 		
 }
-
+$redirect_login = base64_encode($redirect_login);
 $user = JFactory::getUser();
 global $facebook;
 
