@@ -102,12 +102,10 @@ class MyapiController extends JController {
 			 ));
 			
 			$root = JURI::root();
-			$root = str_replace('http://','',$root);
-			$root = str_replace('www.','',$root);
+			$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
+			$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
+			$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
 			
-			if(substr($root,-1,1) == '/'){
-				$root = substr($root,0,-1);	
-			}
 			$rootArray = explode(':',$root);
 			$root = $rootArray[0];
 			$connectURL = 'http://'.$root.'/';
