@@ -47,11 +47,6 @@ class plgSystemmyApiConnect extends JPlugin
 	
 	function onAfterInitialise(){
 		//Do not import in admin view
-		global $mainframe;
-		if($mainframe->isAdmin()) { return; } 
-		
-		JHTML::_('behavior.mootools');
-		
 		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 		$com_params = new JParameter( $plugin->params );
          
@@ -62,13 +57,12 @@ class plgSystemmyApiConnect extends JPlugin
 			'cookie' => true, // enable optional cookie support
 		 ));
 		$GLOBALS['facebook'] =& $facebook;
-		
 	}
 	
 	function onAfterRender(){
 		//For the async facebook injection
 		global $mainframe;
-		
+		JHTML::_('behavior.mootools');
 		
 		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 		$com_params = new JParameter( $plugin->params );  
