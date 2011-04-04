@@ -62,7 +62,7 @@ myapi = {
 					window.location = 'index.php?option=com_myapi&task=newLink&'+token+'=1&return='+redirect;
 				}
 			});
-		},		
+		}		
 	},
 	register: {
 		showRegisterWindow: function(){
