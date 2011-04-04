@@ -52,6 +52,13 @@ else{
 	$redirect_login = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=".$menuitem,false);
 		
 }
+
+$u =& JURI::getInstance( $redirect_login );
+$root = JURI::root();
+$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
+$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
+$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
+$redirect_login = 'http://'.$root.$u->getPath();
 $redirect_login = base64_encode($redirect_login);
 $user = JFactory::getUser();
 global $facebook;
@@ -143,8 +150,13 @@ $avatar = $myApiModel->getAvatar();
 <?php else: ?>
      <div style="text-align:center;">
       <?php if(!$linked): ?> 
+     <?php
+	 
+	 $loginUrl = $facebook->getLoginUrl(array('next' => JURI::base().'index.php?option=com_myapi&task=newLink&return='.$redirect_login ));	
+	 
+	 ?>
      
-	  <fb:login-button id="fbLinkButton" autologoutlink="false" v="2" size="small" onlogin="myapi.auth.newLink('<?php echo JUtility::getToken(); ?>','<?php echo $redirect_login; ?>');" perms="email,user_likes,user_photos,user_status,read_stream,publish_stream,offline_access"><?php echo $params->get('login_link_text'); ?></fb:login-button>
+	  <fb:login-button id="fbLinkButton" autologoutlink="false" v="2" size="small" onlogin="myapi.auth.newLink('<?php echo JUtility::getToken(); ?>','<?php echo $loginUrl; ?>');" perms="email,user_likes,user_photos,user_status,read_stream,publish_stream,offline_access"><?php echo $params->get('login_link_text'); ?></fb:login-button>
       <div style="margin-top:15px;"></div>
 	  <fb:facepile width="198" max-rows="2"></fb:facepile>
 		

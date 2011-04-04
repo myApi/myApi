@@ -59,7 +59,7 @@ myapi = {
 			$ES('.fb_button_text','fbLinkButton')[0].innerHTML = "Linking...";
 			FB.getLoginStatus(function(response) {
 				if (response.session) {
-					window.location = 'index.php?option=com_myapi&task=newLink&'+token+'=1&return='+redirect;
+					window.location = redirect;
 				}
 			});
 		}		

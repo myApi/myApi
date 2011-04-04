@@ -72,7 +72,15 @@ global $mainframe;
 		$menu =& JSite::getMenu();
 		$menuitem = $menu->getDefault()->id;
 	}
-	$redirect = base64_encode(JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=$menuitem",false));
+	$redirect = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=$menuitem",false);
+	$u =& JURI::getInstance($redirect);
+$root = JURI::root();
+$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
+$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
+$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
+$redirect = 'http://'.$root.$u->getPath();
+$redirect = base64_encode($redirect);
+	
 		
 $forgotPass = JRoute::_( 'index.php?option=com_user&view=reset' );
 $forgotUser = JRoute::_( 'index.php?option=com_user&view=remind' );
@@ -126,56 +134,31 @@ $formToken = JHTML::_( 'form.token' );
 	//This task logs in a user
 	function facebookLogin() {
 		// Check for request forgeries
-		JRequest::checkToken('get') or jexit( 'Invalid Token' );
-		
-		
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
-		$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser = $facebookmodel->getLoggedInUser();
-		$uid = $fbUser['id'];
-		$return = base64_decode(JRequest::getVar('return','','post'));
+		//JRequest::checkToken('get') or jexit( 'Invalid Token' );
+		global $facebook; global $mainframe;
+		$session = $facebook->getSession();
+		$uid = $session['uid'];
+		$return = base64_decode(JRequest::getVar('return',''));
 		$user = JFactory::getUser();
-		if($uid):
-			global $mainframe;
-			$db =& JFactory::getDBO();
-			$query = "SELECT userId FROM ".$db->nameQuote('#__myapi_users')." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
-			$db->setQuery( $query );
-			$db->query();
-			$num_rows = $db->getNumRows();
-			$query_id = $db->loadResult();
-			if($num_rows!=0)
-			{
-				if($user->guest){
-					$options['fake_array'] = "This mainframe->login needs and array passed to it";
-					$options['uid'] = $uid;
-					$error = $mainframe->login($uid,$options);
-					if(!is_object($error))
-					{
-						$this->syncPhoto($query_id,$uid);
-						if($return == '') { $this->setRedirect(JURI::base(),JText::_( 'LOGGED_IN_FACEBOOK' )); }
-						else { $this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' )); }
-					}
-					else{ $this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); }
-				}elseif($query_id != $user->id){
-					//If the user is logged then the facebook link must be for another joomla account
-					$this->setRedirect(JURI::base(),JText::_('DOUBLE_LINK'));
-				}
-				else{
-					$this->syncPhoto($query_id,$uid);
-					 if(JRequest::getVar('return','') == '') { $this->setRedirect(JURI::base(),JText::_( 'LOGGED_IN_FACEBOOK' )); }
-					 else { $this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' )); }
-				}
-				
-			}
-			else
-			{
-				return false; //No link found
-				
-					
-			}
-		else:
+		if($uid){
+		  if($user->guest){
+			  $options['return'] = $return;
+			  $options['uid'] = $uid;
+			  $error = $mainframe->login($uid,$options);
+			  if(!is_object($error)){
+				  $loggedUser = JFactory::getUser();
+				  $this->syncPhoto($user->id,$uid);
+				  if($return == '')
+				  	$this->setRedirect(JURI::base(),JText::_( 'LOGGED_IN_FACEBOOK' ));
+				  else
+				  	$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
+			  }else{ 
+			  	$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
+			  }
+		  }
+		}else{
 			$this->setRedirect($return,JText::_('NO_SESSION'));
-		endif;
+		}
 	}
 	
 	
@@ -196,8 +179,6 @@ $formToken = JHTML::_( 'form.token' );
 	//Joomla user login task
 	function login()
 	{
-		// Check for request forgeries
-		JRequest::checkToken('request') or jexit( 'Invalid Token' );
 
 		global $mainframe;
 
@@ -241,18 +222,12 @@ $formToken = JHTML::_( 'form.token' );
 		if($num_rows == 0){ 
 			MyapiController::showRegisterWindow(); 
 		}else{
-			global $mainframe;
-			$options['fake_array'] = "This mainframe->login needs and array passed to it";
-			$options['uid'] = $uid;
-			$error = $mainframe->login($uid,$options);
-			if(!is_object($error)){
-				$this->syncPhoto($query_id,$uid);
-			}
-						
+			global $facebook;
+			$loginUrl = $facebook->getLoginUrl(array('next' => JURI::base().'index.php?option=com_myapi&task=facebookLogin&return='.JRequest::getVar('return','','get') ));		
 			$data = array();
-			$data[] = "window.location = '".base64_decode(JRequest::getVar('return','','get'))."';";
+			$data[] = "window.location = '".$loginUrl."';";
 			echo json_encode($data);
-			
+			global $mainframe;
 			$mainframe->close(); 
 		}
 	}
@@ -261,20 +236,16 @@ $formToken = JHTML::_( 'form.token' );
 
 	function newLink(){
 		// Check for request forgeries
-		JRequest::checkToken('get') or jexit( 'Invalid Token' );
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
-		$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser = $facebookmodel->getLoggedInUser();
-		if($fbUser['id'] != ''){
+		global $facebook;
+		$facebookSession = $facebook->getSession();
+		if($facebookSession['uid'] != ''){
 			$user = JFactory::getUser();
 			$db = JFactory::getDBO();
-			global $facebook;
-			$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-			$facebookSession = $facebook->getSession();
-			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($fbUser['id']).",".$db->quote($facebookSession['access_token']).")";
+			
+			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).")";
 			$db->setQuery($query);
 			$db->query();
-			$this->syncPhoto($user->id,$fbUser['id']);
+			$this->syncPhoto($user->id,$facebookSession['uid']);
 			
 			$this->setRedirect(JURI::base(),JText::_('LINK_COMPLETE'));
 		}else{
@@ -287,8 +258,6 @@ $formToken = JHTML::_( 'form.token' );
 	{
 		global $mainframe;
 
-		// Check for request forgeries
-		JRequest::checkToken() or jexit( 'Invalid Token' );
 		$return = base64_decode(JRequest::getVar('return','','post'));
 		// Get required system objects
 		$user 		= clone(JFactory::getUser());
