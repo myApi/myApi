@@ -20,7 +20,9 @@
   `status_text` text NOT NULL,
   `access_token` varchar(255) NOT NULL,
   `avatar` varchar(255) default NULL,
-  PRIMARY KEY  (`userId`)
+  PRIMARY KEY  (`userId`),
+  UNIQUE KEY `userId` (`userId`),
+  UNIQUE KEY `uid` (`uid`)
 );
 </query>
 		 
