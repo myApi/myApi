@@ -223,7 +223,12 @@ $formToken = JHTML::_( 'form.token' );
 			MyapiController::showRegisterWindow(); 
 		}else{
 			global $facebook;
-			$loginUrl = $facebook->getLoginUrl(array('next' => JURI::base().'index.php?option=com_myapi&task=facebookLogin&return='.JRequest::getVar('return','','get') ));		
+			$root = JURI::root();
+			$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
+			$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
+			$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
+			
+			$loginUrl = $facebook->getLoginUrl(array('next' => 'http://'.$root.'/index.php?option=com_myapi&task=facebookLogin&return='.JRequest::getVar('return','','get') ));		
 			$data = array();
 			$data[] = "window.location = '".$loginUrl."';";
 			echo json_encode($data);
