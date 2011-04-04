@@ -38,40 +38,27 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiComment extends JPlugin
 {
-
 	function onPrepareContent( &$article, &$params, $limitstart )
 	{
 		//this may fire fron a component other than com_content
 		if(($article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
 		{
 			$xid = urlencode('articlecomment'.$article->id);
-			
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
-				$link = JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid));
-				$u =& JURI::getInstance( JURI::base() );
-				$link = 'http://'.$u->getHost().$link;
-			
-			
-			
-			$commentURL = $link;
-			$commentEncodeURL = base64_encode($commentURL);
-			$articleTitleEncode = urlencode($article->title);
+			$link = JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid));
+			$u =& JURI::getInstance( JURI::base() );
+			$commentURL = 'http://'.$u->getHost().$link;
 			
 			$base = JURI::base();
-$doc = & JFactory::getDocument();
-JHTML::_('behavior.mootools');
-
-		 $doc = & JFactory::getDocument();
-		 $doc->addStyleSheet('components'.DS.'com_myapi'.DS.'assets'.DS.'css'.DS.'comments.css');
-
-			
+			$doc = & JFactory::getDocument();
+			JHTML::_('behavior.mootools');
 			
 			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
 
-	// Load plugin params info
-	$myapiparama = new JParameter($plugin->params);
-			
+			// Load plugin params info
+			$myapiparama = new JParameter($plugin->params);
+					
 			$comment_css = $myapiparama->get('comment_css');
 			$comment_sections = $myapiparama->get('comment_sections');
 			$comment_categories = $myapiparama->get('comment_categories');
@@ -90,15 +77,13 @@ JHTML::_('behavior.mootools');
 			$comment_show = false;
 			global $facebook;
 			
-		
 			if($article->sectionid != '')
 			{
 				if( is_array($comment_sections) )
 				{	foreach($comment_sections as $id)
 					{ if($id == $article->sectionid) { $comment_show = true; } }
 				}
-				else
-				{
+				else{
 					if($comment_sections == $article->sectionid) { $comment_show = true; }	
 				}
 			}
@@ -108,8 +93,7 @@ JHTML::_('behavior.mootools');
 				{	foreach($comment_categories as $id)
 					{ if($id == $article->category) { $comment_show = true; } }
 				}
-				else
-				{
+				else{
 					if($comment_categories == $article->category) { $comment_show = true; }	
 				}
 			}
@@ -124,29 +108,28 @@ JHTML::_('behavior.mootools');
 				$hasAccess = true;
 			}elseif($comments_access == '30'){
 				if(($user->gid == '23') || ($user->gid == '24') || ($user->gid == '25'))
-				{
 					$hasAccess = true;
-				}
 			}
 			else{
-				if($user->gid >= $comments_access){
+				if($user->gid >= $comments_access)
 					$hasAccess = true;
-				}
 			}
 				
-			if(($comments_access == $user->gid) || ($comments_access == '29') ) { $hasAccess = true; }
+			if(($comments_access == $user->gid) || ($comments_access == '29') )
+				$hasAccess = true;
 			
-			if($comments_show_on == 'all') { $comment_show = true; }  //reset if show on all is on
+			if($comments_show_on == 'all')
+				$comment_show = true;
 			
 			
 			if($comment_show && $hasAccess )
 			{
-				//$comment_box = '<div class="myApiComments" xid="'.$xid.'" id="'.$xid.'Container"></div>'; 
-				$comment_box = '<fb:comments xid="'.$xid.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" title="'.$article->title.' - Comments" url="'.$commentURL.'"  reverse="'.$comments_reverse.'" publish_feed="'.$comments_publish_feed.'" css="'.JURI::base().'/components/com_myapi/css/comment/'.$comment_css.'?v='.time().'"></fb:comments>';
-				$comment_link_box = '<fb:comments xid="'.$xid.'" numposts="5" width="700" title="'.$article->title.' - Comments" url="'.$commentURL.'"  reverse="'.$comments_reverse.'" publish_feed="'.$comments_publish_feed.'" css="'.JURI::base().'/components/com_myapi/css/comment/'.$comment_css.'?v='.time().'"></fb:comments>';				
 				
-				$comment_link = '<br /><a class="" href="#"  onClick=\'myApiModal.open("Leave a comment.",null,"'.addslashes($comment_link_box).'");\'>Add a comment</a><br />';
+				$comment_box = '<fb:comments xid="'.$xid.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" title="'.htmlentities($article->title,ENT_QUOTES).' - Comments" url="'.$commentURL.'"  reverse="'.$comments_reverse.'" publish_feed="'.$comments_publish_feed.'" css="'.JURI::base().'/components/com_myapi/css/comment/'.$comment_css.'?v='.time().'"></fb:comments>';
 				
+				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>Add a comment</a><br />";
+				
+				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"Leave a comment.\",null,\"<fb:comments xid=\'".$xid."\' numposts=\'5\' width=\'700\' title=\'".htmlentities($article->title,ENT_QUOTES)." - Comments\' url=\'".$commentURL."\'  reverse=\'".$comments_reverse."\' publish_feed=\'".$comments_publish_feed."\'></fb:comments>\"); }); });";
 				
 				if(JRequest::getVar('view','','get') == 'article'){
 					//article	
@@ -156,6 +139,7 @@ JHTML::_('behavior.mootools');
 					}else{
 						//link
 						$article->text = $article->text.$comment_link;
+						$doc->addScriptDeclaration($js);
 					}
 				}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
 					//blog		
@@ -165,6 +149,7 @@ JHTML::_('behavior.mootools');
 					}else{
 						//link
 						$article->text = $article->text.$comment_link;
+						$doc->addScriptDeclaration($js);
 					}
 				}else{
 					//must be list
@@ -174,21 +159,10 @@ JHTML::_('behavior.mootools');
 					}else{
 						//link
 						$article->text = $article->text.$comment_link;
+						$doc->addScriptDeclaration($js);
 					}
 				}
-				
-				
-				
-				
-				
-				
 			}
-			
-			
-			
-			
-			
-			
 		}
 
 	}
