@@ -80,8 +80,17 @@ class plgUsermyapiuser extends JPlugin {
 		  
 		  if($count == 0)
 		  {
-			  
-			 $query = "INSERT INTO ".$db->nameQuote('#__myapi_users')."  (userId,uid,access_token) VALUES (".$db->quote($instance->id).",".$db->quote($uid).",".$db->quote($facebookSession['access_token']).")";
+			  jimport( 'joomla.filesystem.folder' );
+			  if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
+				  JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
+				  
+			  $dest = JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$facebookSession['uid'].'.jpg';
+			  $avatar = 'facebookUID'.$facebookSession['uid'].'.jpg';
+			  $buffer = file_get_contents('https://graph.facebook.com/'.$facebookSession['uid'].'/picture',$dest);
+			  jimport( 'joomla.filesystem.file' );
+			  JFile::write($dest,$buffer);
+			
+			  $query = "INSERT INTO ".$db->nameQuote('#__myapi_users')."  (userId,uid,access_token,avatar) VALUES (".$db->quote($instance->id).",".$db->quote($uid).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
 			  $db->setQuery( $query );
 			  $db->query();
 		  }

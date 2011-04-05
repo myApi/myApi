@@ -104,7 +104,7 @@ $formToken = JHTML::_( 'form.token' );
 		$mainframe->close();
 	}
 	
-	function syncPhoto($id,$uid){
+	function syncPhoto($uid){
 		jimport( 'joomla.filesystem.folder' );
 			if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
 				JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
@@ -117,12 +117,12 @@ $formToken = JHTML::_( 'form.token' );
 			JFile::write($dest,$buffer);
 			$db =& JFactory::getDBO();
 			
-			$query = "UPDATE #__myapi_users SET avatar ='".$avatar."' WHERE userId ='".$id."'";
+			$query = "UPDATE #__myapi_users SET avatar ='".$avatar."' WHERE uid ='".$uid."'";
 			$db->setQuery($query);
 			$db->query();
 			
 			try{
-			  $query = "UPDATE #__comprofiler SET avatar ='".$avatar."' WHERE user_id ='".$id."'";
+			  $query = "UPDATE #__comprofiler JOIN #__myapi_users ON #__comprofiler.user_id = #__myapi_users.userId  SET #__comprofiler.avatar ='".$avatar."' WHERE #__myapi_users.uid ='".$uid."'";
 			  $db->setQuery($query);
 			  $db->query();
 			}catch(Exception $e){}
@@ -146,8 +146,7 @@ $formToken = JHTML::_( 'form.token' );
 			  $options['uid'] = $uid;
 			  $error = $mainframe->login($uid,$options);
 			  if(!is_object($error)){
-				  $loggedUser = JFactory::getUser();
-				  $this->syncPhoto($user->id,$uid);
+				  MyapiController::syncPhoto($uid);
 				  if($return == '')
 				  	$this->setRedirect(JURI::base(),JText::_( 'LOGGED_IN_FACEBOOK' ));
 				  else
@@ -247,10 +246,26 @@ $formToken = JHTML::_( 'form.token' );
 			$user = JFactory::getUser();
 			$db = JFactory::getDBO();
 			
-			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).")";
+			jimport( 'joomla.filesystem.folder' );
+			if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
+				JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
+				
+			$dest = JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$facebookSession['uid'].'.jpg';
+			$avatar = 'facebookUID'.$facebookSession['uid'].'.jpg';
+			$buffer = file_get_contents('https://graph.facebook.com/'.$facebookSession['uid'].'/picture',$dest);
+			jimport( 'joomla.filesystem.file' );
+			JFile::write($dest,$buffer);
+			$db =& JFactory::getDBO();
+			
+			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
 			$db->setQuery($query);
 			$db->query();
-			$this->syncPhoto($user->id,$facebookSession['uid']);
+			
+			try{
+			  $query = "UPDATE #__comprofiler SET #__comprofiler.avatar ='".$avatar."' user_id ='".$user->id."'";
+			  $db->setQuery($query);
+			  $db->query();
+			}catch(Exception $e){}
 			
 			$this->setRedirect(JURI::base(),JText::_('LINK_COMPLETE'));
 		}else{
@@ -363,7 +378,7 @@ $formToken = JHTML::_( 'form.token' );
 			$options['fake_array'] = "This mainframe->login needs and array passed to it";
 			$error = $mainframe->login($fbUser['uid'],$options);
 			$user = JFactory::getUser();
-			$this->syncPhoto($user->id,$fbUser['uid']);
+			MyapiController::syncPhoto($fbUser['uid']);
 			$this->setRedirect($return,$message);
 		}else{
 			
