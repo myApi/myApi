@@ -41,7 +41,7 @@ class plgContentmyApiComment extends JPlugin
 	function onPrepareContent( &$article, &$params, $limitstart )
 	{
 		//this may fire fron a component other than com_content
-		if(($article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
+		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
 		{
 			$xid = urlencode('articlecomment'.$article->id);
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');

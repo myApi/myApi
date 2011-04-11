@@ -44,7 +44,7 @@ class plgContentmyApiShare extends JPlugin
 		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php')){ return; }
 		
 		//this may fire fron a component other than com_content
-		if(($article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
+		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
 		{
 			$doc = & JFactory::getDocument();
 			
