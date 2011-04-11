@@ -125,11 +125,11 @@ class plgContentmyApiComment extends JPlugin
 			if($comment_show && $hasAccess )
 			{
 				
-				$comment_box = '<fb:comments xid="'.$xid.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" title="'.htmlentities($article->title,ENT_QUOTES).' - Comments" url="'.$commentURL.'"  reverse="'.$comments_reverse.'" publish_feed="'.$comments_publish_feed.'" css="'.JURI::base().'/components/com_myapi/css/comment/'.$comment_css.'?v='.time().'"></fb:comments>';
+				$comment_box = '<fb:comments migrated="1" xid="'.$xid.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" title="'.htmlentities($article->title,ENT_QUOTES).' - Comments" url="'.$commentURL.'"  reverse="'.$comments_reverse.'" publish_feed="'.$comments_publish_feed.'" css="'.JURI::base().'/components/com_myapi/css/comment/'.$comment_css.'?v='.time().'"></fb:comments>';
 				
 				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>Add a comment</a><br />";
 				
-				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"Leave a comment.\",null,\"<fb:comments xid=\'".$xid."\' numposts=\'5\' width=\'700\' title=\'".htmlentities($article->title,ENT_QUOTES)." - Comments\' url=\'".$commentURL."\'  reverse=\'".$comments_reverse."\' publish_feed=\'".$comments_publish_feed."\'></fb:comments>\"); }); });";
+				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"Leave a comment.\",null,\"<fb:comments migrated=\'1\' xid=\'".$xid."\' numposts=\'5\' width=\'700\' title=\'".htmlentities($article->title,ENT_QUOTES)." - Comments\' url=\'".$commentURL."\'  reverse=\'".$comments_reverse."\' publish_feed=\'".$comments_publish_feed."\'></fb:comments>\"); }); });";
 				
 				if(JRequest::getVar('view','','get') == 'article'){
 					//article	
