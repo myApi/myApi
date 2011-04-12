@@ -59,15 +59,12 @@ class plgContentmyApiComment extends JPlugin
 			// Load plugin params info
 			$myapiparama = new JParameter($plugin->params);
 					
-			$comment_css = $myapiparama->get('comment_css');
 			$comment_sections = $myapiparama->get('comment_sections');
 			$comment_categories = $myapiparama->get('comment_categories');
 			$comments_show_on = $myapiparama->get('comments_show_on');
 			$comments_access = $myapiparama->get('comments_access');
 			$comments_width = $myapiparama->get('comments_width');
 			$comments_numposts = $myapiparama->get('comments_numposts');
-			$comments_simple = $myapiparama->get('comments_simple');
-			$comments_reverse = $myapiparama->get('comments_reverse');
 			$comments_publish_feed = $myapiparama->get('comments_publish_feed');
 			
 			$comments_view_article = $myapiparama->get('comments_view_article');
@@ -125,11 +122,11 @@ class plgContentmyApiComment extends JPlugin
 			if($comment_show && $hasAccess )
 			{
 				
-				$comment_box = '<fb:comments migrated="1" xid="'.$xid.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" title="'.htmlentities($article->title,ENT_QUOTES).' - Comments" url="'.$commentURL.'"  reverse="'.$comments_reverse.'" publish_feed="'.$comments_publish_feed.'" css="'.JURI::base().'/components/com_myapi/css/comment/'.$comment_css.'?v='.time().'"></fb:comments>';
+				$comment_box = '<fb:comments migrated="1" xid="'.$xid.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" title="'.htmlentities($article->title,ENT_QUOTES).' - Comments" url="'.$commentURL.'" publish_feed="'.$comments_publish_feed.'"></fb:comments>';
 				
 				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>Add a comment</a><br />";
 				
-				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"Leave a comment.\",null,\"<fb:comments migrated=\'1\' xid=\'".$xid."\' numposts=\'5\' width=\'700\' title=\'".htmlentities($article->title,ENT_QUOTES)." - Comments\' url=\'".$commentURL."\'  reverse=\'".$comments_reverse."\' publish_feed=\'".$comments_publish_feed."\'></fb:comments>\"); }); });";
+				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"Leave a comment.\",null,\"<fb:comments migrated=\'1\' xid=\'".$xid."\' numposts=\'5\' width=\'700\' title=\'".htmlentities($article->title,ENT_QUOTES)." - Comments\' url=\'".$commentURL."\' publish_feed=\'".$comments_publish_feed."\'></fb:comments>\"); }); });";
 				
 				if(JRequest::getVar('view','','get') == 'article'){
 					//article	
