@@ -123,11 +123,11 @@ class plgContentmyApiComment extends JPlugin
 			if($comment_show && $hasAccess )
 			{
 				
-				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" publish_feed="'.$comments_publish_feed.'" colorscheme="'.$comments_color_scheme.'"></fb:comments>';
+				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" href="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" publish_feed="'.$comments_publish_feed.'" colorscheme="'.$comments_color_scheme.'"></fb:comments>';
 				
 				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>Add a comment</a><br />";
 				
-				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"Leave a comment.\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'700\' publish_feed=\'".$comments_publish_feed."\' colorscheme=\'".$comments_color_scheme."\'></fb:comments>\"); }); });";
+				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"Leave a comment.\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' href=\'".$commentURL."\' numposts=\'5\' width=\'700\' publish_feed=\'".$comments_publish_feed."\' colorscheme=\'".$comments_color_scheme."\'></fb:comments>\"); }); });";
 				
 				if(JRequest::getVar('view','','get') == 'article'){
 					//article	
