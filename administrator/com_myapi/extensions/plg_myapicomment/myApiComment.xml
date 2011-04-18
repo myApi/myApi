@@ -38,9 +38,9 @@
 		  	<option value="1">Yes</option>
 		</param>
 
-		<param name="comments_color_scheme" type="radio" default="0" label="Choose a Light or Dark Color Scheme" description="This lets you choose a Light or Dark color scheme for Facebook comments. Default is the Light Theme.">
-			<option value="0">Light</option>
-		  	<option value="1">Dark</option>
+		<param name="comments_color_scheme" type="list" default="light" label="Choose a Light or Dark Color Scheme" description="This lets you choose a Light or Dark color scheme for Facebook comments. Default is the Light Theme.">
+			<option value="light">Light</option>
+		  	<option value="dark">Dark</option>
 		</param>
 		
 		<param name="comments_show_on" type="radio" default="all" label="Select an option" description="">
