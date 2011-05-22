@@ -29,31 +29,16 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi_fbfan.  If not, see <http://www.gnu.org/licenses/>.	**
  **                                                                         **			
- *****************************************************************************/
-$classSfx 		= $params->get('moduleclass_sfx');
-$width 			= $params->get('fan_width');
-$height 		= $params->get('fan_height');
-$header		 	= $params->get('fan_header');
-$stream 		= $params->get('fan_stream');
-$scheme 		= $params->get('fan_scheme');
-$faces	 		= $params->get('fan_faces');
-$pageLink 		= $params->get('fan_href');
+ *************************************************************************/ ?>
 
-if($pageLink == ''){
-	require_once (dirname(__FILE__).DS.'helper.php');
-	
-	$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-	$com_params = new JParameter( $plugin->params );
-
-	$profile_id = $com_params->get('appId');
-	$cache = & JFactory::getCache('modmyapifbFanHelper');
-	$cache->setCaching( 1 );
-	$pageLink = $cache->call( array( 'modmyapifbFanHelper', 'getPageLink') ,$profile_id  );
-}
-
-$user = JFactory::getUser();
-
-require(JModuleHelper::getLayoutPath('mod_myapi_fbFan','default'));
-
-?>
+<?php if($pageLink != ""): ?>
+	<div class="<?php echo $classSfx; ?>">
+   		<fb:like-box href="<?php echo $pageLink; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" colorscheme="<?php echo $scheme; ?>" show_faces="<?php echo $faces; ?>" stream="<?php echo $stream; ?>" header="<?php echo $header; ?>"></fb:like-box>
+        <div style="clear:both;"></div>
+  	</div>
+<?php elseif($user->usertype == 'Administrator' || $user->usertype == 'Super Administrator'): ?>
+	<div class="<?php echo $classSfx; ?>">
+    	<p>Unable to find a valid URL for the specified page ID.</p>
+   	</div>
+<?php endif; ?>
 
