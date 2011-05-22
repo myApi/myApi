@@ -29,20 +29,8 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi_fbLive.  If not, see <http://www.gnu.org/licenses/>.	**
  **                                                                         **			
- *****************************************************************************/
+ *************************************************************************/ ?>
 
-$plugin 	=& JPluginHelper::getPlugin('system', 'myApiConnect');
-$com_params = new JParameter( $plugin->params );
-
-$app_id 		= $com_params->get('appId');	
-$classSfx 		= $params->get('moduleclass_sfx');
-$width 			= $params->get('live_width');
-$height 		= $params->get('live_height');
-$xid			= $params->get('live_xid');
-$always_post	= $params->get('live_always_post');
-
-$via_url = JURI::getInstance()->toString();
-
-require(JModuleHelper::getLayoutPath('mod_myapi_fbLive','default'));
-
-?>
+<div class="<?php echo $classSfx; ?>">
+    <fb:live-stream event_app_id="<?php echo $app_id; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" xid="<?php echo $xid; ?>" via_url="<?php echo $via_url; ?>" always_post_to_friends="<?php echo $always_post; ?>"></fb:live-stream>
+</div>
