@@ -29,60 +29,23 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi_fblogin.  If not, see <http://www.gnu.org/licenses/> **
  **                                                                         **			
- *****************************************************************************/
-if(!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'myapi.php')){ return; }
+ *************************************************************************/ ?>
 
-$doc =& JFactory::getDocument();
-$doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi.js');
+<div id="myApiLoginWrapper" class="<?php echo $classSfx; ?>">
+		<?php if(!$linked): ?> 
+        	<fb:login-button id="fbLoginButton" show-faces="<?php echo $show_faces; ?>" width="<?php echo $width; ?>" max-rows="<?php echo $max_rows; ?>" onlogin="myapi.auth.newLink('<?php echo JUtility::getToken(); ?>','<?php echo $loginUrl; ?>');" perms="email,user_likes,publish_stream,offline_access"><?php echo $linkText; ?></fb:login-button>
+        <?php else: ?>
+        	<?php if($avatar != ''): ?>
+        		<img src="images/comprofiler/<?php echo $avatar; ?> " style="margin: 0px 1px 3px 1px; border-width:0px;">
+        	<?php endif; ?>
+        	<br />
+        	<?php echo $user->name; ?>
+        <?php endif; ?>
+        
+        <form action="index.php" onsubmit="myapi.auth.logout(); return false;" method="post">
+            <input type="hidden" name="option" value="com_myapi" />
+            <input type="hidden" name="task" value="logout" />
+            <input type="submit" name="Submit" class="button" value="Log out">
+        </form>
+</div>
 
-$user 				= JFactory::getUser();
-$classSfx 			= $params->get('moduleclass_sfx');
-$width				= $params->get('login_width');
-$show_faces 		= $params->get('login_facepile');
-$max_rows 			= $params->get('login_facepileRows');
-
-if($user->guest){
-	$joomla_login = $params->get('login_joomlaLogin');
-	if($params->get('login_userRedirect') != '1'){
-		//same page
-		$u =& JFactory::getURI(); 
-		$redirect_login = JRoute::_($u->toString(),false);
-	}
-	else{
-		//redirect to different page
-		$menuitem = $params->get('login_userRedirectTo');
-		$redirect_login = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=".$menuitem,false);	
-	}
-	
-	$u 		=& JURI::getInstance( $redirect_login );
-	$root 	= JURI::root();
-	$root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-	$root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-	$root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-	$redirect_login = base64_encode('http://'.$root.$u->getPath());
-	$loginText = $params->get('login_button_text');
-	require(JModuleHelper::getLayoutPath('mod_myapi_fbLogin','guest'));	
-	
-}else{
-	$db = JFactory::getDBO();
-	$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." WHERE userId =".$db->quote($user->id);
-	$db->setQuery($query);
-	$db->query();
-	$num_rows = $db->getNumRows();
-	if($num_rows == 0){
-		$linked = false;
-		global $facebook;
-		$loginUrl = $facebook->getLoginUrl(array('next' => JURI::base().'index.php?option=com_myapi&task=newLink&return='.$redirect_login ));
-		$linkText = $params->get('login_link_text');
-	}
-	else { 
-		$linked = true; 
-		//Get User Avatar
-		require_once JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php';
-		$myApiModel = new MyapiModelMyapi;
-		$avatar = $myApiModel->getAvatar();
-	}
-	require(JModuleHelper::getLayoutPath('mod_myapi_fbLogin','user'));	
-}
-
-?>

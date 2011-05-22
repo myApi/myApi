@@ -1,71 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install type="module" version="1.5">
-    <!-- Name of the Module -->
-        <name>Facebook Connect Login Box</name> 
+	<name>Facebook Connect Login Box</name> 
+	<author>Thomas Welton</author> 
+	<creationDate>March 2011</creationDate> 
+	<copyright>All rights reserved 2011.</copyright> 
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>thomaswelton@me.com</authorEmail> 
+	<authorUrl>http://www.myapi.co.uk</authorUrl> 
+	<version>1.0</version> 
+	
+	<description>MODULE DESCRIPTION</description>
+	
+	<files>
+		<filename module="mod_myapi_fbLogin">mod_myapi_fbLogin.php</filename>
+		<filename>index.html</filename>
+		<filename>tmpl/guest.php</filename>
+		<filename>tmpl/user.php</filename>
+		<filename>tmpl/index.html</filename>
+	</files>
  
-    <!-- Name of the Author -->
-        <author>Thomas Welton</author> 
- 
-    <!-- Version Date of the Module -->
-        <creationDate>March 2011</creationDate> 
- 
-    <!-- Copyright information -->
-        <copyright>All rights reserved 2011.</copyright> 
- 
-    <!-- License Information -->
-        <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
- 
-    <!-- Author's email address -->
-        <authorEmail>thomaswelton@me.com</authorEmail> 
- 
-    <!-- Author's website -->
-        <authorUrl>http://www.myapi.co.uk</authorUrl> 
- 
-    <!-- Module version number -->
-        <version>1.0</version> 
- 
-    <!-- Description of what the module does -->
-        <description>Displays the facebook connect login box, you can configure this module from within the myApi component</description>
- 
-    <!-- Listing of all files that should be installed for the module to function -->
-        <files>
-        <!-- The "module" attribute signifies that this is the main controller file -->
-                <filename module="mod_myapi_fbLogin">mod_myapi_fbLogin.php</filename>
-				<filename>index.html</filename>
-        </files>
- 
-    <!-- Optional parameters -->
+ 	<languages>
+		<language tag="en-GB">languages/en-GB.mod_myapi_fbLogin.ini</language>
+	</languages>
+	
 	<params>
-	
-    	<param name="login_size" type="list" default="small" label="Connect button size" description="">
-			<option value="small">Small</option>
-			<option value="medium">Medium</option>
-			<option value="large">Large</option>
-			<option value="xlarge">Extra Large</option>
+		<param name="moduleclass_sfx" type="text" default="" label="PARAM_CLASS_SFX_LABEL" description="PARAM_CLASS_SFX_DESC" />
+		<param name="login_facepile" type="radio" default="1" label="PARAM_FACE_LABEL" description="PARAM_FACE_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
 		</param>
-		<param name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="Module Class Suffix" />
-		<param name="login_button_text" type="text" default="Connect with Facebook" label="Facebook connect button text" description="" size="30" />
-		<param name="login_link_text" type="text" default="Link Accounts" label="Link Account Button" description="If the user is logged into joomla this text with display to indicate an instant linking process" size="30" />
+		<param name="login_width" type="text" default="200" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" size="30" />
+		<param name="login_facepileRows" type="text" default="1" label="PARAM_ROWS_LABEL" description="PARAM_ROWS_DESC" />
+
+		<param name="login_button_text" type="text" default="Connect with Facebook" label="PARAM_LOGIN_LABEL" description="PARAM_LOGIN_DESC" size="30" />
+		<param name="login_link_text" type="text" default="Link Accounts" label="PARAM_LINK_LABEL" description="PARAM_LINK_DESC" size="30" />
 			
-		<param name="login_userRedirect" type="radio" default="0" label="Select an option" description="">
-			<option value="0">Same Page</option>
-			<option value="1">Selected Menu Item (Also select an item below)</option>
+		<param name="login_userRedirect" type="radio" default="0" label="PARAM_REDIRECT_LABEL" description="PARAM_REDIRECT_DESC">
+			<option value="0">PARAM_REDIRECT_SAME</option>
+			<option value="1">PARAM_REDIRECT_MENU</option>
 		</param>
+		<param name="login_userRedirectTo" type="menuitem" default="" label="PARAM_REDIRECT_TO_LABEL" description="PARAM_REDIRECT_TO_DESC" />
 		
-		<param name="login_facepile" type="radio" default="1" label="Show the facepile" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
-		</param>
-		<param name="login_facepileWidth" type="text" default="180" label="Facepile width" description="" />
-		<param name="login_facepileRows" type="text" default="1" label="Facepile rows" description="" />
 		
-		<param name="login_joomlaLogin" type="radio" default="0" label="Show the joomla login module" description="">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="login_joomlaLogin" type="radio" default="0" label="PARAM_JOOMLA_LABEL" description="PARAM_JOOMLA_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
 		</param>
-			
-		<param name="login_userRedirectTo" type="menuitem" default="" label="After login redirect to menu item" description="Select a menu item" />
-	
-    </params>
+	</params>
 		
 </install>
