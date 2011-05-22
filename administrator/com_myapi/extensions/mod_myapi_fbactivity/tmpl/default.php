@@ -1,13 +1,13 @@
 <?php defined('_JEXEC') or die('Direct Access to this location is not allowed.');
 /*****************************************************************************
  **                                                                         ** 
- **                                         .o.                   o8o  	    **
- **                                        .888.                  `"'  	    **
- **     ooo. .oo.  .oo.   oooo    ooo     .8"888.     oo.ooooo.  oooo  	    **
- **     `888P"Y88bP"Y88b   `88.  .8'     .8' `888.     888' `88b `888  	    **
- **      888   888   888    `88..8'     .88ooo8888.    888   888  888  	    **
- **      888   888   888     `888'     .8'     `888.   888   888  888  	    **
- **     o888o o888o o888o     .8'     o88o     o8888o  888bod8P' o888o      **
+ **                                         .o.                   o8o		**
+ **                                        .888.                  `"'		**
+ **     ooo. .oo.  .oo.   oooo    ooo     .8"888.     oo.ooooo.  oooo		**
+ **     `888P"Y88bP"Y88b   `88.  .8'     .8' `888.     888' `88b `888		**
+ **      888   888   888    `88..8'     .88ooo8888.    888   888  888		**
+ **      888   888   888     `888'     .8'     `888.   888   888  888		**
+ **     o888o o888o o888o     .8'     o88o     o8888o  888bod8P' o888o		**
  **                       .o..P'                       888             	    **
  **                       `Y8P'                       o888o            	    **
  **                                                                         **
@@ -24,26 +24,17 @@
  **   myApi_fbActivity is distributed in the hope that it will be useful,   **
  **   but WITHOUT ANY WARRANTY; without even the implied warranty of	    **
  **   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         **
- **   GNU General Public License for more details.                          **
- **                                                                         **
- **   You should have received a copy of the GNU General Public License	    **
- **   along with myApi_fbActivity.     										**
- **   If not, see <http://www.gnu.org/licenses/>. 							**
+ **   GNU General Public License for more details.							**
+ **																			**
+ **   You should have received a copy of the GNU General Public License		**
+ **   along with myApi_fbActivity.											**
+ **   If not, see <http://www.gnu.org/licenses/>.							**
  **                                                                         **			
- ****************************************************************************/
+ *************************************************************************/ ?>
 
-$width 		= $params->get('activity_width');
-$height 	= $params->get('activity_height');
-$header 	= $params->get('activity_header');
-$recommend 	= $params->get('activity_recommend');
-$font 		= $params->get('activity_font');
-$scheme 	= $params->get('activity_scheme');
-$border 	= $params->get('activity_border');
-$ref 		= $params->get('activity_ref');
-
-require(JModuleHelper::getLayoutPath('mod_myapi_fbActivity','default'));
-
-?>
+<div class="<?php echo $params->get('moduleclass_sfx'); ?>">
+	<fb:activity border_color="<?php echo $border; ?>" colorscheme="<?php echo $scheme; ?>" header="<?php echo $header; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" font="<?php echo $font; ?>" recommendations="<?php echo $recommend; ?>" ref="<?php echo $ref; ?>"></fb:activity>
+</div>
 
 
 
