@@ -30,17 +30,8 @@
  **   along with myApi_fbRecommendations.  									**
  **   If not, see <http://www.gnu.org/licenses/>.							**
  **                                                                         **			
- *****************************************************************************/
+ *************************************************************************/ ?>
  
-$classSfx 	= $params->get('moduleclass_sfx');
-$width 		= $params->get('recommendations_width');
-$height 	= $params->get('recommendations_height');
-$header 	= $params->get('recommendations_header');
-$font 		= $params->get('recommendations_font');
-$scheme		= $params->get('recommendations_scheme');
-$border 	= $params->get('recommendations_border');
-$ref 		= $params->get('recommendations_ref');
-
-require(JModuleHelper::getLayoutPath('mod_myapi_fbRecommendations','default'));
-
-?>
+<div class="<?php echo $classSfx; ?>">
+	<fb:recommendations width="<?php echo $width; ?>" height="<?php echo $height; ?>" header="<?php echo $header; ?>" colorscheme="<?php echo $scheme; ?>" font="<?php echo $font; ?>" border_color="<?php echo $border; ?>" ref="<?php echo $ref; ?>"></fb:recommendations>
+</div>
