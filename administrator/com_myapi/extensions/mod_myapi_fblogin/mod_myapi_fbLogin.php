@@ -59,7 +59,11 @@ if($user->guest){
 	$root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
 	$root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
 	$root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-	$redirect_login = base64_encode('http://'.$root.$u->getPath());
+	$host		=& JURI::getInstance($root );
+	$port 	= ($host->getPort() == '') ? '' : ":".$host->getPort();
+	$query = ($u->getQuery() == '') ? '' : '?'.$u->getQuery();
+	$redirect_login = base64_encode('http://'.$host->getHost().$port.$u->getPath().$query); 
+	
 	$loginText = $params->get('login_button_text');
 	require(JModuleHelper::getLayoutPath('mod_myapi_fbLogin','guest'));	
 	
