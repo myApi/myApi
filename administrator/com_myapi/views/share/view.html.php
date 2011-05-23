@@ -39,7 +39,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport( 'joomla.application.component.view');
 class MyapiViewShare extends JView {
     function display($tpl = null) {
-       	
+       	JPlugin::loadLanguage( 'plg_content_myApiShare' , JPATH_ADMINISTRATOR );
 		
 		
 		$db = JFactory::getDBO();
