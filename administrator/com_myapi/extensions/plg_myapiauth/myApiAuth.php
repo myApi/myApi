@@ -42,63 +42,53 @@ class plgAuthenticationmyApiAuth extends JPlugin
 	{
 		parent::__construct($subject, $config);
 	}
- 
-  
-    function onAuthenticate($uid, $options, &$response )
+ 	
+	function onAuthenticate($uid, $options, &$response )
     {
 		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php')){ return; }
 		if(isset($options['group'])){
 			if($options['group']!="Public Backend"){
 				return;
-			}
-			
+			}	
 		}
       	if(!is_array($uid)){
-		$db =& JFactory::getDBO();
-		
-		$query = "SELECT #__users.id FROM ".$db->nameQuote('#__myapi_users')." JOIN #__users ON #__myapi_users.userId = #__users.id WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid)." AND #__users.block = '0'";
-		$db->setQuery( $query );
-		$db->query();
-		$id = $db->loadResult();
-		
-		if($id != '')
-		{       
+			$db =& JFactory::getDBO();
+			
+			$query = "SELECT #__users.id FROM ".$db->nameQuote('#__myapi_users')." JOIN #__users ON #__myapi_users.userId = #__users.id WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid)." AND #__users.block = '0'";
+			$db->setQuery( $query );
+			$db->query();
+			$id = $db->loadResult();
+			
+			if($id != ''){       
 				//If facebook user had a linked account
 				$query = "SELECT ".$db->nameQuote('username')." FROM ".$db->nameQuote('#__users')." WHERE ".$db->nameQuote('id')." = ".$db->quote($id);
 				$db->setQuery( $query );
 				$db->query();
 				$username = $db->loadResult();
 				
-				if($username != '')
-				{
+				if($username != ''){
 					$user = JFactory::getUser($id);
 					$response->status			= JAUTHENTICATE_STATUS_SUCCESS;
 					$response->error_message	= '';
 					$response->username = $user->username;
 					return true;
 				}
-				else
-				{
-					
+				else{
 					$query = "DELETE FROM ".$db->nameQuote('#__myapi_users')." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
 					$db->setQuery( $query );
 					$db->query();
 					
 					$response->status = JAUTHENTICATE_STATUS_FAILURE;
-					$response->error_message = 'Woops - Looks like the account you had linked to your facebook account has been deleted.  Please create a new user account or log in with another username';
+					$response->error_message = JText::_('USER_DELETED');
 					return false;
-					
 				}
-		
+			}
+			else{
+				$response->status = JAUTHENTICATE_STATUS_FAILURE;
+				$response->error_message = JText::_('NOT_LINKED');
+				return false;
+			}
 		}
-		else
-		{
-			
-			$response->status = JAUTHENTICATE_STATUS_FAILURE;
-			$response->error_message = 'This facebook profile is not linked to any existing account';
-			return false;
-		}
-	}
 	 }
 }
 ?>
