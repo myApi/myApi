@@ -43,7 +43,7 @@ class plgContentmyApiComment extends JPlugin
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
 		{
-			JPlugin::loadLanguage( 'plg_content_myApiComment' );
+			JPlugin::loadLanguage( 'plg_content_myApiComment' , JPATH_ADMINISTRATOR );
 			
 			$xid = urlencode('articlecomment'.$article->id);
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
