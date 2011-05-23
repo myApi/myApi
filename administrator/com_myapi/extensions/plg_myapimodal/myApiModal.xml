@@ -8,9 +8,14 @@
 	<authorEmail>thomaswelton@me.com</authorEmail>
 	<authorUrl>www.myapi.co.uk</authorUrl>
 	<version>1.0</version>
-	<description>myApiModal system plugin - Facebook style modal lightboxes.</description>
+	<description>PLUGIN DESCRIPTION</description>
 	<files>
 		<filename plugin="myApiModal">myApiModal.php</filename>
 		<folder>myApiModal</folder>
 	</files>
+	
+	<languages>
+		<language tag="en-GB">languages/en-GB.plg_system_myApiModal.ini</language>
+	</languages>
+	
 </install>
