@@ -8,17 +8,22 @@
 	<authorEmail>thomaswelton@me.com</authorEmail>
 	<authorUrl>www.myapi.co.uk</authorUrl>
 	<version>1.0</version>
-	<description>myApiConnect system plugin - Imports the Facebook PHP and Javascript libraries and renders any FBML inside the page. This is a required plugin for all other myApi products.</description>
+	<description>PLUGIN DESCRIPTION</description>
 	<files>
 		<filename plugin="myApiConnect">myApiConnect.php</filename>
 		<filename>myApiConnectFacebook.php</filename>
 		<filename>facebookXD.html</filename>
 		<filename>fb_ca_chain_bundle.crt</filename>
 	</files>
+	
+	<languages>
+		<language tag="en-GB">languages/en-GB.plg_system_myApiConnect.ini</language>
+	</languages>
+	
 	<params>
-		<param name="appId" type="text" label="Facebook Application ID" description="The Application key provided when creating the facebook application associated with this website." size="30" />
-		<param name="secret" type="text" default="" label="Facebook Secret Key" description="The secret key provided when creating the facebook application associated with this website." size="30" />
-		<param name="locale" type="list" default="en_US" label="Language Setting" description="The defualt language to load the facebook JS libaray in, this languge will be used in the social plugins.">
+		<param name="appId" type="text" label="PARAM_ID_LABEL" description="PARAM_ID_DESC" size="30" />
+		<param name="secret" type="text" default="" label="PARAM_SECRET_LABEL" description="PARAM_SECRET_DESC" size="30" />
+		<param name="locale" type="list" default="en_US" label="PARAM_LOCALE_LABEL" description="PARAM_LOCALE_DESC">
 			<option value="ca_ES">Catalan</option>
 			<option value="cs_CZ">Czech</option>
 			<option value="cy_GB">Welsh</option>

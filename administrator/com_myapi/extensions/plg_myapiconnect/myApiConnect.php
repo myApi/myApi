@@ -62,14 +62,13 @@ class plgSystemmyApiConnect extends JPlugin
 	function onAfterRender(){
 		//For the async facebook injection
 		global $mainframe;
+		global $fbAsyncInitJs;
 		JHTML::_('behavior.mootools');
 		
-		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+		$plugin 	=& JPluginHelper::getPlugin('system', 'myApiConnect');
 		$com_params = new JParameter( $plugin->params );  
-		//This initilises the javascript platform async
-		
-		$xdPath = JURI::base().'plugins/system/facebookXD.html';  
-		
+		$xdPath		= JURI::base().'plugins/system/facebookXD.html';
+			
 		$js = <<<EOD
   
   window.addEvent('domready',function(){
@@ -86,26 +85,22 @@ EOD;
 		if(!$mainframe->isAdmin()) {
 		$js .= <<<EOD
 /* <![CDATA[ */
-
 window.fbAsyncInit = function() {
      FB.init({appId: "{$com_params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
+	 {$fbAsyncInitJs};
 };
 /* ]]> */
 EOD;
 		}
-		
+		unset($fbAsyncInitJs);
 		$doc = & JFactory::getDocument();
 		$buffer = JResponse::getBody();
-		 
-		if(@$_SERVER['https'] == 'on')
-		  $fbml	= '<html xmlns:fb="https://www.facebook.com/2008/fbml" ';
-		else
-		   $fbml	= '<html xmlns:fb="http://www.facebook.com/2008/fbml" ';
+		
+		$fbml	= '<html xmlns:fb="http://www.facebook.com/2008/fbml" ';
 		  
-		$FeatureLoader_javascript = '<div id="fb-root"></div><script type="text/javascript"> document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
+		$FeatureLoader_javascript = '<div id="fb-root"></div><script type="text/javascript">document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
 		$buffer = str_replace ("</body>", $FeatureLoader_javascript."</body>", $buffer); 
 		$html	= str_replace( '<html' , $fbml , $buffer );
-		
 		JResponse::setBody( $html );
 	}
 	
