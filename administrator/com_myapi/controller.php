@@ -76,47 +76,49 @@ class MyapiController extends JController {
 		// Check for request forgeries
 		JRequest::checkToken() or jexit( 'Invalid Token' );
 		$post = JRequest::get( 'post' );
-		$db   =& JFactory::getDBO();
-		$row  =& JTable::getInstance('plugin');
-
-		$client = JRequest::getWord( 'filter_client', 'site' );
-
-		if (!$row->bind(JRequest::get('post'))) {
-			JError::raiseError(500, $row->getError() );
-		}
-		if (!$row->check()) {
-			JError::raiseError(500, $row->getError() );
-		}
-		if (!$row->store()) {
-			JError::raiseError(500, $row->getError() );
-		}
-		$row->checkin();
-		$where = "client_id=0";
 		
-		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( '.$where.' )' );
+		$root = JURI::root();
+		$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
+		$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
+		$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
 		
+		$rootArray = explode(':',$root);
+		$root = $rootArray[0];
+		$connectURL = 'http://'.$root.'/';
+		$baseDomain = $root;
+		
+		$data['base_domain'] 	= $baseDomain;
+		$data['uninstall_url'] 	= JURI::base().'index.php?option=com_myapi&task=deauthorizeCallback';
+		$data['connect_url'] 	= $connectURL;
+		
+		try{
 			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
 			$facebook = new myApiFacebook(array(
 				'appId'  => $post['params']['appId'],
 				'secret' => $post['params']['secret']
-			 ));
-			
-			$root = JURI::root();
-			$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-			$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-			$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-			
-			$rootArray = explode(':',$root);
-			$root = $rootArray[0];
-			$connectURL = 'http://'.$root.'/';
-			$baseDomain = $root;
-			
-			$data['base_domain'] = $baseDomain;
-			$data['uninstall_url'] = JURI::base().'index.php?option=com_myapi&task=deauthorizeCallback';
-			$data['connect_url'] = $connectURL;
+			));
 			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','properties'=> json_encode($data)));
+			$db   =& JFactory::getDBO();
+			$row  =& JTable::getInstance('plugin');
+	
+			$client = JRequest::getWord( 'filter_client', 'site' );
+	
+			if (!$row->bind(JRequest::get('post'))) JError::raiseError(500, $row->getError() );
+			
+			if (!$row->check()) JError::raiseError(500, $row->getError() );
+			
+			if (!$row->store()) JError::raiseError(500, $row->getError() );
+		
+			$row->checkin();
+			$where = "client_id=0";
+			$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( '.$where.' )' );
+			
 			
 			$this->setRedirect( 'index.php?option=com_myapi','Details saved, please ensure your Facebook application details are correct at facebook.com');	
+			
+		}catch (FacebookApiException $e) {
+			$this->setRedirect( 'index.php?option=com_myapi&view=settings','Error - Please check that the details are correct. '.$e);		
+		}
 		
 	}
 

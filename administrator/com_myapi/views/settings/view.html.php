@@ -51,6 +51,10 @@ class MyapiViewSettings extends JView {
 		
 		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 		if(is_object($plugin)){
+			$doc =& JFactory::getDocument();
+			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
+			JToolBarHelper::title('myApi Authentication', 'facebook.png');
+
 			$paramsdata =  $plugin->params;
 			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect.xml';
 			$params = new JParameter( $paramsdata, $paramsdefs );
