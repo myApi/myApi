@@ -96,7 +96,7 @@ class MyapiController extends JController {
 		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( '.$where.' )' );
 		
 			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
-			$facebook =& new myApiFacebook(array(
+			$facebook = new myApiFacebook(array(
 				'appId'  => $post['params']['appId'],
 				'secret' => $post['params']['secret']
 			 ));
