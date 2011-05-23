@@ -35,7 +35,6 @@ $doc =& JFactory::getDocument();
 $doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
 JToolBarHelper::title('Facebook Connect Users', 'facebook.png');
 JToolBarHelper::deleteList('This will unlink the user(s) Joomla account and Facebook account, it will not delete the user from your site.','unlinkUser', 'Unlink Account(s)');
-JToolbarHelper::preferences('com_myapi');
 ?>
 
   <form action="index.php" method="post" name="adminForm">

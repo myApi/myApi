@@ -53,7 +53,8 @@
 
     <menu task="default" img="js/ThemeOffice/component.png">myApi</menu>
     <submenu>
-        <menu link="option=com_myapi&amp;view=users">myApi</menu>
+		<menu link="option=com_myapi&amp;view=users">Users</menu>
+		<menu link="option=com_myapi&amp;view=settings">App Settings</menu>
 		<menu link="option=com_myapi&amp;view=comment">Comment</menu>
 		<menu link="option=com_myapi&amp;view=share">Share</menu>
 		<menu link="option=com_myapi&amp;view=like">Like</menu>

@@ -58,7 +58,6 @@ class MyapiViewComment extends JView {
 		  $this->assignRef('params',$params);
 		  $this->assignRef('plugin',$row);
 		  JToolbarHelper::save('savePlugin','save content');
-		  JToolbarHelper::preferences('com_myapi');
 		}else{
 			global $mainframe;
 			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,'The myApiComment plugin needs to be ENABLED before you can configure it.');	
