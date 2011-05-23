@@ -8,33 +8,40 @@
 	<authorEmail>thomaswelton@me.com</authorEmail>
 	<authorUrl>http://www.myapi.co.uk</authorUrl>
 	<version>1.0</version>
-	<description>myApiShare plugin</description>
+	<description>PLUGIN DESCRIPTION</description>
 	<files>
 		<filename plugin="myApiShare">myApiShare.php</filename>
 		<folder>share</folder>
 	</files>
 	
+	<languages>
+		<language tag="en-GB">languages/en-GB.plg_content_myApiShare.ini</language>
+	</languages>
+	
 	<params addPath="/plugins/content/share/">
 	
-	<param name="share_show_on" type="radio" default="all" label="Select an option" description="">
-			<option value="all">Show on all articles &lt;br/&gt;</option>
-		  	<option value="selected">Show on selected article sections and categories (select below) &lt;br/&gt;</option>
+		<param name="share_type" type="list" default="box_count" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">
+			<option value="box_count">PARAM_BOX_COUNT</option>
+			<option value="button_count">PARAM_BUTTON_COUNT</option>
+			<option value="button">PARAM_BUTTON</option>
+			<option value="icon">PARAM_ICON</option>
+			<option value="icon_link">PARAM_ICON_LINK</option>
 		</param>
-		<param name="share_type" type="list" default="box_count" label="Share button type" description="">
- 	 		<option value="box_count">box_count</option>
-			<option value="button_count">button_count</option>
-			<option value="button">button</option>
-			<option value="icon">icon</option>
-			<option value="icon_link">icon_link</option>
+		
+		<param name="share_style" type="text" label="PARAM_STYLE_LABEL" description="PARAM_STYLE_DESC" size="30" />
+		
+		<param name="share_show_on" type="radio" default="all" label="PARAM_SHOW_LABEL" description="PARAM_SHOW_DESC">
+			<option value="all">PARAM_SHOW_ALL</option>
+			<option value="selected">PARAM_SHOW_SELECT</option>
 		</param>
-		<param name="share_style" type="text" label="CSS Style" description="inline CSS for the share button, enter valid CSS seperate by semicolons like thisexample. margin-left:10px; margin-top:20px; " size="30" />
- 		<param name="share_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="Sections - Show Share Button" description="Use Ctrl-click to select more than one item.">
+	
+ 		<param name="share_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="PARAM_SECTIONS_LABEL" description="PARAM_MULTI">
 			<option value="-1"></option>
         </param>
 		
-		<param name="share_categories" type="sqlmultilistx" sql="SELECT * FROM #__categories" key_field="title" value_field="title" default="" multiple="multiple" label="Categories - Show Share Button" description="Use Ctrl-click to select more than one item.">
+		<param name="share_categories" type="sqlmultilistx" sql="SELECT * FROM #__categories" key_field="title" value_field="title" default="" multiple="multiple" label="PARAM_CAT_LABEL" description="PARAM_MULTI">
 			<option value="-1"></option>
         </param>
-		</params>
+	</params>
 	
 </install>
