@@ -47,7 +47,7 @@ $pkgs = array('mod_myapi_fblogin'=> array('name' => 'Facebook connect login modu
 			  'plg_myapishare'=> array('name' => 'Share content plugin', 'db' => 'myApiShare'),
 			  'plg_myapilike'=> array('name' => 'Like content plugin', 'db' => 'myApiLike'),
 			  'plg_myapimodal'=> array('name' => 'Facebook Style Modal Boxes', 'db' => 'myApiModal'),
-			  'plg_myapiuser'=> array('name' => 'User actions plugin', 'db' => 'myapiuser'));
+			  'plg_myapiuser'=> array('name' => 'User actions plugin', 'db' => 'myApiUser'));
 
 foreach( $pkgs as $pkg => $pkgarray ){
  $msgcolor = "";

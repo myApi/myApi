@@ -36,7 +36,7 @@ defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
 
-class plgUsermyapiuser extends JPlugin {
+class plgUsermyApiUser extends JPlugin {
 
 
 	function plgUserJoomla(& $subject, $config) {
@@ -135,7 +135,7 @@ class plgUsermyapiuser extends JPlugin {
 		if($autoregister)
 		{
 			if(!$instance->save()) {
-				return JError::raiseWarning('SOME_ERROR_CODE', $instance->getError());
+				return JError::raiseWarning('', $instance->getError());
 			}
 		} else {
 			// No existing user and autoregister off, this is a temporary user
