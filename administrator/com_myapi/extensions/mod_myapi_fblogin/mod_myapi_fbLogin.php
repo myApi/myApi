@@ -41,25 +41,29 @@ $width				= $params->get('login_width');
 $show_faces 		= $params->get('login_facepile');
 $max_rows 			= $params->get('login_facepileRows');
 
+if($params->get('login_userRedirect') != '1'){
+	//same page
+	$u =& JFactory::getURI(); 
+	$redirect_login = JRoute::_($u->toString(),false);
+}
+else{
+	//redirect to different page
+	$menuitem = $params->get('login_userRedirectTo');
+	$redirect_login = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=".$menuitem,false);	
+}
+
+$u 		=& JURI::getInstance( $redirect_login );
+$root 	= JURI::root();
+$root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
+$root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
+$root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
+$host		=& JURI::getInstance($root );
+$port 	= ($host->getPort() == '') ? '' : ":".$host->getPort();
+$query = ($u->getQuery() == '') ? '' : '?'.$u->getQuery();
+$redirect_login = base64_encode('http://'.$host->getHost().$port.$u->getPath().$query); 
+
 if($user->guest){
 	$joomla_login = $params->get('login_joomlaLogin');
-	if($params->get('login_userRedirect') != '1'){
-		//same page
-		$u =& JFactory::getURI(); 
-		$redirect_login = JRoute::_($u->toString(),false);
-	}
-	else{
-		//redirect to different page
-		$menuitem = $params->get('login_userRedirectTo');
-		$redirect_login = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=".$menuitem,false);	
-	}
-	
-	$u 		=& JURI::getInstance( $redirect_login );
-	$root 	= JURI::root();
-	$root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-	$root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-	$root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-	$redirect_login = base64_encode('http://'.$root.$u->getPath());
 	$loginText = $params->get('login_button_text');
 	require(JModuleHelper::getLayoutPath('mod_myapi_fbLogin','guest'));	
 	

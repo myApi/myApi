@@ -66,20 +66,14 @@ class MyapiController extends JController {
 		
 global $mainframe;
 
-//redirect to different page
-	$menuitem = $com_params->get('userRedirectTo');
-	if($menuitem == '') { 
-		$menu =& JSite::getMenu();
-		$menuitem = $menu->getDefault()->id;
-	}
-	$redirect = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=$menuitem",false);
-	$u =& JURI::getInstance($redirect);
-$root = JURI::root();
-$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-$redirect = 'http://'.$root.$u->getPath();
-$redirect = base64_encode($redirect);
+
+$root 	= JURI::root();
+$root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
+$root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
+$root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
+$host		=& JURI::getInstance($root );
+$port 	= ($host->getPort() == '') ? '' : ":".$host->getPort();
+$redirect_login = base64_encode('http://'.$host->getHost().$port); 
 	
 		
 $forgotPass = JRoute::_( 'index.php?option=com_user&view=reset' );
