@@ -26,10 +26,12 @@ var myApiModal = {
 		create : function()
 		{
 			higestZindex = 1;
-			$$('*').each( function(element){         
-				if (element.getStyle('z-index').toInt() > higestZindex){
-					higestZindex = element.getStyle('z-index').toInt()
-				}
+			$$('*').each( function(el,index){         
+				try{
+					if ($$('*')[index].getStyle('z-index').toInt() > higestZindex){
+						higestZindex = $$('*')[index].getStyle('z-index').toInt();
+					}
+				}catch(e){}
 			});
 			higestZindex++;
 			
