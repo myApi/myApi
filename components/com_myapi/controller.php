@@ -160,34 +160,22 @@ $formToken = JHTML::_( 'form.token' );
 	
 	}
 	//Joomla user login task
-	function login()
-	{
-		global $mainframe;
+	function login(){
+		global $mainframe,$facebook;
 
-		$return = base64_decode(JRequest::getVar('return','','post'));
-			
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
-		$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser = $facebookmodel->getLoggedInUser();
-		
-		$options = array();
-		$options['remember'] = JRequest::getBool('remember', false);
-		$options['return'] = $return;
-		$options['uid'] = $fbUser['id'];
-
-		$credentials = array();
+		$options 				= array();
+		$credentials 			= array();
+		$return 				= base64_decode(JRequest::getVar('return','','post'));
+		$session 				= $facebook->getSession();
+		$options['remember']	= JRequest::getBool('remember', false);
+		$options['return'] 		= $return;
+		$options['uid'] 		= $session['uid'];
 		$credentials['username'] = JRequest::getVar('username', '', 'method', 'username');
 		$credentials['password'] = JRequest::getString('passwd', '', 'post', JREQUEST_ALLOWRAW);
 
-		//preform the login action
+		
 		$error = $mainframe->login($credentials, $options);
-		$message = JText::_( 'LOGGED_IN_FACEBOOK' );
-		if(JError::isError($error))
-		{
-			$message = $error->message;
-		}
-		
-		
+		$message = (JError::isError($error)) ? $error->message : JText::_( 'LOGGED_IN_FACEBOOK' );
 		$this->setRedirect($return,$message);
 	}
 	
