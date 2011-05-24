@@ -73,7 +73,7 @@ $root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
 $root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
 $host		=& JURI::getInstance($root );
 $port 	= ($host->getPort() == '') ? '' : ":".$host->getPort();
-$redirect_login = base64_encode('http://'.$host->getHost().$port); 
+$redirect = base64_encode('http://'.$host->getHost().$port); 
 	
 		
 $forgotPass = JRoute::_( 'index.php?option=com_user&view=reset' );
