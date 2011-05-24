@@ -10,5 +10,8 @@ Here are some useful links:
 - Facebook dev group - http://www.facebook.com/home.php?sk=group_208347789194869&ap=1
 
 ### Author
-myApi is written by [Thomas Welton][https://github.com/thomaswelton].<br>
-Thomas is a software developer for [ClkClk][http://www.clkclk.com/] 
+myApi is written by [Thomas Welton][thomas].<br>
+Thomas is a software developer for [ClkClk][clkclk.com]
+
+[clkclk.com]: http://www.clkclk.com/ "Daily deals in your area."
+[thomas]: https://github.com/thomaswelton
