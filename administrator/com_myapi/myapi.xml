@@ -58,6 +58,7 @@
 		<menu link="option=com_myapi&amp;view=comment">Comment</menu>
 		<menu link="option=com_myapi&amp;view=share">Share</menu>
 		<menu link="option=com_myapi&amp;view=like">Like</menu>
+		<menu link="option=com_myapi&amp;view=send">Send</menu>
     </submenu>
 
     <files>
