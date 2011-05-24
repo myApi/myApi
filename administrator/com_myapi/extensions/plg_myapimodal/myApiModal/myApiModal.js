@@ -81,6 +81,8 @@ var myApiModal = {
 				$('fb-modal').remove();
 			}catch(e){}
 			myApiModal.setHTML(html);
+			
+			document.body.setStyle('z-index',higestZindex+1);
 			myApiModal.injectInside($(document.body));
 			$('fb-modal').opacityFx = new Fx.Style('fb-modal','opacity',{duration: 500});
 		},
