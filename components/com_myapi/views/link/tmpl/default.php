@@ -1,4 +1,4 @@
-<?php
+<?php defined('_JEXEC') or die('Restricted access');
 /*****************************************************************************
  **                                                                         ** 
  **                                         .o.                   o8o  	    **
@@ -30,12 +30,6 @@
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
  *****************************************************************************/
- $root = JURI::root();
-			$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-			$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-			$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-			$action = 'http://'.$root.'/';
-
 ?>
 <div class="ubersearch search_profile"> 
 									<div class="result clearfix"> 
@@ -61,7 +55,7 @@
    <td>
    
    
-   	<form action="<?php echo $action; ?>index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
+   	<form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
 <table>
     <tr>
     	<td>
@@ -104,7 +98,7 @@
    <td> 
    
    
-<form action="<?php echo $action; ?>index.php?option=com_myapi&task=newUser" method="post" id="myApiNewUserRegForm" class="myapiAjaxForm">
+<form action="index.php?option=com_myapi&task=newUser" method="post" id="myApiNewUserRegForm" class="myapiAjaxForm">
 <table class="myapi">
           <input type="hidden" name="option" value="com_myapi" />
         
@@ -153,7 +147,7 @@
    <td>
    
    
-   	<form action="<?php echo $action; ?>index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
+   	<form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
 <table align="right">
     <tr>
     	<td>
