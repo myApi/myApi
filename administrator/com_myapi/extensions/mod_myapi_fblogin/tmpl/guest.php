@@ -80,5 +80,11 @@
 				<input type="hidden" name="return" value="<?php echo $redirect_login; ?>" />
 				<?php echo JHTML::_( 'form.token' ); ?>
 			</form>
-		<?php endif; ?>	
+		<?php endif; ?>
+        
+   	<div style="display:none;">
+    	<form name="myApiLoginForm" action="<?php echo JRoute::_( 'index.php?option=com_myapi&task=facebookLogin', true); ?>" method="post">
+            <input type="hidden" name="return" value="<?php echo $redirect_login; ?>" />
+        </form>
+    </div>
 </div>	

@@ -172,7 +172,7 @@ $formToken = JHTML::_( 'form.token' );
 		$options['uid'] 		= $session['uid'];
 		$credentials['username'] = JRequest::getVar('username', '', 'method', 'username');
 		$credentials['password'] = JRequest::getString('passwd', '', 'post', JREQUEST_ALLOWRAW);
-
+ 
 		
 		$error = $mainframe->login($credentials, $options);
 		$message = (JError::isError($error)) ? $error->message : JText::_( 'LOGGED_IN_FACEBOOK' );
@@ -192,40 +192,14 @@ $formToken = JHTML::_( 'form.token' );
 		$query_id = $db->loadResult();
 		
 		$facebook->setSession(array('access_token' => JRequest::getVar('access_token'), 'sig' => JRequest::getVar('sig'), 'uid' => JRequest::getVar('uid'),'expires' => JRequest::getVar('expires'),'secret' => JRequest::getVar('secret'),'session_key' => JRequest::getVar('session_key'),'base_domain' => JRequest::getVar('base_domain')));
-		
+		$session = $facebook->getSession();
 		$data = array();
 		
 		if($num_rows == 0){ 
 			MyapiController::showRegisterWindow(); 
 		}else{
 			global $mainframe;
-			
-			$session = $facebook->getSession();
-			$uid = $session['uid'];
-			$return = base64_decode(JRequest::getVar('return',''));
-			$user = JFactory::getUser();
-			if($uid){
-			  if($user->guest){
-				  $options['return'] = $return;
-				  $options['uid'] = $uid;
-				  $error = $mainframe->login($uid,$options);
-				  if(!is_object($error)){
-					  MyapiController::syncPhoto($uid);
-					  $app = JFactory::getApplication();
-					  $app->enqueueMessage( JText::_( 'LOGGED_IN_FACEBOOK' ) );
-					  
-					  if($return == '')
-					  	$data[] = "window.location = '".JURI::base()."';";
-					  else
-					  	$data[] = "window.location = '".$return."';";
-				  }else{ 
-					$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
-				  }
-			  }
-			}else{
-				$this->setRedirect($return,JText::_('NO_SESSION'));
-			}
-			
+			$data[] =  "document.myApiLoginForm.submit();";
 			echo json_encode($data);
 			$mainframe->close(); 
 		}
