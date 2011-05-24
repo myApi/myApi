@@ -34,6 +34,7 @@ if(!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'myapi.php
 
 $doc =& JFactory::getDocument();
 $doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi.js');
+$doc->addStylesheet('modules'.DS.'mod_myapi_fbLogin'.DS.'mod_myapi_fbLogin.css');
 
 $user 				= JFactory::getUser();
 $classSfx 			= $params->get('moduleclass_sfx');
