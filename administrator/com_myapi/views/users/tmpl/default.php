@@ -41,25 +41,36 @@ JToolBarHelper::deleteList('This will unlink the user(s) Joomla account and Face
     <input type="hidden" name="option" value="com_myapi" />
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="0" />
-    <input type="hidden" name="controller" value="myapi" />	
+    <input type="hidden" name="controller" value="myapi" />
+    <input type="hidden" name="filter_order" value="<?php echo $this->lists['order']; ?>" />
+    <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
+
 	<?php echo JHTML::_( 'form.token' ); ?>	
 	<p>Below is a list of joomla users that have linked their facebook profiles to the site, as an admin you are not able to add a new link between a facebook profile and joomla user, this can only be done by the facebook users on the front end.  However you can unlink facebook accounts from joomla account.  Just check the boxes next to the links you want to destroy and click unlink accounts.  This does not delete the joomla user account or facebook profile.</p>
 	<table id="userslist" class="adminlist">
  		<tr>
           <th class="top_row" width="20"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $this->users); ?>);" /></th>
-          <th class="top_row">Name</th>
-          <th class="top_row">Username</th>
-          <th class="top_row">User Type</th>
-          <th class="top_row">Facebook UID</th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort','Name','#__users.name', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort','Username','#__users.username', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort','User Type','#__users.usertype', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort','Facebook UID','#__myapi_users.uid', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
        </tr>
-        <?php foreach($this->users as $index => $array): ?>
+        <?php foreach($this->users as $index => $obj): ?>
             <tr>
-                <td><?php echo JHTML::_( 'grid.id', $index, $array['id'] ); ?></td>
-                <td><?php echo $array['name']; ?></td>
-                <td><?php echo $array['username']; ?></td>
-                <td><?php echo $array['usertype']; ?></td>
-                <td><a href="http://www.facebook.com/profile.php?id=<?php echo $array['uid']; ?>" target="_blank">Facebook Profile</a></td>
+                <td><?php echo JHTML::_( 'grid.id', $index, $obj->id ); ?></td>
+                <td><?php echo $obj->name; ?></td>
+                <td><?php echo $obj->username; ?></td>
+                <td><?php echo $obj->usertype; ?></td>
+                <td><a href="http://www.facebook.com/profile.php?id=<?php echo $obj->uid; ?>" target="_blank">Facebook Profile</a></td>
             </tr>
         <?php endforeach; ?>
+        <tfoot>
+      		<tr class="footer">
+            	<td colspan="5"><?php echo $this->pagination->getResultsCounter(); ?></td>
+          	</tr>
+          	<tr class="footer">
+            	<td colspan="5"><?php echo $this->pagination->getListFooter(); ?></td>
+           	</tr>
+      </tfoot>
    </table>
 </form>

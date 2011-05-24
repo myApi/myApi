@@ -1,4 +1,4 @@
-<?php
+<?php defined('_JEXEC') or die('Restricted access');
 /*****************************************************************************
  **                                                                         ** 
  **                                         .o.                   o8o  	    **
@@ -31,18 +31,30 @@
  **                                                                         **			
  *****************************************************************************/
 
-// no direct access
-defined('_JEXEC') or die('Restricted access');
-
-// Import Joomla! libraries
 jimport('joomla.application.component.model');
 
 class MyapiModelUsers extends JModel {
- 
-  function __construct() {
-		parent::__construct();
-    }
+  	
+	var $_total = null;
+  	var $_pagination = null;
 	
+	function __construct() {
+		parent::__construct();
+		global $mainframe, $option;
+		 
+        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');		
+		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		
+		$this->setState('limitstart', $limitstart);
+ 		$this->setState('limit', $limit);
+		
+		//for sortable columns
+		$filter_order     = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', '#__jos_myapi_users.userId', 'cmd' );
+        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
+ 
+        $this->setState('filter_order', $filter_order);
+        $this->setState('filter_order_Dir', $filter_order_Dir);
+    }
 	
 	function getUsers(){
 		$db =& JFactory::getDBO();
@@ -50,6 +62,45 @@ class MyapiModelUsers extends JModel {
 		$db->setQuery($query);
 		$users = $db->loadAssocList();
 		return $users;
+	}
+	
+	function getData(){
+		if(empty($this->_data)){
+			$query = $this->_buildQuery();
+			$this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit')); 
+		}
+		return $this->_data;
+	}
+	function getTotal(){
+		if (empty($this->_total)) {
+			$query = $this->_buildQuery();
+			$this->_total = $this->_getListCount($query);    
+		}
+		return $this->_total;
+	}
+	function getPagination(){
+		if (empty($this->_pagination)) {
+			jimport('joomla.html.pagination');
+			$this->_pagination = new JPagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit') );
+		}
+		return $this->_pagination;
+	}
+	
+	function _buildQuery(){  
+	  $db = JFactory::getDBO();
+	  $query = "SELECT * FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__users.id')." ".$this->_buildContentOrderBy();
+	  return $query;
+	}
+  
+  	function _buildContentOrderBy(){
+		global $mainframe, $option;
+		$orderby = '';
+		$filter_order     = $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order');
+		$filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir');
+		if(!empty($filter_order) && !empty($filter_order_Dir) ){
+			$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
+		}
+		return $orderby;
 	}
 	
 }

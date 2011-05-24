@@ -1,4 +1,4 @@
-<?php
+<?php defined('_JEXEC') or die('Restricted access');
 /*****************************************************************************
  **                                                                         ** 
  **                                         .o.                   o8o  	    **
@@ -30,22 +30,22 @@
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
  *****************************************************************************/
-
-
-// no direct access
-defined('_JEXEC') or die('Restricted access');
-
-// Import Joomla! libraries
+ 
 jimport( 'joomla.application.component.view');
 class MyapiViewUsers extends JView {
     function display($tpl = null) {
-       	
-		$model = $this->getModel('users');
-		$this->assignRef("users", $model->getUsers());
-					
+		global $mainframe, $option;
+       	$model 		= $this->getModel('users');
 		
+		$items 				= $model->getData();      
+		$pagination			= $model->getPagination();
+		$lists['order'] 	= $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order');
+		$lists['order_Dir'] = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir');
 		
-	 parent::display($tpl);
+		$this->assignRef( 'lists', $lists );
+		$this->assignRef('pagination', $pagination);
+		$this->assignRef("users", $items);
+		parent::display($tpl);
     }
 }
 ?>
