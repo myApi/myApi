@@ -19,14 +19,14 @@
 	</languages>
 	
 	<params addPath="/plugins/content/like/">
-		<param name="show_faces" type="radio" default="false" label="PARAM_FACES_LABEL" description="PARAM_FACES_DESC">
-			<option value="false">NO</option>
-		  	<option value="true">YES</option>
+		<param name="show_faces" type="radio" default="0" label="PARAM_FACES_LABEL" description="PARAM_FACES_DESC">
+			<option value="0">NO</option>
+		  	<option value="1">YES</option>
 		</param>
 		
-		<param name="show_send" type="radio" default="false" label="PARAM_SEND_LABEL" description="PARAM_SEND_DESC">
-			<option value="false">NO</option>
-		  	<option value="true">YES</option>
+		<param name="show_send" type="radio" default="0" label="PARAM_SEND_LABEL" description="PARAM_SEND_DESC">
+			<option value="0">NO</option>
+		  	<option value="1">YES</option>
 		</param>
 		
 		<param name="layout_style" type="list" default="standard" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">

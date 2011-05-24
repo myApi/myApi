@@ -50,14 +50,14 @@ class plgContentmyApiLike extends JPlugin
 			$like_categories 	= $myapiparama->get('like_categories');
 			$like_show_on 		= $myapiparama->get('like_show_on');
 			$layout_style 		= $myapiparama->get('layout_style');
-			$show_faces 		= $myapiparama->get('show_faces');
 			$color_scheme 		= $myapiparama->get('color_scheme');
 			$verb 				= $myapiparama->get('verb');
 			$width 				= $myapiparama->get('width');
 			$like_style 		= $myapiparama->get('like_style');
 			$font 				= $myapiparama->get('like_font');
 			$ref 				= $myapiparama->get('like_ref');
-			$show_send 			= $myapiparama->get('like_send');
+			$show_send 			= ($myapiparama->get('show_send') == 1) ? 'true' : 'false';
+			$show_faces 		= ($myapiparama->get('show_faces') == 1) ? 'true' : 'false';
 			$like_show 			= false;
 		
 			global $facebook;
@@ -82,7 +82,7 @@ class plgContentmyApiLike extends JPlugin
 				$link 		= JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid));
 				$u			=& JURI::getInstance( JURI::base() );
 				$link 		= 'http://'.$u->getHost().$link;
-				$newtext	= '<fb:like href="'.$link.'" style="'.$like_style.'" layout="'.$layout_style.'" show_faces="'.$show_faces.'" width="'.$width.'" action="'.$verb.'" colorscheme="'.$color_scheme.'" font="'.$font.'" ref="'.$ref.'" send="'.$show_send.'"></fb:like>';
+				$newtext	= '<span style="'.$like_style.'"><fb:like href="'.$link.'" layout="'.$layout_style.'" show_faces="'.$show_faces.'" width="'.$width.'" action="'.$verb.'" colorscheme="'.$color_scheme.'" font="'.$font.'" send="'.$show_send.'" ref="'.$ref.'"></fb:like></span>';
 		
 				$newtext 		= $newtext.$article->text;
 				$article->text 	= $newtext;
