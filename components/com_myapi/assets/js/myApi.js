@@ -1,14 +1,15 @@
-myapi = {
+//myApi Javascript
+
+var myapi = {
 	ajax: {
 		evaluate: function(changes){
 			try{ 
-				for( index in changes ){
-					var str = changes[index];
-					str = str.clean(); 
+				for(var i=0;i<changes.length;i++){
+					var str = changes[i].clean(); 
 					str = str.replace(/[\n\r\t]/g,''); 
 					eval( str ); 
 				}
-			 }catch(e){  }	
+			}catch(e){  }	
 		}
 	},
 	auth: {
