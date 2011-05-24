@@ -45,7 +45,7 @@ class plgSystemmyApiModal extends JPlugin
 	
 	//This imports the Facebook php libary and creates a global object for use accross the whole site.
 	
-	function onAfterInitialise(){
+	function onAfterRender(){
 		//Do not import in admin view
 		global $mainframe;
 		if($mainframe->isAdmin()) { return; } 
