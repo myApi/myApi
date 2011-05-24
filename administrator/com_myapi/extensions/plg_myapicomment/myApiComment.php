@@ -67,6 +67,7 @@ class plgContentmyApiComment extends JPlugin
 			$comments_access = $myapiparama->get('comments_access');
 			$comments_width = $myapiparama->get('comments_width');
 			$comments_numposts = $myapiparama->get('comments_numposts');
+			$comments_scheme = $myapiparama->get('comments_scheme');
 			
 			$comments_view_article = $myapiparama->get('comments_view_article');
 			$comments_view_list = $myapiparama->get('comments_view_list');
@@ -121,7 +122,7 @@ class plgContentmyApiComment extends JPlugin
 			
 			if($comment_show && $hasAccess )
 			{
-				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'"></fb:comments>';
+				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" colorscheme="'.$comments_scheme.'"></fb:comments>';
 				
 				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>".JText::_('ADD_COMMENT')."</a><br />";
 				

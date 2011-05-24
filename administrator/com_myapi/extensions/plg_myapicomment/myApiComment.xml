@@ -21,9 +21,11 @@
 	<params addPath="/plugins/content/comment/">
 		<param name="comments_width" type="text" default="500" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" size="10" />
 		<param name="comments_numposts" type="text" default="10" label="PARAM_NUMPOSTS_LABEL" description="PARAM_NUMPOSTS_DESC" size="10" />
+		<param name="comments_scheme" type="list" default="light" label="PARAM_SCHEME_LABEL" description="PARAM_SCHEME_DESC">
+		  	<option value="light">PARAM_SCHEME_LIGHT</option>
+			<option value="dark">PARAM_SCHEME_DARK</option>
+		</param>
 		<param name="comments_access" type="usergroup" default="29" label="PARAM_ACCESS_LABEL" description="PARAM_ACCESS_DESC" />
-		
-		
 		<param name="comments_view_article" type="radio" default="0" label="PARAM_ARTICLE_LABEL" description="PARAM_VIEW_DESC">
 			<option value="0">PARAM_VIEW_BOX</option>
 		  	<option value="1">PARAM_VIEW_LINK</option>
