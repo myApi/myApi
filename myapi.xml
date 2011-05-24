@@ -68,9 +68,7 @@
         <filename>config.xml</filename>
         <filename>controller.php</filename>
         <filename>index.html</filename>
-        <filename>install.myapi.php</filename>
         <filename>myapi.php</filename>
-        <filename>uninstall.myapi.php</filename>
         <folder>models</folder>
         <folder>tables</folder>
         <folder>views</folder>
