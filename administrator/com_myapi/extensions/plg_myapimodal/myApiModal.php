@@ -45,7 +45,7 @@ class plgSystemmyApiModal extends JPlugin
 	
 	//This imports the Facebook php libary and creates a global object for use accross the whole site.
 	
-	function onAfterInitialise(){
+	function onAfterDispatch(){
 		//Do not import in admin view
 		global $mainframe;
 		if($mainframe->isAdmin()) { return; } 
@@ -55,6 +55,7 @@ class plgSystemmyApiModal extends JPlugin
 		$doc = & JFactory::getDocument();
 		$doc->addScript('plugins'.DS.'system'.DS.'myApiModal'.DS.'myApiModal.js');
 		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiModal'.DS.'myApiModal.css');
+		
 	}
 }
 ?>
