@@ -52,15 +52,11 @@ else{
 	$redirect_login = JRoute::_(JFactory::getApplication()->getMenu()->getItem( $menuitem )->link . "&Itemid=".$menuitem,false);	
 }
 
-$u 		=& JURI::getInstance( $redirect_login );
-$root 	= JURI::root();
-$root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-$root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-$root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-$host		=& JURI::getInstance($root );
+$u 		= JURI::getInstance( $redirect_login );
+$host	= JURI::getInstance(JURI::current());
 $port 	= ($host->getPort() == '') ? '' : ":".$host->getPort();
-$query = ($u->getQuery() == '') ? '' : '?'.$u->getQuery();
-$redirect_login = base64_encode('http://'.$host->getHost().$port.$u->getPath().$query); 
+$query 	= ($u->getQuery() == '') ? '' : '?'.$u->getQuery();
+$redirect_login	= base64_encode($host->getScheme().'://'.$host->getHost().$port.$u->getPath().$query); 
 
 if($user->guest){
 	$joomla_login = $params->get('login_joomlaLogin');
