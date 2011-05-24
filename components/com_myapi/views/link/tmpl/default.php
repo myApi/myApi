@@ -95,7 +95,7 @@
 	<input type="hidden" name="option" value="com_myapi" />
 	<input type="hidden" name="myapiFbLink" value="1" />
 	<input type="hidden" name="task" value="login" />
-	<input type="hidden" name="return" value="<?php echo $redirect; ?>" />
+	<input type="hidden" name="return" value="<?php echo JRequest::getVar('return',$redirect,'get'); ?>" />
 	<?php echo $formToken; ?>
 
 </form>
@@ -128,7 +128,7 @@
 	<input type="hidden" name="task" value="newUser" />
 	<input type="hidden" name="id" value="0" />
 	<input type="hidden" name="gid" value="0" />
-	<input type="hidden" name="return" value="<?php echo $redirect; ?>" />
+	<input type="hidden" name="return" value="<?php echo JRequest::getVar('return',$redirect,'get'); ?>" />
 	<?php echo $formToken ?>
 
 </form>
@@ -187,7 +187,7 @@
 	<input type="hidden" name="option" value="com_myapi" />
 	<input type="hidden" name="myapiFbLink" value="1" />
 	<input type="hidden" name="task" value="login" />
-	<input type="hidden" name="return" value="<?php echo $redirect; ?>" />
+	<input type="hidden" name="return" value="<?php echo JRequest::getVar('return',$redirect,'get'); ?>" />
 	<?php echo $formToken; ?>
 
 </form>

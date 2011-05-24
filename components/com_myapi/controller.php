@@ -57,16 +57,6 @@ class MyapiController extends JController {
 		$db->setQuery($query);
 		$registeredEmail = $db->loadResult();
 		
-		
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
-		$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-		
-		$com_params = &JComponentHelper::getParams( 'com_myapi' );
-		$appId = $com_params->get('appId');
-		
-global $mainframe;
-
-
 $root 	= JURI::root();
 $root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
 $root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
