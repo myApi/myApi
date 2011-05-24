@@ -162,7 +162,6 @@ $formToken = JHTML::_( 'form.token' );
 	//Joomla user login task
 	function login()
 	{
-
 		global $mainframe;
 
 		$return = base64_decode(JRequest::getVar('return','','post'));
@@ -194,6 +193,7 @@ $formToken = JHTML::_( 'form.token' );
 	
 	//A function called via ajax to see is a Facebook user is linked to a Joomla user
 	function isLinked(){
+		global $facebook, $mainframe;
 		JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
 		$db = JFactory::getDBO();
 		$uid = JRequest::getVar('fbId','','get');
@@ -202,20 +202,43 @@ $formToken = JHTML::_( 'form.token' );
 		$db->query();
 		$num_rows = $db->getNumRows();
 		$query_id = $db->loadResult();
+		
+		$facebook->setSession(array('access_token' => JRequest::getVar('access_token'), 'sig' => JRequest::getVar('sig'), 'uid' => JRequest::getVar('uid'),'expires' => JRequest::getVar('expires'),'secret' => JRequest::getVar('secret'),'session_key' => JRequest::getVar('session_key'),'base_domain' => JRequest::getVar('base_domain')));
+		
+		$data = array();
+		
 		if($num_rows == 0){ 
 			MyapiController::showRegisterWindow(); 
 		}else{
-			global $facebook;
-			$root = JURI::root();
-			$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-			$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-			$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-			
-			$loginUrl = $facebook->getLoginUrl(array('next' => 'http://'.$root.'/index.php?option=com_myapi&task=facebookLogin&return='.JRequest::getVar('return','','get') ));		
-			$data = array();
-			$data[] = "window.location = '".$loginUrl."';";
-			echo json_encode($data);
 			global $mainframe;
+			
+			$session = $facebook->getSession();
+			$uid = $session['uid'];
+			$return = base64_decode(JRequest::getVar('return',''));
+			$user = JFactory::getUser();
+			if($uid){
+			  if($user->guest){
+				  $options['return'] = $return;
+				  $options['uid'] = $uid;
+				  $error = $mainframe->login($uid,$options);
+				  if(!is_object($error)){
+					  MyapiController::syncPhoto($uid);
+					  $app = JFactory::getApplication();
+					  $app->enqueueMessage( JText::_( 'LOGGED_IN_FACEBOOK' ) );
+					  
+					  if($return == '')
+					  	$data[] = "window.location = '".JURI::base()."';";
+					  else
+					  	$data[] = "window.location = '".$return."';";
+				  }else{ 
+					$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
+				  }
+			  }
+			}else{
+				$this->setRedirect($return,JText::_('NO_SESSION'));
+			}
+			
+			echo json_encode($data);
 			$mainframe->close(); 
 		}
 	}
