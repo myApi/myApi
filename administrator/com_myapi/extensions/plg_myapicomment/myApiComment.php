@@ -128,44 +128,49 @@ class plgContentmyApiComment extends JPlugin
 				
 				
 				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'700\'></fb:comments>\"); }); });";
-				
-				global $fbAsyncInitJs;
-				$fbAsyncInitJs .= "try{ var query = FB.Data.query('select id from comment where xid=\"$xid\"', 'xid'); query.wait(function(rows) { $('".$xid."commentLink').setHTML('".JText::_('ADD_COMMENT')." ('+rows.length+')'); }); }catch(e){}";
-				
+			
 				if(JRequest::getVar('view','','get') == 'article'){
 					//article	
-					if($comments_view_article == 0){
+					if($comments_view_article == 1){
 						//box
 						$article->text = $article->text.$comment_box;
-					}else{
+					}elseif($comments_view_article == 2){
 						//link
 						$article->text = $article->text.$comment_link;
 						$doc->addScriptDeclaration($js);
+						plgContentmyApiComment::addFbJs($xid);
 					}
 				}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
 					//blog		
-					if($comments_view_blog == 0){
+					if($comments_view_blog == 1){
 						//box
 						$article->text = $article->text.$comment_box;
-					}else{
+					}elseif($comments_view_blog == 2){
 						//link
 						$article->text = $article->text.$comment_link;
 						$doc->addScriptDeclaration($js);
+						plgContentmyApiComment::addFbJs($xid);
 					}
 				}else{
 					//must be list
-					if($comments_view_list == 0){
+					if($comments_view_list == 1){
 						//box
 						$article->text = $article->text.$comment_box;
-					}else{
+					}elseif($comments_view_list == 2){
 						//link
 						$article->text = $article->text.$comment_link;
 						$doc->addScriptDeclaration($js);
+						plgContentmyApiComment::addFbJs($xid);
 					}
 				}
 			}
 		}
 
+	}
+	
+	function addFbJs($xid){
+		global $fbAsyncInitJs;
+		$fbAsyncInitJs .= "try{ var query = FB.Data.query('select id from comment where xid=\"$xid\"', 'xid'); query.wait(function(rows) { $('".$xid."commentLink').setHTML('".JText::_('ADD_COMMENT')." ('+rows.length+')'); }); }catch(e){}";	
 	}
 
     function bind( $array, $ignore = '' )
