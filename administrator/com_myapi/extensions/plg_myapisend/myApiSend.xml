@@ -15,7 +15,7 @@
 	</files>
 	
 	<languages>
-		<language tag="en-GB">languages/en-GB.plg_content_myApiSend.ini</language>
+		<language tag="en-GB">languages/en-GB.plg_content_myapisend.ini</language>
 	</languages>
 	
 	<params addPath="/plugins/content/send/">

@@ -15,7 +15,7 @@
 	</files>
 	
 	<languages>
-		<language tag="en-GB">languages/en-GB.plg_content_myApiShare.ini</language>
+		<language tag="en-GB">languages/en-GB.plg_content_myapishare.ini</language>
 	</languages>
 	
 	<params addPath="/plugins/content/share/">
