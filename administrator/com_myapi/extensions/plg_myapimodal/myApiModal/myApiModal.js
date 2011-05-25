@@ -26,7 +26,7 @@ var myApiModal = {
 		create : function()
 		{
 			higestZindex = 1;
-			$$('*').each( function(el,index){         
+			$$('body > *').each( function(el,index){         
 				try{
 					if ($$('*')[index].getStyle('z-index').toInt() > higestZindex){
 						higestZindex = $$('*')[index].getStyle('z-index').toInt();
