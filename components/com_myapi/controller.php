@@ -48,40 +48,27 @@ class MyapiController extends JController {
 	function showRegisterWindow(){
 		global $facebook;
 		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
-		$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser = $facebookmodel->getLoggedInUserLiked();
 		
+		$db 			= JFactory::getDBO();
+		$facebookmodel 	= new myapiModelfacebook;  //Bring the myAPI facebook model
+		$fbUser 		= $facebookmodel->getLoggedInUserLiked();
+		$query 			= "SELECT COUNT(".$db->nameQuote('id').") FROM ".$db->nameQuote('#__users')." WHERE ".$db->nameQuote('email')." = ".$db->quote($fbUser['email']);
 		
-		$db = JFactory::getDBO();
-		$query = "SELECT COUNT(".$db->nameQuote('id').") FROM ".$db->nameQuote('#__users')." WHERE ".$db->nameQuote('email')." = ".$db->quote($fbUser['email']);
 		$db->setQuery($query);
 		$registeredEmail = $db->loadResult();
 		
-$root 	= JURI::root();
-$root	= (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-$root	= (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-$root	= (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-$host		=& JURI::getInstance($root );
-$port 	= ($host->getPort() == '') ? '' : ":".$host->getPort();
-$redirect = base64_encode('http://'.$host->getHost().$port); 
-	
-		
-$forgotPass = JRoute::_( 'index.php?option=com_user&view=reset' );
-$forgotUser = JRoute::_( 'index.php?option=com_user&view=remind' );
-$formToken = JHTML::_( 'form.token' );
+		$forgotPass	= JRoute::_( 'index.php?option=com_user&view=reset' );
+		$forgotUser	= JRoute::_( 'index.php?option=com_user&view=remind' );
+		$formToken	= JHTML::_( 'form.token' );
 
-		
 		ob_start();
-	 include(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'views'.DS.'link'.DS.'tmpl'.DS.'default.php');
-	
- 		$html = ob_get_contents();
+	 		include(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'views'.DS.'link'.DS.'tmpl'.DS.'default.php');
+			$html = ob_get_contents();
 		ob_end_clean();	
 		
-		$header = "Hi, login or register below. You can create a new user accout, or link your facebook account to an exisiting user.";
-		
-		$data[] = "myApiModal.open('Facebook Connect','".addslashes($header)."','".addslashes($html)."');";
+		$data[] = "myApiModal.open('".JText::_('FACEBOOK_CONNECT',true)."','".JText::_('REGISTRATION_PROMPT',true)."','".addslashes($html)."');";
 		if(!$fbUser['liked']){
-		$data[] = "FB.Event.subscribe('edge.create', function(response) { $('myApiNewUserRegForm').submit(); });";
+			$data[] = "FB.Event.subscribe('edge.create', function(response) { $('myApiNewUserRegForm').submit(); });";
 		}
 		echo json_encode($data);
 		global $mainframe;
@@ -90,74 +77,59 @@ $formToken = JHTML::_( 'form.token' );
 	
 	function syncPhoto($uid){
 		jimport( 'joomla.filesystem.folder' );
-			if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
-				JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
-				
-			$dest = JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
+		if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
+			JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
 			
-			$avatar = 'facebookUID'.$uid.'.jpg';
-			$buffer = file_get_contents('https://graph.facebook.com/'.$uid.'/picture',$dest);
-			jimport( 'joomla.filesystem.file' );
-			JFile::write($dest,$buffer);
-			$db =& JFactory::getDBO();
-			
-			$query = "UPDATE #__myapi_users SET avatar ='".$avatar."' WHERE uid ='".$uid."'";
-			$db->setQuery($query);
-			$db->query();
-			
-			try{
-			  $query = "UPDATE #__comprofiler JOIN #__myapi_users ON #__comprofiler.user_id = #__myapi_users.userId  SET #__comprofiler.avatar ='".$avatar."' WHERE #__myapi_users.uid ='".$uid."'";
-			  $db->setQuery($query);
-			  $db->query();
-			}catch(Exception $e){}
+		$dest	= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
+		$avatar	= 'facebookUID'.$uid.'.jpg';
+		$buffer	= file_get_contents('https://graph.facebook.com/'.$uid.'/picture',$dest);
+		jimport( 'joomla.filesystem.file' );
+		JFile::write($dest,$buffer);
+		
+		$db 	=& JFactory::getDBO();
+		$query 	= "UPDATE #__myapi_users SET avatar ='".$avatar."' WHERE uid ='".$uid."'";
+		$db->setQuery($query);
+		$db->query();
+		
+		try{
+		  $query = "UPDATE #__comprofiler JOIN #__myapi_users ON #__comprofiler.user_id = #__myapi_users.userId  SET #__comprofiler.avatar ='".$avatar."' WHERE #__myapi_users.uid ='".$uid."'";
+		  $db->setQuery($query);
+		  $db->query();
+		}catch(Exception $e){}
 		return;
-		// end new code
-	
 	}
 	
 	//This task logs in a user
 	function facebookLogin() {
-		// Check for request forgeries
-		//JRequest::checkToken('get') or jexit( 'Invalid Token' );
-		global $facebook; global $mainframe;
-		$session = $facebook->getSession();
-		$uid = $session['uid'];
-		$return = base64_decode(JRequest::getVar('return',''));
-		$user = JFactory::getUser();
-		if($uid){
-		  if($user->guest){
-			  $options['return'] = $return;
-			  $options['uid'] = $uid;
-			  $error = $mainframe->login($uid,$options);
-			  if(!is_object($error)){
-				  MyapiController::syncPhoto($uid);
-				  if($return == '')
-				  	$this->setRedirect(JURI::base(),JText::_( 'LOGGED_IN_FACEBOOK' ));
-				  else
-				  	$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
-			  }else{ 
-			  	$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
-			  }
-		  }
+		global $facebook, $mainframe;
+		
+		$session	= $facebook->getSession();
+		$uid 		= $session['uid'];
+		$return 	= base64_decode(JRequest::getVar('return',''));
+		$user 		= JFactory::getUser();
+		
+		if($uid && $user->guest){
+			$options['return'] = $return;
+			$options['uid'] = $uid;
+			$error = $mainframe->login($uid,$options);
+			if(!is_object($error)){
+				MyapiController::syncPhoto($uid);
+				$return = ($return == '') ? JURI::base() : $return;
+				$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
+			}else{ 
+				$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
+			}
 		}else{
 			$this->setRedirect($return,JText::_('NO_SESSION'));
 		}
 	}
 	
-	
 	function logout(){
-	
-		global $mainframe;
+		global $mainframe, $facebook;
 		$mainframe->logout();
-		global $facebook;
 		$facebook->setSession(null);
-		
-		if(JRequest::getVar('auto','0','get') == '0'){
-			$this->setRedirect(JURI::base(),JText::_('FACEBOOK_LOGOUT'));
-		}else{
-			$this->setRedirect(JURI::base(),JText::_('FACEBOOK_EXPIRED'));
-		}
-	
+		$msg = (JRequest::getVar('auto','0','get') == '0') ? JText::_('FACEBOOK_LOGOUT') : JText::_('FACEBOOK_EXPIRED');
+		$this->setRedirect(JURI::base(),$msg);
 	}
 	//Joomla user login task
 	function login(){
@@ -173,7 +145,6 @@ $formToken = JHTML::_( 'form.token' );
 		$credentials['username'] = JRequest::getVar('username', '', 'method', 'username');
 		$credentials['password'] = JRequest::getString('passwd', '', 'post', JREQUEST_ALLOWRAW);
  
-		
 		$error = $mainframe->login($credentials, $options);
 		$message = (JError::isError($error)) ? $error->message : JText::_( 'LOGGED_IN_FACEBOOK' );
 		$this->setRedirect($return,$message);
@@ -183,9 +154,9 @@ $formToken = JHTML::_( 'form.token' );
 	function isLinked(){
 		global $facebook, $mainframe;
 		JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
-		$db = JFactory::getDBO();
-		$uid = JRequest::getVar('fbId','','get');
-		$query = "SELECT userId FROM ".$db->nameQuote('#__myapi_users')." WHERE uid =".$db->quote($uid);
+		$db 	= JFactory::getDBO();
+		$uid 	= JRequest::getVar('fbId','','get');
+		$query 	= "SELECT userId FROM ".$db->nameQuote('#__myapi_users')." WHERE uid =".$db->quote($uid);
 		$db->setQuery($query);
 		$db->query();
 		$num_rows = $db->getNumRows();
@@ -193,40 +164,37 @@ $formToken = JHTML::_( 'form.token' );
 		
 		$facebook->setSession(array('access_token' => JRequest::getVar('access_token'), 'sig' => JRequest::getVar('sig'), 'uid' => JRequest::getVar('uid'),'expires' => JRequest::getVar('expires'),'secret' => JRequest::getVar('secret'),'session_key' => JRequest::getVar('session_key'),'base_domain' => JRequest::getVar('base_domain')));
 		$session = $facebook->getSession();
-		$data = array();
 		
 		if($num_rows == 0){ 
 			MyapiController::showRegisterWindow(); 
 		}else{
-			global $mainframe;
+			$data = array();
 			$data[] =  "document.myApiLoginForm.submit();";
 			echo json_encode($data);
 			$mainframe->close(); 
 		}
 	}
 	
-	
-
 	function newLink(){
 		// Check for request forgeries
 		global $facebook;
 		$facebookSession = $facebook->getSession();
 		if($facebookSession['uid'] != ''){
-			$user = JFactory::getUser();
-			$db = JFactory::getDBO();
+			$user	= JFactory::getUser();
+			$db 	= JFactory::getDBO();
 			
+			jimport( 'joomla.filesystem.file' );
 			jimport( 'joomla.filesystem.folder' );
 			if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
 				JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
 				
-			$dest = JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$facebookSession['uid'].'.jpg';
+			$dest 	= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$facebookSession['uid'].'.jpg';
 			$avatar = 'facebookUID'.$facebookSession['uid'].'.jpg';
 			$buffer = file_get_contents('https://graph.facebook.com/'.$facebookSession['uid'].'/picture',$dest);
-			jimport( 'joomla.filesystem.file' );
 			JFile::write($dest,$buffer);
-			$db =& JFactory::getDBO();
 			
-			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
+			$db		= JFactory::getDBO();
+			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
 			$db->setQuery($query);
 			$db->query();
 			
@@ -238,7 +206,7 @@ $formToken = JHTML::_( 'form.token' );
 			
 			$this->setRedirect(JURI::base(),JText::_('LINK_COMPLETE'));
 		}else{
-		$this->setRedirect(JURI::base(),JText::_('No Facebook User ID found'));
+			$this->setRedirect(JURI::base(),JText::_('NO_UID_FOUND'));
 		}
 	}
 	
@@ -299,8 +267,6 @@ $formToken = JHTML::_( 'form.token' );
 		$newUser['password'] = $newUser['password2'] = JUserHelper::genRandomPassword();
 		$newUser['email'] = $fbUser['email'];
 		
-		
-		
 		// Bind the post array to the user object
 		if (!$user->bind( $newUser, 'usertype' )) {
 			$message = $user->getError();
@@ -318,10 +284,8 @@ $formToken = JHTML::_( 'form.token' );
 		// If user activation is turned on, we need to set the activation information
 		$useractivation = $usersConfig->get( 'useractivation' );
 		
-
 		// If there was an error with registration, set the message and display form
-		if ( !$user->save() )
-		{
+		if ( !$user->save() ){
 			$message = $user->getError();
 			$this->setRedirect($return,$message);
 		}elseif($fbUser['uid'] != ''){
@@ -350,18 +314,12 @@ $formToken = JHTML::_( 'form.token' );
 			MyapiController::syncPhoto($fbUser['uid']);
 			$this->setRedirect($return,$message);
 		}else{
-			
-			$this->setRedirect($return,'No Facebook User ID found');
-			
+			$this->setRedirect($return,JText::_('NO_UID_FOUND'));
 		}
 	}
 	
-	
-	
-	function _sendMail(&$user, $password)
-	{
+	function _sendMail(&$user, $password){
 		global $mainframe;
-
 		$db		=& JFactory::getDBO();
 
 		$name 		= $user->get('name');
@@ -379,8 +337,6 @@ $formToken = JHTML::_( 'form.token' );
 		$subject 	= html_entity_decode($subject, ENT_QUOTES);
 
 		$message = sprintf ( JText::_( 'SEND_MSG' ), $name, $sitename, $siteURL);
-		
-
 		$message = html_entity_decode($message, ENT_QUOTES);
 
 		//get all super administrator
