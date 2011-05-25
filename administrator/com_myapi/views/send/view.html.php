@@ -39,7 +39,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport( 'joomla.application.component.view');
 class MyapiViewSend extends JView {
     function display($tpl = null) {
-       	JPlugin::loadLanguage( 'plg_content_myApiSend' , JPATH_ADMINISTRATOR );
+       	JPlugin::loadLanguage( 'plg_content_myapisend' , JPATH_ADMINISTRATOR );
 		
 		
 		$db = JFactory::getDBO();

@@ -39,7 +39,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport( 'joomla.application.component.view');
 class MyapiViewSettings extends JView {
     function display($tpl = null) {
-		JPlugin::loadLanguage( 'plg_system_myApiConnect' , JPATH_ADMINISTRATOR );
+		JPlugin::loadLanguage( 'plg_system_myapiconnect' , JPATH_ADMINISTRATOR );
 		
 		$db = JFactory::getDBO();
 		$query = "SELECT id FROM #__plugins WHERE element =".$db->quote('myApiConnect');
