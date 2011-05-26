@@ -60,7 +60,7 @@ class plgContentmyApiLike extends JPlugin
 			$show_faces 		= ($myapiparama->get('show_faces') == 1) ? 'true' : 'false';
 			$like_show 			= false;
 		
-			global $facebook;
+			$facebook = plgSystemmyApiConnect::getFacebook();
 			
 			if($article->sectionid != ''){
 				if( is_array($like_sections) ){	

@@ -34,7 +34,7 @@ class MyapiController extends JController {
 	}
 	
 	function deauthorizeCallback(){
-		global $facebook;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		$signedRequest = $facebook->getSignedRequest();
 		$db = JFactory::getDBO();
 		$query = "DELETE FROM ".$db->nameQuote('#__myapi_users')." WHERE ".$db->nameQuote('uid')." = ".$db->quote($signedRequest['user_id']);
@@ -46,7 +46,7 @@ class MyapiController extends JController {
 	}
 	
 	function showRegisterWindow(){
-		global $facebook;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
 		
 		$db 			= JFactory::getDBO();
@@ -177,7 +177,7 @@ class MyapiController extends JController {
 	
 	function newLink(){
 		// Check for request forgeries
-		global $facebook;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		$facebookSession = $facebook->getSession();
 		if($facebookSession['uid'] != ''){
 			$user	= JFactory::getUser();
@@ -290,7 +290,7 @@ class MyapiController extends JController {
 			$this->setRedirect($return,$message);
 		}elseif($fbUser['uid'] != ''){
 			$db = JFactory::getDBO();
-			global $facebook;
+			$facebook = plgSystemmyApiConnect::getFacebook();
 			$facebookSession = $facebook->getSession();
 			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($fbUser['uid']).",".$db->quote($facebookSession['access_token']).")";
 			$db->setQuery($query);

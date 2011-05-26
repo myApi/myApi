@@ -41,11 +41,10 @@ class plgSystemmyApiConnect extends JPlugin
 	
 	function plgSystemmyApiConnect(&$subject, $config){
 		parent::__construct($subject, $config);
-		$GLOBALS['facebook'] = plgSystemmyApiConnect::getFacebook();
 	}
 	
 	function getFacebook(){
-		if(!isset($this->_facebook)){
+		if(empty($this->_facebook)){
 			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 			$com_params = new JParameter( $plugin->params );
 			 

@@ -35,7 +35,7 @@ class modmyapifbFanHelper
 {
 	function getPageLink($id){
 		try {
-			global $facebook;
+			$facebook = plgSystemmyApiConnect::getFacebook();
 			$page = $facebook->api('/'.$id);
 			return $page['link'];
 		}catch (FacebookApiException $e) {

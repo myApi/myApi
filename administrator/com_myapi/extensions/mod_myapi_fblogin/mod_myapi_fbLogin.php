@@ -74,7 +74,7 @@ if($user->guest){
 	$num_rows = $db->getNumRows();
 	if($num_rows == 0){
 		$linked = false;
-		global $facebook;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		$loginUrl = $facebook->getLoginUrl(array('next' => JURI::base().'index.php?option=com_myapi&task=newLink&return='.$redirect_login ));
 		$linkText = $params->get('login_link_text');
 	}

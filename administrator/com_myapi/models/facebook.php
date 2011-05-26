@@ -57,7 +57,7 @@ class MyapiModelFacebook extends JModel {
 	Returns: Returns the UID of the currently logged in user, or false.  Checks for an expired session
 	*/
 	function getLoggedInUser() {
-		global $facebook;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		try {
 		 $me = $facebook->api('/me?metadata=1');
 		} catch (FacebookApiException $e) {
@@ -68,7 +68,7 @@ class MyapiModelFacebook extends JModel {
 	}
 	
 	function getLoggedInUserLiked(){
-		  global $facebook;
+		  $facebook = plgSystemmyApiConnect::getFacebook();
 		try {
 			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 			$com_params = new JParameter( $plugin->params );
@@ -96,7 +96,7 @@ class MyapiModelFacebook extends JModel {
 	}
 	
 	function getLoggedInUserLikes() {
-		global $facebook;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		try {
 		  $likes = $facebook->api('/me/likes');
 		  
@@ -116,7 +116,7 @@ class MyapiModelFacebook extends JModel {
 	}
 	
 	function getLoggedInUserDetails() {
-		global $facebook;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		try {
 			$user_details =  $facebook->api(array('method' => 'fql.query','query'=> "SELECT pic_square,pic_big,username,name,email,uid FROM user WHERE uid = me()"));
 		} catch (FacebookApiException $e) {
