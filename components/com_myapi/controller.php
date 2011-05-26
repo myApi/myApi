@@ -126,7 +126,8 @@ class MyapiController extends JController {
 	}
 	
 	function logout(){
-		global $mainframe, $facebook;
+		global $mainframe;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		$mainframe->logout();
 		$facebook->setSession(null);
 		$msg = (JRequest::getVar('auto','0','get') == '0') ? JText::_('FACEBOOK_LOGOUT') : JText::_('FACEBOOK_EXPIRED');
@@ -134,7 +135,8 @@ class MyapiController extends JController {
 	}
 	//Joomla user login task
 	function login(){
-		global $mainframe,$facebook;
+		global $mainframe;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 
 		$options 				= array();
 		$credentials 			= array();
