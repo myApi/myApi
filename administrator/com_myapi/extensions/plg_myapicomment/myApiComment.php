@@ -48,7 +48,10 @@ class plgContentmyApiComment extends JPlugin
 			$xid = urlencode('articlecomment'.$article->id);
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
-			$link = JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid));
+			$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+			$u =& JURI::getInstance( JURI::base().$link );
+			$commentURL = 'http://'.$u->getHost().$u->getPath().$u->getQuery();
+			
 			$u =& JURI::getInstance( JURI::base() );
 			$commentURL = 'http://'.$u->getHost().$link;
 			
