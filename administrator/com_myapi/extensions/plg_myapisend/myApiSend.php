@@ -60,7 +60,7 @@ class plgContentmyApiSend extends JPlugin
 			$show_send 			= $myapiparama->get('send_send');
 			$send_show 			= false;
 		
-			global $facebook;
+			$facebook = plgSystemmyApiConnect::getFacebook();
 			
 			if($article->sectionid != ''){
 				if( is_array($send_sections) ){	

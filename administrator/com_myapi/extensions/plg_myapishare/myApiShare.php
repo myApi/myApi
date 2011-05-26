@@ -60,7 +60,7 @@ class plgContentmyApiShare extends JPlugin
 			$share_style = $myapiparama->get('share_style');
 			$share_show = false;
 		
-			global $facebook;
+			$facebook = plgSystemmyApiConnect::getFacebook();
 			
 			if($article->sectionid != '')
 			{

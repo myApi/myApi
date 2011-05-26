@@ -41,22 +41,21 @@ class plgSystemmyApiConnect extends JPlugin
 	
 	function plgSystemmyApiConnect(&$subject, $config){
 		parent::__construct($subject, $config);
-		$GLOBALS['facebook'] = plgSystemmyApiConnect::getFacebook();
 	}
 	
 	function getFacebook(){
-		if(!isset($this->_facebook)){
+		if(!isset($this) || empty($this->_facebook)){
 			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 			$com_params = new JParameter( $plugin->params );
 			 
 			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
-			$this->_facebook = new myApiFacebook(array(
+			$facebook = new myApiFacebook(array(
 				'appId'  => $com_params->get('appId'),
 				'secret' => $com_params->get('secret'),
 				'cookie' => true, // enable optional cookie support
 			 ));
 		}
-		return $this->_facebook;
+		return (isset($this)) ? $this->_facebook = $facebook : $facebook;
 	}
 	
 	function onAfterRender(){

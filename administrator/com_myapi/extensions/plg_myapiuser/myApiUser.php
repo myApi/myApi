@@ -75,7 +75,7 @@ class plgUsermyApiUser extends JPlugin {
 		  $result = $db->loadAssoc();
 		  $count = $db->getAffectedRows();
 		  
-		  global $facebook;
+		  $facebook = plgSystemmyApiConnect::getFacebook();
 			  $facebookSession = $facebook->getSession();
 		  
 		  if($count == 0)
