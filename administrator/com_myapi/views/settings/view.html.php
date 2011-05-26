@@ -53,18 +53,18 @@ class MyapiViewSettings extends JView {
 		if(is_object($plugin)){
 			$doc =& JFactory::getDocument();
 			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
-			JToolBarHelper::title('myApi Authentication', 'facebook.png');
+			JToolBarHelper::title(JText::_('AUTH_HEADER'), 'facebook.png');
 
 			$paramsdata =  $plugin->params;
 			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect.xml';
 			$params = new JParameter( $paramsdata, $paramsdefs );
 			$this->assignRef('params', $params);
 			$this->assignRef('plugin',$row);
-			JToolbarHelper::save('','Save Settings');
+			JToolbarHelper::save('',JText::_('SAVE'));
 			parent::display($tpl);
 		}else{
 			global $mainframe;
-			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,'The myApiConnect plugin needs to be ENABLED before you can configure it.');	
+			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));	
 		}
     }
 }

@@ -52,15 +52,19 @@ class MyapiViewComment extends JView {
 		
 		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
 		if(is_object($plugin)){
-		  $paramsdata = $plugin->params;
-		  $paramsdefs = JPATH_SITE.DS.'plugins'.DS.'content'.DS.'myApiComment.xml';
-		  $params = new JParameter( $paramsdata, $paramsdefs );
-		  $this->assignRef('params',$params);
-		  $this->assignRef('plugin',$row);
-		  JToolbarHelper::save('savePlugin','save content');
+			$doc =& JFactory::getDocument();
+			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
+			JToolBarHelper::title(JText::_('COMMENT_HEADER'), 'facebook.png');
+			
+			$paramsdata = $plugin->params;
+			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.'content'.DS.'myApiComment.xml';
+			$params = new JParameter( $paramsdata, $paramsdefs );
+			$this->assignRef('params',$params);
+			$this->assignRef('plugin',$row);
+			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
 		}else{
 			global $mainframe;
-			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,'The myApiComment plugin needs to be ENABLED before you can configure it.');	
+			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));	
 		}		
 	
 		

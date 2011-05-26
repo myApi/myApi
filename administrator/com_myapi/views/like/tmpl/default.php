@@ -1,4 +1,4 @@
-<?php
+<?php defined('_JEXEC') or die('Restricted access');
 /*****************************************************************************
  **                                                                         ** 
  **                                         .o.                   o8o  	    **
@@ -29,15 +29,10 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
- *****************************************************************************/
-defined('_JEXEC') or die('Restricted access');
-$doc =& JFactory::getDocument();
-$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
-JToolBarHelper::title('myApi Content Plugin', 'facebook.png');
-?>
+ *************************************************************************/ ?>
 
-  <form action="index.php" method="post" name="adminForm">
-     <input type="hidden" name="option" value="com_myapi" />
+<form action="index.php" method="post" name="adminForm">
+    <input type="hidden" name="option" value="com_myapi" />
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="0" />
     <input type="hidden" name="id" value="<?php echo $this->plugin->id; ?>" />
@@ -46,11 +41,11 @@ JToolBarHelper::title('myApi Content Plugin', 'facebook.png');
     <input type="hidden" name="controller" value="myapi" />	
     <input type="hidden" name="view" value="like" />	
 	<table width="100%">
-	<tr>
-	<td><p>From here you can adjust the settings for the like buttons. You'll need to click save to apply these default settings if this is the first time you have installed myApi</p></td>
-	</tr>
-    <tr>
-	<td align="center" valign="top"><?php echo $this->params->render( 'params'); ?></td>
-    </tr>
+		<tr>
+			<td><p><?php echo JText::_('LIKE_DESC'); ?></p></td>
+		</tr>
+    	<tr>
+			<td align="center" valign="top"><?php echo $this->params->render( 'params'); ?></td>
+    	</tr>
     </table>
 </form>

@@ -43,37 +43,23 @@ class MyapiController extends JController {
     }
 	
 	
-	function savePlugin()
-	{
-		// Check for request forgeries
+	function savePlugin(){
 		JRequest::checkToken() or jexit( 'Invalid Token' );
 
-		$db   =& JFactory::getDBO();
-		$row  =& JTable::getInstance('plugin');
-
+		$db   	=& JFactory::getDBO();
+		$row  	=& JTable::getInstance('plugin');
 		$client = JRequest::getWord( 'filter_client', 'site' );
 
-		if (!$row->bind(JRequest::get('post'))) {
-			JError::raiseError(500, $row->getError() );
-		}
-		if (!$row->check()) {
-			JError::raiseError(500, $row->getError() );
-		}
-		if (!$row->store()) {
-			JError::raiseError(500, $row->getError() );
-		}
-		$row->checkin();
-		$where = "client_id=0";
+		if (!$row->bind(JRequest::get('post'))) JError::raiseError(500, $row->getError() );
+		if (!$row->check()) JError::raiseError(500, $row->getError() );
+		if (!$row->store()) JError::raiseError(500, $row->getError() );
 		
-		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( '.$where.' )' );
-
-		$msg = 'Successfully Saved Plugin'.$row->name;
-		$this->setRedirect( 'index.php?option=com_myapi&view='. JRequest::getVar('view','','post'), $msg );
-			
+		$row->checkin();
+		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( "client_id=0" )' );
+		$this->setRedirect( 'index.php?option=com_myapi&view='. JRequest::getVar('view','','post'), JText::_('PLUGIN_SAVED').' '.$row->name );
 	}
 	
 	function saveAPI() {
-		// Check for request forgeries
 		JRequest::checkToken() or jexit( 'Invalid Token' );
 		$post = JRequest::get( 'post' );
 		
@@ -104,25 +90,20 @@ class MyapiController extends JController {
 			$client = JRequest::getWord( 'filter_client', 'site' );
 	
 			if (!$row->bind(JRequest::get('post'))) JError::raiseError(500, $row->getError() );
-			
 			if (!$row->check()) JError::raiseError(500, $row->getError() );
-			
 			if (!$row->store()) JError::raiseError(500, $row->getError() );
 		
 			$row->checkin();
-			$where = "client_id=0";
-			$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( '.$where.' )' );
+			$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( "client_id=0" )' );
 			
-			
-			$this->setRedirect( 'index.php?option=com_myapi','Details saved, please ensure your Facebook application details are correct at facebook.com');	
-			
+			$this->setRedirect( 'index.php?option=com_myapi',JText::_('APP_SAVED'));	
+		
 		}catch (FacebookApiException $e) {
-			$this->setRedirect( 'index.php?option=com_myapi&view=settings','Error - Please check that the details are correct. '.$e);		
+			$this->setRedirect( 'index.php?option=com_myapi&view=settings',JText::_('APP_SAVED_ERROR').' '.$e);		
 		}
 		
 	}
 
-	
 	//Deletes the link between a joomla and facebook user
 	function unlinkUser(){
 		JRequest::checkToken() or die( 'Invalid Token' );
@@ -131,7 +112,7 @@ class MyapiController extends JController {
 		foreach($_POST['cid'] as $id){
 			$row->delete( $id );
 		}
-		$this->setRedirect("index.php?option=com_myapi&view=users", "User(s) Facebook accounts unlinked");
+		$this->setRedirect("index.php?option=com_myapi&view=users", JText::_('USER_UNLINKED'));
 	}
 }
 ?>

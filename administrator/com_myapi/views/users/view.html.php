@@ -45,6 +45,12 @@ class MyapiViewUsers extends JView {
 		$this->assignRef( 'lists', $lists );
 		$this->assignRef('pagination', $pagination);
 		$this->assignRef("users", $items);
+		
+		$doc =& JFactory::getDocument();
+		$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
+		JToolBarHelper::title(JText::_('USERS_HEADER'), 'facebook.png');
+		JToolBarHelper::deleteList(JText::_('UNLINK_USER_DESC'),'unlinkUser', JText::_('UNLINK_USER'));
+
 		parent::display($tpl);
     }
 }

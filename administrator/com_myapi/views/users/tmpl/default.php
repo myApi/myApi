@@ -1,4 +1,4 @@
-<?php
+<?php defined('_JEXEC') or die('Restricted access');
 /*****************************************************************************
  **                                                                         ** 
  **                                         .o.                   o8o  	    **
@@ -29,15 +29,9 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
- *****************************************************************************/
-defined('_JEXEC') or die('Restricted access');
-$doc =& JFactory::getDocument();
-$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
-JToolBarHelper::title('Facebook Connect Users', 'facebook.png');
-JToolBarHelper::deleteList('This will unlink the user(s) Joomla account and Facebook account, it will not delete the user from your site.','unlinkUser', 'Unlink Account(s)');
-?>
+ *************************************************************************/ ?>
 
-  <form action="index.php" method="post" name="adminForm">
+<form action="index.php" method="post" name="adminForm">
     <input type="hidden" name="option" value="com_myapi" />
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="0" />
@@ -46,14 +40,14 @@ JToolBarHelper::deleteList('This will unlink the user(s) Joomla account and Face
     <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
 
 	<?php echo JHTML::_( 'form.token' ); ?>	
-	<p>Below is a list of joomla users that have linked their facebook profiles to the site, as an admin you are not able to add a new link between a facebook profile and joomla user, this can only be done by the facebook users on the front end.  However you can unlink facebook accounts from joomla account.  Just check the boxes next to the links you want to destroy and click unlink accounts.  This does not delete the joomla user account or facebook profile.</p>
+	<p><?php echo JText::_('USERS_DESC'); ?></p>
 	<table id="userslist" class="adminlist">
  		<tr>
           <th class="top_row" width="20"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $this->users); ?>);" /></th>
-          <th class="top_row"><?php echo JHTML::_('grid.sort','Name','#__users.name', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
-          <th class="top_row"><?php echo JHTML::_('grid.sort','Username','#__users.username', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
-          <th class="top_row"><?php echo JHTML::_('grid.sort','User Type','#__users.usertype', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
-          <th class="top_row"><?php echo JHTML::_('grid.sort','Facebook UID','#__myapi_users.uid', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort',JText::_('NAME'),'#__users.name', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort',JText::_('USERNAME'),'#__users.username', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort',JText::_('USER_TYPE'),'#__users.usertype', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
+          <th class="top_row"><?php echo JHTML::_('grid.sort',JText::_('FACEBOOK_UID'),'#__myapi_users.uid', $this->lists['order_Dir'], $this->lists['order'] ); ?></th>
        </tr>
         <?php foreach($this->users as $index => $obj): ?>
             <tr>
@@ -61,7 +55,7 @@ JToolBarHelper::deleteList('This will unlink the user(s) Joomla account and Face
                 <td><?php echo $obj->name; ?></td>
                 <td><?php echo $obj->username; ?></td>
                 <td><?php echo $obj->usertype; ?></td>
-                <td><a href="http://www.facebook.com/profile.php?id=<?php echo $obj->uid; ?>" target="_blank">Facebook Profile</a></td>
+                <td><a href="http://www.facebook.com/profile.php?id=<?php echo $obj->uid; ?>" target="_blank"><?php echo JText::_('FACEBOOK_PROFILE'); ?></a></td>
             </tr>
         <?php endforeach; ?>
         <tfoot>

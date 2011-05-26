@@ -18,37 +18,23 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-/*
- * Define constants for all pages
- */
 define( 'COM_MYAPI_DIR', 'images'.DS.'myapi'.DS );
 define( 'COM_MYAPI_BASE', JPATH_ROOT.DS.COM_MYAPI_DIR );
 define( 'COM_MYAPI_BASEURL', JURI::root().str_replace( DS, '/', COM_MYAPI_DIR ));
 
-// Require the base controller
+
 require_once JPATH_COMPONENT.DS.'controller.php';
-
-// Require the base controller
 require_once JPATH_COMPONENT.DS.'helpers'.DS.'helper.php';
-
-// Initialize the controller
 $controller = new MyapiController( );
-
-// Perform the Request task
 $controller->execute( JRequest::getCmd('task'));
 
 
 if((JRequest::getVar('view') != "settings") && (JRequest::getVar('task','','post') != 'saveAPI')){
- $plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-$params = new JParameter( $plugin->params );
-  
-  $appId = $params->get('appId');
-  $secret = $params->get('secret');
-  global $mainframe;
-  if(($appId == '') || ($secret == '')){
-	  header('Location: index.php?option=com_myapi&view=settings');  //Chrome bug fix
-	 // $mainframe->redirect('','Please enter your App Id and Secret Key');	
-  }
+	$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+	$params = new JParameter( $plugin->params );
+	$appId 	= $params->get('appId');
+	$secret = $params->get('secret');
+	if(($appId == '') || ($secret == '')) header('Location: index.php?option=com_myapi&view=settings');
 }
 
 $controller->redirect();

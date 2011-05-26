@@ -36,19 +36,19 @@ $installer = new JInstaller();
 $installer->_overwrite = true;
 
 $pkg_path = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'extensions'.DS;
-$pkgs = array('mod_myapi_fblogin'=> array('name' => 'Facebook connect login module', 'db' => ''),
-			  'mod_myapi_fbfan'=> array('name' => 'Facebook fan box module', 'db' => ''),
-			  'mod_myapi_fbactivity'=> array('name' => 'Facebook activity box', 'db' => ''),
-			  'mod_myapi_fblive'=> array('name' => 'Facebook Live Box', 'db' => ''),
-			  'mod_myapi_fbrecommendations'=> array('name' => 'Facebook Recommendations box', 'db' => ''),
-			  'plg_myapiauth'=> array('name' => 'Authorisation plugin',  'db' => 'myApiAuth'),
-			  'plg_myapicomment'=> array('name' => 'Comment content plugin',  'db' => 'myApiComment'), 
-			  'plg_myapiconnect'=> array('name' => 'Facebook Connect parsing plugin', 'db' => 'myApiConnect'),
-			  'plg_myapishare'=> array('name' => 'Share content plugin', 'db' => 'myApiShare'),
-			  'plg_myapilike'=> array('name' => 'Like content plugin', 'db' => 'myApiLike'),
-			  'plg_myapisend'=> array('name' => 'Send content plugin', 'db' => 'myApiSend'),
-			  'plg_myapimodal'=> array('name' => 'Facebook Style Modal Boxes', 'db' => 'myApiModal'),
-			  'plg_myapiuser'=> array('name' => 'User actions plugin', 'db' => 'myApiUser'));
+$pkgs = array('mod_myapi_fblogin'=> array('name' => JText::_('INSTALL_FBLOGIN'), 'db' => ''),
+			  'mod_myapi_fbfan'=> array('name' => JText::_('INSTALL_FBFAN'), 'db' => ''),
+			  'mod_myapi_fbactivity'=> array('name' => JText::_('INSTALL_FBACTIVITY'), 'db' => ''),
+			  'mod_myapi_fblive'=> array('name' => JText::_('INSTALL_FBLIVE'), 'db' => ''),
+			  'mod_myapi_fbrecommendations'=> array('name' => JText::_('INSTALL_FBRECOMMENDATIONS'), 'db' => ''),
+			  'plg_myapiauth'=> array('name' => JText::_('INSTALL_FBAUTH'),  'db' => 'myApiAuth'),
+			  'plg_myapicomment'=> array('name' => JText::_('INSTALL_FBCOMMENT'),  'db' => 'myApiComment'), 
+			  'plg_myapiconnect'=> array('name' => JText::_('INSTALL_FBCONNECT'), 'db' => 'myApiConnect'),
+			  'plg_myapishare'=> array('name' => JText::_('INSTALL_FBSHARE'), 'db' => 'myApiShare'),
+			  'plg_myapilike'=> array('name' => JText::_('INSTALL_FBLIKE'), 'db' => 'myApiLike'),
+			  'plg_myapisend'=> array('name' => JText::_('INSTALL_FBSEND'), 'db' => 'myApiSend'),
+			  'plg_myapimodal'=> array('name' => JText::_('INSTALL_FBMODAL'), 'db' => 'myApiModal'),
+			  'plg_myapiuser'=> array('name' => JText::_('INSTALL_FBUSER'), 'db' => 'myApiUser'));
 
 foreach( $pkgs as $pkg => $pkgarray ){
  $msgcolor = "";
@@ -57,23 +57,23 @@ foreach( $pkgs as $pkg => $pkgarray ){
   if( $installer->install( dirname(__FILE__).DS.'extensions'.DS.$pkg) )
   {
     $msgcolor = "#E0FFE0";
-    $msgtext  = $pkgarray['name']." successfully installed.";
+    $msgtext  = $pkgarray['name']." ".JText::_('INSTALL_SUCCESS').".";
 	if($pkgarray['db'] != ''){
 		$db = JFactory::getDBO();
 		$query = "UPDATE #__plugins SET published=1 WHERE element='".$pkgarray['db']."'";
 		$db->setQuery($query);
 		$db->query();
-		$msgtext = $msgtext. " and automatically published";
+		$msgtext = $msgtext. " ".JText::_('INSTALL_PUBLISHED');
 	}
   }
   else
   {
     $msgcolor = "#FFD0D0";
-    $msgtext  = "ERROR: Could not install the ".$pkgarray['name']." Please install manually.";
+    $msgtext  = JText::_('INSTALL_ERROR')." ".$pkgarray['name'].". ".JText::_('INSTALL_MANUALLY').".";
   }
   } catch (Exception $e) {
 	    $msgcolor = "#FFD0D0";
-   	 $msgtext  = "ERROR: Could not install the ".$pkgarray['name']." Please install manually.";
+   	 $msgtext  = JText::_('INSTALL_ERROR')." ".$pkgarray['name'].". ".JText::_('INSTALL_MANUALLY').".";
   }
   ?>
   <table bgcolor="<?php echo $msgcolor; ?>" width ="100%">

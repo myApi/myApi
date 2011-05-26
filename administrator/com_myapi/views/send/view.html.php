@@ -52,15 +52,19 @@ class MyapiViewSend extends JView {
 		
 		$plugin = & JPluginHelper::getPlugin('content', 'myApiSend');
 		if(is_object($plugin)){
+			$doc =& JFactory::getDocument();
+			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
+			JToolBarHelper::title(JText::_('SEND_HEADER'), 'facebook.png');
+			
 			$paramsdata = $plugin->params;
 			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.'content'.DS.'myApiSend.xml';
 			$params = new JParameter( $paramsdata, $paramsdefs );
 			$this->assignRef('params',$params);
 			$this->assignRef('plugin',$row);
-			JToolbarHelper::save('savePlugin','Save Settings');
+			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
 		}else{
 			global $mainframe;
-			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,'The myApiSend plugin needs to be ENABLED before you can configure it.');	
+			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));		
 		}
 		
 	

@@ -29,7 +29,7 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
- **************************************************************************/?>
+ *************************************************************************/ ?>
 
 <form action="index.php" id="adminForm" name="adminForm" method="post">
     <input type="hidden" name="option" value="com_myapi" />
@@ -40,10 +40,8 @@
     <input type="hidden" name="controller" value="myapi" />	
     <input type="hidden" name="component" value="com_myapi" />		
     <?php echo JHTML::_( 'form.token' ); ?>	
-    
-    <h1>Settings</h1>
-    <p>In order to connect your website to Facebook you'll need to set up a Facebook application, this can be done from your <a href="http://www.facebook.com/developers/apps.php" target="_new">Developer dashboard</a> from within Facebook. Either set up a new application, or if you have previously used myApi click "edit settings" for your application.</p>
-    <p>If you are creating a new app you'll need to give it a name and agree to the facebook terms and conditions.</p>
-    <p>Once you have confirmed your settings find your application's ID, and Secret key and enter them below and hit save</p>
+    <p><?php echo JText::_('SETTINGS_DESC_3'); ?></p>
+    <p><?php echo JText::_('SETTINGS_DESC_3'); ?></p>
+    <p><?php echo JText::_('SETTINGS_DESC_3'); ?></p>
     <?php echo $this->params->render('params'); ?>
 </form>
