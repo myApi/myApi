@@ -1,4 +1,4 @@
-<?php
+<?php defined('_JEXEC') or die('Restricted access');
 /*****************************************************************************
  **                                                                         ** 
  **                                         .o.                   o8o  	    **
@@ -29,46 +29,22 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
- *****************************************************************************/
+ *************************************************************************/ ?>
 
-
-// no direct access
-defined('_JEXEC') or die('Restricted access');
-
-// Import Joomla! libraries
-jimport( 'joomla.application.component.view');
-class MyapiViewComment extends JView {
-    function display($tpl = null) {
-       	JPlugin::loadLanguage( 'plg_content_myapicomment' , JPATH_ADMINISTRATOR );
-		
-		
-		$db = JFactory::getDBO();
-		$query = "SELECT id FROM #__plugins WHERE element =".$db->quote('myApiComment');
-		$db->setQuery($query);
-		$id = $db->loadResult();
-		
-		$row 	=& JTable::getInstance('plugin');
-		$row->load($id);
-		
-		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-		if(is_object($plugin)){
-			$doc =& JFactory::getDocument();
-			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
-			JToolBarHelper::title(JText::_('COMMENT_HEADER'), 'facebook.png');
-			
-			$paramsdata = $plugin->params;
-			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.'content'.DS.'myApiComment.xml';
-			$params = new JParameter( $paramsdata, $paramsdefs );
-			$this->assignRef('params',$params);
-			$this->assignRef('plugin',$row);
-			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
-		}else{
-			global $mainframe;
-			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));	
-		}		
-	
-		
-	 parent::display($tpl);
-    }
-}
-?>
+<form action="index.php" method="post" name="adminForm">
+    <input type="hidden" name="option" value="com_myapi" />
+    <input type="hidden" name="task" value="" />
+    <input type="hidden" name="boxchecked" value="0" />
+    <input type="hidden" name="id" value="<?php echo $this->plugin->id; ?>" />
+    <input type="hidden" name="cid[]" value="<?php echo $this->plugin->id; ?>" />
+    <?php echo JHTML::_( 'form.token' ); ?>
+    <input type="hidden" name="controller" value="myapi" />	
+	<table width="100%">
+		<tr>
+			<td><p><?php echo $this->description; ?></p></td>
+		</tr>
+    	<tr>
+			<td align="center" valign="top"><?php echo $this->params->render( 'params'); ?></td>
+    	</tr>
+    </table>
+</form>

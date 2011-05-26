@@ -65,7 +65,7 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 			if($attribs->get('ogimage','') == ''){
 				$row = & JTable::getInstance('content');
 				$row->load($article->id);
-				$attribs->set('ogimage',plgContentmyApiComment::getContentImage($article->text));
+				$attribs->set('ogimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
 				$row->attribs = $attribs->toString();
 				$row->bind($row);
 				$row->store();

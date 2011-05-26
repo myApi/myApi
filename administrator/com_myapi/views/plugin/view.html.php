@@ -29,23 +29,39 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
- *************************************************************************/ ?>
- 
-<form action="index.php" method="post" name="adminForm">
-    <input type="hidden" name="option" value="com_myapi" />
-    <input type="hidden" name="task" value="" />
-    <input type="hidden" name="boxchecked" value="0" />
-    <input type="hidden" name="id" value="<?php echo $this->plugin->id; ?>" />
-    <input type="hidden" name="cid[]" value="<?php echo $this->plugin->id; ?>" />
-    <?php echo JHTML::_( 'form.token' ); ?>
-    <input type="hidden" name="controller" value="myapi" />	
-    <input type="hidden" name="view" value="comment" />	
-	<table width="100%">
-		<tr>
-			<td><p><?php echo JText::_('COMMENT_DESC'); ?></p></td>
-		</tr>
-    	<tr>
-			<td align="center" valign="top"><?php echo $this->params->render( 'params'); ?></td>
-    	</tr>
-    </table>
-</form>
+ *****************************************************************************/
+jimport( 'joomla.application.component.view');
+
+class MyapiViewPlugin extends JView {
+    function display($tpl = null) {
+		$db = JFactory::getDBO();
+		$query = "SELECT id FROM #__plugins WHERE element =".$db->quote(JRequest::getVar('plugin'));
+		$db->setQuery($query);
+		$id = $db->loadResult();
+		
+		$row 	=& JTable::getInstance('plugin');
+		$row->load($id);
+		
+		$plugin = & JPluginHelper::getPlugin($row->folder, $row->element);
+		if(is_object($plugin)){
+			JPlugin::loadLanguage( 'plg_'.$row->folder.'_'.strtolower(JRequest::getVar('plugin')) , JPATH_ADMINISTRATOR );
+			
+			$doc =& JFactory::getDocument();
+			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
+			JToolBarHelper::title(JText::_(strtoupper($row->element).'_HEADER'), 'facebook.png');
+			
+			$paramsdata = $plugin->params;
+			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.$row->folder.DS.$row->element.'.xml';
+			$params = new JParameter( $paramsdata, $paramsdefs );
+			$this->assignRef('params',$params);
+			$this->assignRef('plugin',$row);
+			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
+			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
+		}else{
+			global $mainframe;
+			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));		
+		}
+		parent::display($tpl);
+    }
+}
+?>

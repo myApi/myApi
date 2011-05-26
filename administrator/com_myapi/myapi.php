@@ -24,17 +24,16 @@ define( 'COM_MYAPI_BASEURL', JURI::root().str_replace( DS, '/', COM_MYAPI_DIR ))
 
 
 require_once JPATH_COMPONENT.DS.'controller.php';
-require_once JPATH_COMPONENT.DS.'helpers'.DS.'helper.php';
 $controller = new MyapiController( );
 $controller->execute( JRequest::getCmd('task'));
 
 
-if((JRequest::getVar('view') != "settings") && (JRequest::getVar('task','','post') != 'saveAPI')){
+if((JRequest::getVar('view') != "plugin") && (JRequest::getVar('plugin') != "myApiConnect") && (JRequest::getVar('task','','post') != 'saveAPI')){
 	$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 	$params = new JParameter( $plugin->params );
 	$appId 	= $params->get('appId');
 	$secret = $params->get('secret');
-	if(($appId == '') || ($secret == '')) header('Location: index.php?option=com_myapi&view=settings');
+	if(($appId == '') || ($secret == '')) header('Location: index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
 }
 
 $controller->redirect();

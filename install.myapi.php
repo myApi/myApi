@@ -50,8 +50,8 @@ $pkgs = array('mod_myapi_fblogin'=> array('name' => JText::_('INSTALL_FBLOGIN'),
 			  'plg_myapilike'=> array('name' => JText::_('INSTALL_FBLIKE'), 'db' => 'myApiLike'),
 			  'plg_myapisend'=> array('name' => JText::_('INSTALL_FBSEND'), 'db' => 'myApiSend'),
 			  'plg_myapimodal'=> array('name' => JText::_('INSTALL_FBMODAL'), 'db' => 'myApiModal'),
-			  'plg_myopengraph'=> array('name' => JText::_('INSTALL_FBOPENGRAPH'), 'db' => 'myApiOpenGraph'),
-			  'plg_myopengraphcontent'=> array('name' => JText::_('INSTALL_FBOPENGRAPHCONTENT'), 'db' => 'myApiOpenGraphContent'),
+			  'plg_myapiopengraph'=> array('name' => JText::_('INSTALL_FBOPENGRAPH'), 'db' => 'myApiOpenGraph'),
+			  'plg_myapiopengraphcontent'=> array('name' => JText::_('INSTALL_FBOPENGRAPHCONTENT'), 'db' => 'myApiOpenGraphContent'),
 			  'plg_myapiuser'=> array('name' => JText::_('INSTALL_FBUSER'), 'db' => 'myApiUser'));
 
 foreach( $pkgs as $pkg => $pkgarray ){

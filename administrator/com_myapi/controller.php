@@ -19,7 +19,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport( 'joomla.application.component.controller' );
-require_once( JPATH_COMPONENT.DS.'helpers'.DS.'helper.php' );
 
 /**
  * myApi Controller
@@ -48,6 +47,7 @@ class MyapiController extends JController {
 
 		$db   	=& JFactory::getDBO();
 		$row  	=& JTable::getInstance('plugin');
+		$row->load(JRequest::getVar('id','','post'));
 		$client = JRequest::getWord( 'filter_client', 'site' );
 
 		if (!$row->bind(JRequest::get('post'))) JError::raiseError(500, $row->getError() );
@@ -56,13 +56,16 @@ class MyapiController extends JController {
 		
 		$row->checkin();
 		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( "client_id=0" )' );
-		$this->setRedirect( 'index.php?option=com_myapi&view='. JRequest::getVar('view','','post'), JText::_('PLUGIN_SAVED').' '.$row->name );
+		//custom logic for saving spefic plugins
+		$funcname = 'save_'.$row->element;
+		if(method_exists('MyapiController','save_'.$row->element)){
+			$this->$funcname();
+		}else{
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin='.$row->element, JText::_('PLUGIN_SAVED').' '.$row->name );
+		}
 	}
 	
-	function saveAPI() {
-		JRequest::checkToken() or jexit( 'Invalid Token' );
-		$post = JRequest::get( 'post' );
-		
+	function save_myApiConnect() {
 		$root = JURI::root();
 		$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
 		$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
@@ -84,22 +87,10 @@ class MyapiController extends JController {
 				'secret' => $post['params']['secret']
 			));
 			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','properties'=> json_encode($data)));
-			$db   =& JFactory::getDBO();
-			$row  =& JTable::getInstance('plugin');
-	
-			$client = JRequest::getWord( 'filter_client', 'site' );
-	
-			if (!$row->bind(JRequest::get('post'))) JError::raiseError(500, $row->getError() );
-			if (!$row->check()) JError::raiseError(500, $row->getError() );
-			if (!$row->store()) JError::raiseError(500, $row->getError() );
-		
-			$row->checkin();
-			$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( "client_id=0" )' );
-			
-			$this->setRedirect( 'index.php?option=com_myapi',JText::_('APP_SAVED'));	
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED'));	
 		
 		}catch (FacebookApiException $e) {
-			$this->setRedirect( 'index.php?option=com_myapi&view=settings',JText::_('APP_SAVED_ERROR').' '.$e);		
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED_ERROR').' '.$e);		
 		}
 		
 	}
