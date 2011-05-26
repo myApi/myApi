@@ -30,6 +30,10 @@
  **   along with myApi_fbfan.  If not, see <http://www.gnu.org/licenses/>.	**
  **                                                                         **			
  *****************************************************************************/
+
+if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook())
+	return;
+			 
 $classSfx 		= $params->get('moduleclass_sfx');
 $width 			= $params->get('fan_width');
 $height 		= $params->get('fan_height');

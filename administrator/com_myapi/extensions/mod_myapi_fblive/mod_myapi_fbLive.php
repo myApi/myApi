@@ -31,6 +31,9 @@
  **                                                                         **			
  *****************************************************************************/
 
+if(!class_exists('plgSystemmyApiConnect'))
+	return;
+	
 $plugin 	=& JPluginHelper::getPlugin('system', 'myApiConnect');
 $com_params = new JParameter( $plugin->params );
 

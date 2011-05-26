@@ -32,6 +32,9 @@
  **                                                                         **			
  *****************************************************************************/
  
+if(!class_exists('plgSystemmyApiConnect'))
+	return;
+	 
 $classSfx 	= $params->get('moduleclass_sfx');
 $width 		= $params->get('recommendations_width');
 $height 	= $params->get('recommendations_height');

@@ -38,6 +38,12 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiComment extends JPlugin
 {
+	var $_facebook = false;
+	function __construct() {
+		if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook())
+			return;
+	}
+	
 	function onPrepareContent( &$article, &$params, $limitstart )
 	{
 		//this may fire fron a component other than com_content
@@ -74,8 +80,6 @@ class plgContentmyApiComment extends JPlugin
 			$comments_view_blog = $myapiparama->get('comments_view_blog');
 			
 			$comment_show = false;
-			global $facebook;
-			
 			if($article->sectionid != '')
 			{
 				if( is_array($comment_sections) )
@@ -122,12 +126,12 @@ class plgContentmyApiComment extends JPlugin
 			
 			if($comment_show && $hasAccess )
 			{
-				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" colorscheme="'.$comments_scheme.'"></fb:comments>';
+				$comment_box = '<fb:comments app_id="'.$this->_facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" colorscheme="'.$comments_scheme.'"></fb:comments>';
 				
 				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>".JText::_('ADD_COMMENT')."</a><br />";
 				
 				
-				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'700\'></fb:comments>\"); }); });";
+				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,\"<fb:comments app_id=\'".$this->_facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'700\'></fb:comments>\"); }); });";
 			
 				if(JRequest::getVar('view','','get') == 'article'){
 					//article	

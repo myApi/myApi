@@ -37,26 +37,26 @@ jimport( 'joomla.plugin.plugin');
 
 class plgSystemmyApiConnect extends JPlugin
 {
+	var $_facebook = null;
 	
-	function plgSystemmyApiConnect(&$subject, $config)
-	{
+	function plgSystemmyApiConnect(&$subject, $config){
 		parent::__construct($subject, $config);
+		$GLOBALS['facebook'] = plgSystemmyApiConnect::getFacebook();
 	}
 	
-	//This imports the Facebook php libary and creates a global object for use accross the whole site.
-	
-	function onAfterInitialise(){
-		//Do not import in admin view
-		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$com_params = new JParameter( $plugin->params );
-         
-		require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
-		$facebook = new myApiFacebook(array(
-			'appId'  => $com_params->get('appId'),
-			'secret' => $com_params->get('secret'),
-			'cookie' => true, // enable optional cookie support
-		 ));
-		$GLOBALS['facebook'] =& $facebook;
+	function getFacebook(){
+		if(!isset($this->_facebook)){
+			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+			$com_params = new JParameter( $plugin->params );
+			 
+			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+			$this->_facebook = new myApiFacebook(array(
+				'appId'  => $com_params->get('appId'),
+				'secret' => $com_params->get('secret'),
+				'cookie' => true, // enable optional cookie support
+			 ));
+		}
+		return $this->_facebook;
 	}
 	
 	function onAfterRender(){

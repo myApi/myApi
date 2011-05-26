@@ -31,7 +31,9 @@
  **   If not, see <http://www.gnu.org/licenses/>. 							**
  **                                                                         **			
  ****************************************************************************/
-
+if(!class_exists('plgSystemmyApiConnect'))
+	return;
+			
 $width 		= $params->get('activity_width');
 $height 	= $params->get('activity_height');
 $header 	= $params->get('activity_header');

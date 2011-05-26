@@ -30,7 +30,9 @@
  **   along with myApi_fblogin.  If not, see <http://www.gnu.org/licenses/> **
  **                                                                         **			
  *****************************************************************************/
-if(!file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'myapi.php')){ return; }
+
+if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook() || !file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'myapi.php'))
+	return;
 
 $doc =& JFactory::getDocument();
 $doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi.js');
