@@ -34,31 +34,29 @@ jimport( 'joomla.plugin.plugin');
 
 class plgSystemmyApiConnect extends JPlugin
 {
-	var $_facebook = null;
-	
 	function plgSystemmyApiConnect(&$subject, $config){
 		parent::__construct($subject, $config);
 	}
 	
 	function getFacebook(){
-		if(empty($this->_facebook)){
-			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-			$params = new JParameter( $plugin->params );
-			 
-			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
-			$this->_facebook = new myApiFacebook(array(
-				'appId'  => $params->get('appId'),
-				'secret' => $params->get('secret'),
-				'cookie' => true, // enable optional cookie support
-			 ));
-		}
-		return $this->_facebook;
+		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+		$params = new JParameter( $plugin->params );
+		 
+		require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+		$facebook =  new myApiFacebook(array(
+			'appId'  => $params->get('appId'),
+			'secret' => $params->get('secret'),
+			'cookie' => true, // enable optional cookie support
+		));	
+		return $facebook;
 	}
 	
-	function onAfterDispatch(){
+	function onAfterRender(){
 		global $mainframe, $fbAsyncInitJs;
 		$document=& JFactory::getDocument();   
-		if($document->getType() != 'html' || $mainframe->isAdmin()) return;
+		
+		if($document->getType() != 'html' || $mainframe->isAdmin()) 
+			return;
 
 		JHTML::_('behavior.mootools');
 		
@@ -66,6 +64,7 @@ class plgSystemmyApiConnect extends JPlugin
 		$params = new JParameter( $plugin->params );  
 		$xdPath	= JURI::base().'plugins/system/facebookXD.html';
 		$locale = ($params->get("locale") == '') ? 'en_US' : $params->get("locale");	
+		
 		$js 	= <<<EOD
 /* <![CDATA[ */		
 window.addEvent('domready',function(){
