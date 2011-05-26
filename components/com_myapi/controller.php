@@ -101,7 +101,8 @@ class MyapiController extends JController {
 	
 	//This task logs in a user
 	function facebookLogin() {
-		global $facebook, $mainframe;
+		global $mainframe;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		
 		$session	= $facebook->getSession();
 		$uid 		= $session['uid'];
@@ -152,7 +153,8 @@ class MyapiController extends JController {
 	
 	//A function called via ajax to see is a Facebook user is linked to a Joomla user
 	function isLinked(){
-		global $facebook, $mainframe;
+		global $mainframe;
+		$facebook = plgSystemmyApiConnect::getFacebook();
 		JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
 		$db 	= JFactory::getDBO();
 		$uid 	= JRequest::getVar('fbId','','get');
