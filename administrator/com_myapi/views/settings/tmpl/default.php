@@ -40,8 +40,8 @@
     <input type="hidden" name="controller" value="myapi" />	
     <input type="hidden" name="component" value="com_myapi" />		
     <?php echo JHTML::_( 'form.token' ); ?>	
-    <p><?php echo JText::_('SETTINGS_DESC_3'); ?></p>
-    <p><?php echo JText::_('SETTINGS_DESC_3'); ?></p>
+    <p><?php echo JText::_('SETTINGS_DESC_1'); ?></p>
+    <p><?php echo JText::_('SETTINGS_DESC_2'); ?></p>
     <p><?php echo JText::_('SETTINGS_DESC_3'); ?></p>
     <?php echo $this->params->render('params'); ?>
 </form>

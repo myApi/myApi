@@ -44,8 +44,8 @@
     </files>
 
 
-	<languages>
-    	<language tag="en-GB">components/language/en-GB/en-GB.com_myapi.ini</language>
+	<languages folder="components/language">
+    	<language tag="en-GB">en-GB/en-GB.com_myapi.ini</language>
    	</languages>
 
     <!-- administration part -->
@@ -77,8 +77,8 @@
 		<folder>helpers</folder>
     </files>
 
-	<languages folder="admin">
-		<language tag="en-GB">administrator/language/en-GB/en-GB.com_myapi.ini</language>
+	<languages folder="administrator/language">
+		<language tag="en-GB">en-GB/en-GB.com_myapi.ini</language>
 	</languages>
 
     </administration>

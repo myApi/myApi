@@ -30,8 +30,10 @@
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
  *****************************************************************************/
-
 jimport('joomla.installer.helper');
+$language = &JFactory::getLanguage();
+$language->load('com_myapi');
+
 $installer = new JInstaller();
 $installer->_overwrite = true;
 
