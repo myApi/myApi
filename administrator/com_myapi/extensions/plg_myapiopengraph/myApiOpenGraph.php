@@ -53,7 +53,7 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		$ogptags_default['og:site_name']	= $config->getValue( 'config.sitename' );
 		$ogptags_default['fb:app_id'] 		= $connect_params->get('appId');
 		$ogptags_default['fb:admins']		= implode(',',$cache->call( array( 'plgSystemmyApiOpenGraph', 'getFbAdmins')));
-		if($plugin_params->get('ogimage') != '') $ogptags_default['og:image'] = JURI::base().'images/'.$plugin_params->get('ogimage');
+		if($plugin_params->get('ogimage') != '' && $plugin_params->get('ogimage') != -1) $ogptags_default['og:image'] = JURI::base().'images/'.$plugin_params->get('ogimage');
 		
 		plgSystemmyApiOpenGraph::setTags($ogptags_default);
 	}

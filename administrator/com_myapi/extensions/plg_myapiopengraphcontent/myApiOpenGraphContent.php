@@ -33,7 +33,7 @@
 jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiOpenGraphContent extends JPlugin
-{	
+{
 	function getContentImage($text){
 		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
 		$dom = new simple_html_dom();
@@ -82,8 +82,8 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 				$newTags['og:description'] 	= (strlen($rawText) > 247) ? substr($rawText,0,247).'...' : $rawText;
 				$newTags['og:type']	= 'article';
 				$newTags['og:url'] 	= $articleURL;
-				if($attribs->get('ogimage','0') != 0) $newTags['og:image'] = $attribs->get('ogimage','0');
-		
+				if($attribs->get('ogimage','0') != '0') $newTags['og:image'] = $attribs->get('ogimage');
+				
 				plgSystemmyApiOpenGraph::setTags($newTags);
 			}
 		}
