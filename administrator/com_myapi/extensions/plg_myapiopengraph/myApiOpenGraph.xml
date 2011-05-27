@@ -19,5 +19,7 @@
 	
 	<params>
 		<param name="ogimage" type="filelist" default="" label="OGIMAGE_LABEL" description="OGIMAGE_DESC" directory="images" />
+		<param name="fbpageid" type="text" label="PARAM_PAGEID_LABEL" description="PARAM_PAGEID_DESC" size="30" />
+		<param name="fbadmins" type="text" label="PARAM_FBADMINS_LABEL" description="PARAM_FBADMINS_DESC" size="30" />
 	</params>
 </install>

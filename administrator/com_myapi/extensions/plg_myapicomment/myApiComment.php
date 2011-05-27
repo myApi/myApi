@@ -50,10 +50,7 @@ class plgContentmyApiComment extends JPlugin
 				
 			$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
 			$u =& JURI::getInstance( JURI::base().$link );
-			$commentURL = 'http://'.$u->getHost().$u->getPath().$u->getQuery();
-			
-			$u =& JURI::getInstance( JURI::base() );
-			$commentURL = 'http://'.$u->getHost().$link;
+			$commentURL = 'http://'.$u->getHost().$u->getPath().'?'.$u->getQuery();
 			
 			$base = JURI::base();
 			$doc = & JFactory::getDocument();
