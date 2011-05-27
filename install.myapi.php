@@ -101,5 +101,6 @@ foreach($query as $sql){
 	$db->query();	
 }
 
+JFile::delete(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php');
 
 ?>
