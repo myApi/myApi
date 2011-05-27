@@ -31,6 +31,14 @@
  **                                                                         **			
  *****************************************************************************/
 jimport('joomla.installer.helper');
+
+if(file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php'))
+	JFile::delete(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php');
+	
+if(file_exists(JPATH_SITE.DS.'plugins'.DS.'user'.DS.'myapiuser.php'))
+	JFile::delete(JPATH_SITE.DS.'plugins'.DS.'user'.DS.'myapiuser.php');
+
+
 $language = &JFactory::getLanguage();
 $language->load('com_myapi');
 
@@ -100,8 +108,4 @@ foreach($query as $sql){
 	$db->setQuery($sql);
 	$db->query();	
 }
-
-if(file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php'))
-	JFile::delete(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php');
-
 ?>
