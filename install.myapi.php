@@ -101,5 +101,7 @@ foreach($query as $sql){
 	$db->query();	
 }
 
+if(file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php'))
+	JFile::delete(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php');
 
 ?>
