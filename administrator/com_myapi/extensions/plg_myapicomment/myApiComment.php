@@ -125,7 +125,7 @@ class plgContentmyApiComment extends JPlugin
 				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>".JText::_('ADD_COMMENT')."</a><br />";
 				
 				
-				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'700\'></fb:comments>\"); }); });";
+				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'693\'></fb:comments>\"); }); });";
 			
 				if(JRequest::getVar('view','','get') == 'article'){
 					//article	

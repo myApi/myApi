@@ -18,37 +18,51 @@ var myApiModal = {
 				buttonsHTML += '</tr></table>';
 				$('dialog_buttons').setHTML(buttonsHTML);
 			}
+			
+			this.setHeight();
+			
+			window.addEvent('resize',function(){
+				myApiModal.setHeight();
+			});
+			
 			FB.XFBML.parse(document.getElementById('pop_dialog_table'));
 			
 			
 			$('fb-modal').opacityFx.start(1);
 		},
+		getZindex : function(){
+			var highestIndex = 0;
+			var currentIndex = 0;
+			var elArray = Array();
+			elArray = document.getElementsByTagName('*');
+			for(var i=0; i < elArray.length; i++){
+				if (elArray[i].style && ! window.getComputedStyle){
+					currentIndex = parseInt(elArray[i].style['zIndex']);
+				}
+				if(window.getComputedStyle){
+					currentIndex = parseInt(document.defaultView.getComputedStyle(elArray[i],null).getPropertyValue('z-index'));
+				}
+				if(!isNaN(currentIndex) && currentIndex > highestIndex){ highestIndex = currentIndex; }
+			}
+			return(highestIndex+1);
+		},
 		create : function()
 		{
-			higestZindex = 1;
-			$$('body > *').each( function(el,index){         
-				try{
-					if ($$('*')[index].getStyle('z-index').toInt() > higestZindex){
-						higestZindex = $$('*')[index].getStyle('z-index').toInt();
-					}
-				}catch(e){}
-			});
-			higestZindex++;
-			
-			var myApiModal = new Element('div', {
+			var highestZindex = myApiModal.getZindex();
+			var myApiModalEl = new Element('div', {
 				'styles': {
 				  'display': 'block',
-				  'z-index': higestZindex,
+				  'z-index': highestZindex + 1,
 				  'opacity': 0
 				},
 				'class': 'generic_dialog',
 				'id': 'fb-modal'
 			});
 			
-			var html  = '<div class="generic_dialog_popup" style="top: 50px;">';
+			var html  = '<div class="generic_dialog_popup" style="top: 50px;  z-index:'+(highestZindex+1)+';">';
 				html += '	<table class="pop_dialog_table" id="pop_dialog_table" style="width: 750px;">'; 
 				html += '		<tbody>'; 
-				html += '			<tr>'; 
+				html += '			<tr id="pop_top">'; 
 				html += '				<td class="pop_topleft"></td>'; 
 				html += '				<td class="pop_border pop_top"></td>';
 				html += '				<td class="pop_topright"></td>'; 
@@ -71,7 +85,7 @@ var myApiModal = {
 				html += '				</td>'; 
 				html += '				<td class="pop_border pop_side"></td>'; 
 				html += '			</tr>'; 
-				html += '			<tr>'; 
+				html += '			<tr id="pop_bottom">'; 
 				html += '				<td class="pop_bottomleft"></td>'; 
 				html += '				<td class="pop_border pop_bottom"></td>'; 
 				html += '				<td class="pop_bottomright"></td>'; 
@@ -82,14 +96,20 @@ var myApiModal = {
 			try{
 				$('fb-modal').remove();
 			}catch(e){}
-			myApiModal.setHTML(html);
+			myApiModalEl.setHTML(html);
 			
-			document.body.setStyle('z-index',higestZindex+1);
-			myApiModal.injectInside($(document.body));
+			document.getElementsByTagName("body")[0].style.zIndex = highestZindex+2;
+			 
+			myApiModalEl.injectTop(document.getElementsByTagName("body")[0]);		
 			$('fb-modal').opacityFx = new Fx.Style('fb-modal','opacity',{duration: 500});
+		},
+		setHeight : function(){
+			var maxHeight = Math.max(100 , window.getSize().size.y - $('dialog_title').getSize().size.y - $('dialog_buttons').getSize().size.y - $('pop_top').getSize().size.y - $('pop_bottom').getSize().size.y  - $('dialog_body').getStyle('padding-top').toInt() - $('dialog_body').getStyle('padding-bottom').toInt() - 100); //80 is twice the shadow size and 100 is tiwce the top margin.
+			$('dialog_body').setStyle('max-height',maxHeight);
 		},
 		close : function()
 		{
+			window.removeEvent('resize');
 			$('fb-modal').opacityFx.start(0).chain(function(){
 				$('fb-modal').remove();
 			});	

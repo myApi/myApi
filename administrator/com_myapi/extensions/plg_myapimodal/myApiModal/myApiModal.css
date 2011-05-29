@@ -80,6 +80,7 @@ top:0;
 z-index:3;
 }
 .generic_dialog .generic_dialog_popup {
+position:absolute;
 height:0;
 overflow:visible;
 position:relative;
@@ -125,6 +126,7 @@ background-image:url(blank.gif);
 padding:0;
 }
 table.pop_dialog_table {
+position:relative;
 border-collapse:collapse;
 direction:ltr;
 margin:auto;
@@ -182,12 +184,15 @@ display:block;
 padding:4px 10px 5px;
 }
 td.pop_content .dialog_content {
+position:relative;
 background:#FFFFFF none repeat scroll 0 0;
 border-color:#555555;
 border-style:solid;
 border-width:0 1px 1px;
 }
 td.pop_content .dialog_body {
+position:relative;
+overflow:auto;
 border-bottom:1px solid #CCCCCC;
 padding:10px;
 }
