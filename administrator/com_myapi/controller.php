@@ -70,7 +70,7 @@ class MyapiController extends JController {
 		$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
 		$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
 		$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
-		
+		$post = JRequest::get('post');
 		$rootArray = explode(':',$root);
 		$root = $rootArray[0];
 		$connectURL = 'http://'.$root.'/';
@@ -90,7 +90,7 @@ class MyapiController extends JController {
 			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED'));	
 		
 		}catch (FacebookApiException $e) {
-			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED_ERROR'));		
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED_ERROR').$e);		
 		}
 		
 	}
