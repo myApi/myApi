@@ -47,7 +47,7 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		$plugin_params = new JParameter( $plugin->params );
 		
 		$db_admins = $cache->call( array( 'plgSystemmyApiOpenGraph', 'getFbAdmins'));
-		$param_admins = explode(',' , $plugin_params->get('fbadmins'));
+		$param_admins = ($plugin_params->get('fbadmins') != '') ? explode(',',$plugin_params->get('fbadmins')) : array();
 		$admins = array_merge($db_admins,$param_admins);
 		
 		$ogptags_default					= array();
@@ -82,5 +82,19 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		foreach(plgSystemmyApiOpenGraph::$ogptags as $key => $value) $document->addCustomTag('<meta property="'.$key.'" content="'.htmlspecialchars($value).'" />');
 	}
 	
+	function onAfterRender(){
+		$buffer = JResponse::getBody();
+		
+		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		$dom = new simple_html_dom();
+		$dom->load($buffer);
+		$htmlEl = $dom->find('html',0);
+		$xmlns = 'xmlns:og';
+		$htmlEl->$xmlns = "http://ogp.me/ns#";
+		
+		JResponse::setBody( $dom );		
+		$dom->clear(); 
+		unset($dom);
+	}
 }
 ?>
