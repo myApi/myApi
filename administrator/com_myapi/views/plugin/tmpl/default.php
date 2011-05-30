@@ -41,10 +41,11 @@
     <input type="hidden" name="controller" value="myapi" />	
 	<table width="100%">
 		<tr>
-			<td><p><?php echo $this->description; ?></p></td>
+			<td colspan="2"><p><?php echo $this->description; ?></p></td>
 		</tr>
     	<tr>
 			<td align="center" valign="top"><?php echo $this->params->render( 'params'); ?></td>
+            <td><?php echo @$this->aside; ?></td>
     	</tr>
     </table>
 </form>

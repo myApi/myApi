@@ -57,11 +57,18 @@ class MyapiViewPlugin extends JView {
 			$this->assignRef('plugin',$row);
 			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
 			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
+			
+			$funcname = '_'.$row->element;
+			if(method_exists('MyapiViewPlugin','_'.$row->element)) $this->$funcname();
 		}else{
 			global $mainframe;
 			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));		
 		}
 		parent::display($tpl);
     }
+	
+	function _myApiConnect(){
+		$this->assignRef('aside',JHTML::_('image', 'plugins/system/fbapp.png', null));
+	}
 }
 ?>

@@ -86,11 +86,11 @@ class MyapiController extends JController {
 				'appId'  => $post['params']['appId'],
 				'secret' => $post['params']['secret']
 			));
-			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','properties'=> json_encode($data)));
+			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
 			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED'));	
 		
 		}catch (FacebookApiException $e) {
-			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED_ERROR').' '.$e);		
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED_ERROR'));		
 		}
 		
 	}

@@ -15,6 +15,7 @@
 		<filename>facebookXD.html</filename>
 		<filename>fb_ca_chain_bundle.crt</filename>
 		<filename>myApiDom.php</filename>
+		<filename>fbapp.png</filename>
 	</files>
 	
 	<languages>
@@ -22,8 +23,8 @@
 	</languages>
 	
 	<params>
-		<param name="appId" type="text" label="PARAM_ID_LABEL" description="PARAM_ID_DESC" size="30" />
-		<param name="secret" type="text" default="" label="PARAM_SECRET_LABEL" description="PARAM_SECRET_DESC" size="30" />
+		<param name="appId" type="text" label="PARAM_ID_LABEL" description="PARAM_ID_DESC" size="50" />
+		<param name="secret" type="text" default="" label="PARAM_SECRET_LABEL" description="PARAM_SECRET_DESC" size="50" />
 		<param name="locale" type="list" default="en_US" label="PARAM_LOCALE_LABEL" description="PARAM_LOCALE_DESC">
 			<option value="ca_ES">Catalan</option>
 			<option value="cs_CZ">Czech</option>
