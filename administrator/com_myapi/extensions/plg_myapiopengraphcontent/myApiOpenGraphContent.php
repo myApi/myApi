@@ -75,12 +75,14 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
 				$u =& JURI::getInstance( JURI::base().$link );
-				$articleURL = 'http://'.$u->getHost().$u->getPath().'?'.$u->getQuery();
+				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+				$articleURL = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
 				$rawText = strip_tags($article->introtext);
 				$newTags = array();
 				$newTags['og:title'] 		= $article->title;
 				$newTags['og:description'] 	= (strlen($rawText) > 247) ? substr($rawText,0,247).'...' : $rawText;
 				$newTags['og:type']	= 'article';
+				$newTags['og:author']	= $article->author;
 				$newTags['og:url'] 	= $articleURL;
 				if($attribs->get('ogimage','0') != '0') $newTags['og:image'] = $attribs->get('ogimage');
 				
