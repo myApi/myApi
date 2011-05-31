@@ -87,8 +87,10 @@ class plgContentmyApiLike extends JPlugin
 					error_log('myApi unable to calculate link for the article id '.$article->id);
 					return;
 				}
-				$u			=& JURI::getInstance( JURI::base() );
-				$link 		= 'http://'.$u->getHost().$link;
+				$u =& JURI::getInstance( JURI::base().$link );
+				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+				$link = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
+				
 				$newtext	= '<span style="'.$like_style.'"><fb:like href="'.$link.'" layout="'.$layout_style.'" show_faces="'.$show_faces.'" width="'.$width.'" action="'.$verb.'" colorscheme="'.$color_scheme.'" font="'.$font.'" send="'.$show_send.'" ref="'.$ref.'"></fb:like></span>';
 		
 				$newtext 		= $newtext.$article->text;

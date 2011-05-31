@@ -88,8 +88,9 @@ class plgContentmyApiSend extends JPlugin
 					error_log('myApi unable to calculate link for the article id '.$article->id);
 					return;
 				}
-				$u			=& JURI::getInstance( JURI::base() );
-				$link 		= 'http://'.$u->getHost().$link;
+				$u =& JURI::getInstance( JURI::base().$link );
+				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+				$link = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
 				$newtext	= '<fb:send href="'.$link.'" colorscheme="'.$color_scheme.'" font="'.$font.'" ref="'.$ref.'"></fb:send>';
 		
 				$newtext 		= $newtext.$article->text;
