@@ -53,17 +53,28 @@ class plgContentmyApiComment extends JPlugin
 		return $comments_seo;
 	}
 	
-	function onPrepareContent( &$article, &$params, $limitstart )
+	function onBeforeDisplayContent( &$article, &$params, $limitstart )
 	{
+		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
+		
 		//this may fire fron a component other than com_content
-		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '') && class_exists('plgSystemmyApiConnect'))
+		if(is_object($article) && (@$article->id != '') && (@$_POST['fb_sig_api_key'] == '') && class_exists('plgSystemmyApiConnect'))
 		{
 			JPlugin::loadLanguage( 'plg_content_myapicomment' , JPATH_ADMINISTRATOR );
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			$xid = urlencode('articlecomment'.$article->id);
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
-			$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+			if(isset($article->slug)){
+				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
+				$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+			}elseif(method_exists('K2HelperRoute','getItemRoute')){
+				$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
+			}else{
+				error_log('myApi unable to calculate link for the article id '.$article->id);
+				return;
+			}
+				
 			$u =& JURI::getInstance( JURI::base().$link );
 			$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 			$commentURL = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
@@ -90,7 +101,7 @@ class plgContentmyApiComment extends JPlugin
 			$comments_view_blog = $myapiparama->get('comments_view_blog');
 			
 			$comment_show = false;
-			if($article->sectionid != '')
+			if(isset($article->sectionid))
 			{
 				if( is_array($comment_sections) )
 				{	foreach($comment_sections as $id)
@@ -100,7 +111,7 @@ class plgContentmyApiComment extends JPlugin
 					if($comment_sections == $article->sectionid) { $comment_show = true; }	
 				}
 			}
-			if($article->category != '')
+			if(isset($article->category))
 			{
 				if( is_array($comment_categories) )
 				{	foreach($comment_categories as $id)

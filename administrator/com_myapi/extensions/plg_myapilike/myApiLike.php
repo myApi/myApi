@@ -34,8 +34,9 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiLike extends JPlugin
 {
-	function onPrepareContent( &$article, &$params, $limitstart ){
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php')){ return; }
+	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
+		
+		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
 		
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '')){
@@ -62,14 +63,14 @@ class plgContentmyApiLike extends JPlugin
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			
-			if($article->sectionid != ''){
+			if(isset($article->sectionid) && $article->sectionid != ''){
 				if( is_array($like_sections) ){	
 					foreach($like_sections as $id){ if($id == $article->sectionid) $like_show = true;  }
 				}
 				elseif($like_sections == $article->sectionid) $like_show = true;
 			}
-			
-			if($article->category != ''){
+			 
+			if(isset($article->category) && $article->category != ''){
 				if( is_array($like_categories) ){	
 					foreach($like_categories as $id){ if($id == $article->category) $like_show = true; }
 				}
@@ -77,9 +78,15 @@ class plgContentmyApiLike extends JPlugin
 			}
 			
 			if(($like_show) || ($like_show_on == 'all')){
-				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-				
-				$link 		= JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid));
+				if(isset($article->slug)){
+					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
+					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+				}elseif(method_exists('K2HelperRoute','getItemRoute')){
+					$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
+				}else{
+					error_log('myApi unable to calculate link for the article id '.$article->id);
+					return;
+				}
 				$u			=& JURI::getInstance( JURI::base() );
 				$link 		= 'http://'.$u->getHost().$link;
 				$newtext	= '<span style="'.$like_style.'"><fb:like href="'.$link.'" layout="'.$layout_style.'" show_faces="'.$show_faces.'" width="'.$width.'" action="'.$verb.'" colorscheme="'.$color_scheme.'" font="'.$font.'" send="'.$show_send.'" ref="'.$ref.'"></fb:like></span>';

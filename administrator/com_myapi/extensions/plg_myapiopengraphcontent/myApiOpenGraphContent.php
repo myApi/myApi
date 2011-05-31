@@ -58,9 +58,11 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 		return true;
 	}
 	
-	function onPrepareContent( &$article, &$params, $limitstart ){
+	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
 		//this may fire fron a component other than com_content
-		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '') && class_exists('plgSystemmyApiOpenGraph')){
+		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
+		
+		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '') && class_exists('plgSystemmyApiOpenGraph') && (!isset($article->category) && !isset($params->showK2Plugins))){
 			$attribs = new JParameter($article->attribs);
 			if($attribs->get('ogimage','') == ''){
 				$row = & JTable::getInstance('content');
@@ -72,8 +74,15 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 			}
 			//Set open graph tags
 			if(JRequest::getVar('view','','get') == 'article'){
-				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-				$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+				if(isset($article->slug)){
+					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
+					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+				}elseif(method_exists(K2HelperRoute,getItemRoute)){
+					$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
+				}else{
+					error_log('myApi unable to calculate link for the article id '.$article->id);
+					return;
+				}
 				$u =& JURI::getInstance( JURI::base().$link );
 				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 				$articleURL = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
