@@ -101,6 +101,12 @@ class MyapiController extends JController {
 		  $db->setQuery($query);
 		  $db->query();
 		}catch(Exception $e){}
+		try{
+		  $query = "UPDATE #__community_users JOIN #__myapi_users ON #__community_users.userid = #__myapi_users.userId SET #__community_users.avatar =".$db->quote('images/comprofiler/tn'.$avatar).", #__community_users.thumb =".$db->quote('images/comprofiler/tn'.$avatar)." WHERE #__myapi_users.uid =".$db->quote($uid)."";
+		  $db->setQuery($query);
+		  $db->query();
+		}catch(Exception $e){}
+		
 		return;
 	}
 	
