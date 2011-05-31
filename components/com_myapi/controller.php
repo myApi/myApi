@@ -92,7 +92,12 @@ class MyapiController extends JController {
 		$db->query();
 		
 		try{
-		  $query = "UPDATE #__comprofiler JOIN #__myapi_users ON #__comprofiler.user_id = #__myapi_users.userId  SET #__comprofiler.avatar ='".$avatar."' WHERE #__myapi_users.uid ='".$uid."'";
+		  $query = "UPDATE #__comprofiler JOIN #__myapi_users ON #__comprofiler.user_id = #__myapi_users.userId  SET #__comprofiler.avatar =".$db->quote($avatar)." WHERE #__myapi_users.uid =".$db->quote($uid)."";
+		  $db->setQuery($query);
+		  $db->query();
+		}catch(Exception $e){}
+		try{
+		  $query = "UPDATE #__k2_users JOIN #__myapi_users ON #__k2_users.userID = #__myapi_users.userId SET #__k2_users.image =".$db->quote('../../../images/comprofiler/tn'.$avatar)." WHERE #__myapi_users.uid =".$db->quote($uid)."";
 		  $db->setQuery($query);
 		  $db->query();
 		}catch(Exception $e){}
@@ -236,8 +241,7 @@ class MyapiController extends JController {
 		
 		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
 		$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser = $facebookmodel->getLoggedInUserDetails();
-		
+		$fbUser = $facebookmodel->getLoggedInUser();
 		if($fbUser['username'] != ''){
 			$newuserName = $fbUser['username'];
 		}else{
@@ -289,14 +293,14 @@ class MyapiController extends JController {
 		$useractivation = $usersConfig->get( 'useractivation' );
 		
 		// If there was an error with registration, set the message and display form
-		if ( !$user->save() ){
+		if ( $result = !$user->save() ){
 			$message = $user->getError();
 			$this->setRedirect($return,$message);
-		}elseif($fbUser['uid'] != ''){
+		}elseif($fbUser['id'] != ''){
 			$db = JFactory::getDBO();
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			$facebookSession = $facebook->getSession();
-			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($fbUser['uid']).",".$db->quote($facebookSession['access_token']).")";
+			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($fbUser['id']).",".$db->quote($facebookSession['access_token']).")";
 			$db->setQuery($query);
 			$db->query();
 			
@@ -313,9 +317,18 @@ class MyapiController extends JController {
 			$message = JText::_( 'LOGGED_IN_FACEBOOK' );
 			
 			$options['fake_array'] = "This mainframe->login needs and array passed to it";
-			$error = $mainframe->login($fbUser['uid'],$options);
+			$error = $mainframe->login($fbUser['id'],$options);
 			$user = JFactory::getUser();
-			MyapiController::syncPhoto($fbUser['uid']);
+			
+			JRequest::setVar('K2UserForm',$a = 1);
+			JRequest::setVar('gender',$a = substr($fbUser['gender'],0,1)); 
+			JRequest::setVar('url',$a = $fbUser['link']);
+			JRequest::setVar('description',$a = $fbUser['bio']);
+			
+			$dispatcher =& JDispatcher::getInstance();
+			$dispatcher->trigger('onAfterStoreUser', array($user->getProperties(), true, $result,''));
+			
+			MyapiController::syncPhoto($fbUser['id']);
 			$this->setRedirect($return,$message);
 		}else{
 			$this->setRedirect($return,JText::_('NO_UID_FOUND'));

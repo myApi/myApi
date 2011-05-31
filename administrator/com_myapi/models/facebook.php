@@ -114,17 +114,5 @@ class MyapiModelFacebook extends JModel {
 		$db->setQuery($query);
 		return $db->loadAssoc();
 	}
-	
-	function getLoggedInUserDetails() {
-		$facebook = plgSystemmyApiConnect::getFacebook();
-		try {
-			$user_details =  $facebook->api(array('method' => 'fql.query','query'=> "SELECT pic_square,pic_big,username,name,email,uid FROM user WHERE uid = me()"));
-		} catch (FacebookApiException $e) {
-		  error_log($e);
-		  return false;
-		}
-		return $user_details[0];
-	}
-	
 }
 ?>
