@@ -38,6 +38,21 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiComment extends JPlugin
 {	
+	function getComments($xid){
+		$params  =   array(
+		 'method'    => 'fql.query',
+		 'query'     => "SELECT username,fromid,text,time FROM comment WHERE xid='".$xid."';"
+		);
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$fqlResult   =   $facebook->api($params);
+		
+		$comments_seo = '';
+		foreach($fqlResult as $comment){
+			$comments_seo .= "<br />".$comment['username']." said:<br />".$comment['text'];
+		}
+		return $comments_seo;
+	}
+	
 	function onPrepareContent( &$article, &$params, $limitstart )
 	{
 		//this may fire fron a component other than com_content
@@ -50,7 +65,8 @@ class plgContentmyApiComment extends JPlugin
 				
 			$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
 			$u =& JURI::getInstance( JURI::base().$link );
-			$commentURL = 'http://'.$u->getHost().$u->getPath().'?'.$u->getQuery();
+			$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+			$commentURL = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
 			
 			$base = JURI::base();
 			$doc = & JFactory::getDocument();
@@ -138,6 +154,13 @@ class plgContentmyApiComment extends JPlugin
 						$doc->addScriptDeclaration($js);
 						plgContentmyApiComment::addFbJs($xid);
 					}
+					
+					$cache = & JFactory::getCache('plgContentmyApiComment - Comments for SEO');
+					$cache->setCaching( 1 );
+					$cache->setLifeTime(60*60*24*2);
+					$comments = $cache->call( array( 'plgContentmyApiComment', 'getComments'),$xid);
+					$article->text .= "<noscript><h3>Comments for ".$article->title."</h3>".$comments."</noscript>";
+					
 				}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
 					//blog		
 					if($comments_view_blog == 1){
