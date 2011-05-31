@@ -83,6 +83,10 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 	}
 	
 	function onAfterRender(){
+		global $mainframe;
+		$document = JFactory::getDocument(); 
+		if($document->getType() != 'html' || $mainframe->isAdmin()) return;
+		
 		$buffer = JResponse::getBody();
 		
 		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
