@@ -1,3 +1,4 @@
+
 <?php defined( '_JEXEC' ) or die( 'Restricted access' );
 /*****************************************************************************
  **                                                                         ** 
@@ -87,15 +88,25 @@ EOD;
 		unset($fbAsyncInitJs);
 		
 		$buffer = JResponse::getBody();
-		$xmlns = '<html xmlns:fb="http://www.facebook.com/2008/fbml" ';
+		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		$dom = new simple_html_dom();
+		$dom->load($buffer);
 		
-		//This image points to myapi.co.uk but it is not a backlink and doesn't harm your SEO rankings in anyway.
+		$htmlEl = $dom->find('html',0);
+		$xmlns = 'xmlns:fb';
+		$htmlEl->$xmlns = "http://www.facebook.com/2008/fbml";
+		
+		//This image points to myapi.co.uk but it is not a backlink and doesn't harm your SEO rankings in anyway. If you want to delete it you can but the rest of the code is vital.
 		$host = JURI::getInstance(JURI::current());
 		$pixelTag = ($host->getScheme() == 'http') ? '<img src="http://myapi.co.uk/index.php?option=com_pixeltag&appid='.$params->get('appId').'&domain='.JURI::base().'" style="border:0px;" alt="fbPixel"/>' : '';
 		$FeatureLoader_javascript = '<div id="fb-root">'.$pixelTag.'</div><script type="text/javascript">document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
-		$buffer = str_replace ("</body>", $FeatureLoader_javascript."</body>", $buffer); 
-		$html	= str_replace( '<html' , $xmlns , $buffer );
-		JResponse::setBody( $html );
+		
+		$bodyEl = $dom->find('body',0);
+		$bodyEl->innertext .= $FeatureLoader_javascript;
+		
+		JResponse::setBody( $dom );		
+		$dom->clear(); 
+		unset($dom);
 	}
 	
 }
