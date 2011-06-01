@@ -61,7 +61,11 @@ class plgSystemmyApiConnect extends JPlugin
 		JHTML::_('behavior.mootools');
 		$plugin	=& JPluginHelper::getPlugin('system', 'myApiConnect');
 		$params = new JParameter( $plugin->params );  
-		$xdPath	= JURI::current().'plugins/system/facebookXD.html';
+		
+		$u =& JURI::getInstance( JURI::base() );
+		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+		$xdPath	= $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'plugins/system/facebookXD.html';
+		
 		$locale = ($params->get("locale") == '') ? 'en_US' : $params->get("locale");	
 		
 		$js 	= <<<EOD
