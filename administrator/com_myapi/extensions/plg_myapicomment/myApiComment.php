@@ -145,56 +145,54 @@ class plgContentmyApiComment extends JPlugin
 				$comment_show = true;
 			
 			
-			if($comment_show && $hasAccess )
-			{
+			if($comment_show && $hasAccess ){
 				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" colorscheme="'.$comments_scheme.'"></fb:comments>';
 				
 				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>".JText::_('ADD_COMMENT')."</a><br />";
 				
 				
 				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'693\'></fb:comments>\"); }); });";
-			
-				if(JRequest::getVar('view','','get') == 'article'){
-					//article	
-					if($comments_view_article == 1){
-						//box
-						$article->text = $article->text.$comment_box;
-					}elseif($comments_view_article == 2){
-						//link
-						$article->text = $article->text.$comment_link;
-						$doc->addScriptDeclaration($js);
-						plgContentmyApiComment::addFbJs($xid);
-					}
-					
+				
+				$viewType = null;
+				
+				if(JRequest::getVar('view','','get') == 'article'){	
+					$viewType = ($comments_view_article == 1) ? 'box' : $viewType = 'link';
+				
+					//Only add noscript comments for article view
 					$cache = & JFactory::getCache('plgContentmyApiComment - Comments for SEO');
 					$cache->setCaching( 1 );
 					$cache->setLifeTime(60*60*24*2);
 					$comments = $cache->call( array( 'plgContentmyApiComment', 'getComments'),$xid);
 					$article->text .= "<noscript><h3>Comments for ".$article->title."</h3>".$comments."</noscript>";
-					
 				}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
-					//blog		
-					if($comments_view_blog == 1){
-						//box
-						$article->text = $article->text.$comment_box;
-					}elseif($comments_view_blog == 2){
-						//link
-						$article->text = $article->text.$comment_link;
-						$doc->addScriptDeclaration($js);
-						plgContentmyApiComment::addFbJs($xid);
-					}
+					$viewType = ($comments_view_blog == 1) ? 'box' : $viewType = 'link';
 				}else{
-					//must be list
-					if($comments_view_list == 1){
-						//box
-						$article->text = $article->text.$comment_box;
-					}elseif($comments_view_list == 2){
-						//link
-						$article->text = $article->text.$comment_link;
-						$doc->addScriptDeclaration($js);
-						plgContentmyApiComment::addFbJs($xid);
-					}
+					$viewType = ($comments_view_list == 1) ? 'box' : $viewType = 'link';
 				}
+				
+				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				$dom = new simple_html_dom();
+				$dom->load($article->text);
+		
+				$tableEl = $dom->find('.myApiShareBottom',0);
+				if(!$tableEl){
+					$table = '<table class="myApiShareBottom"></table>';
+					$article->text = $article->text.$table;
+					$dom->load($article->text);
+				}
+				
+				$commentEl = ($viewType == 'box') ? $comment_box : $comment_link;
+				//$colspan = ($buttons = $dom->find('.myApiShareBottom',0)->find('.myApiButtons',0)) ?  sizeof($buttons->find('td')) : 1;
+				$tr = '<tr class="myApiComments"><td class="myApiCommentsCell">'.$commentEl.'</td></tr>';
+				$row = $dom->find('.myApiShareBottom',0);
+				$row->innertext .= $tr;
+				
+				if($viewType == 'link'){
+					$doc->addScriptDeclaration($js);
+					plgContentmyApiComment::addFbJs($xid);
+				}
+				$article->text 	= $dom->save();
+				$dom->clear(); unset($dom);
 			}
 		}
 

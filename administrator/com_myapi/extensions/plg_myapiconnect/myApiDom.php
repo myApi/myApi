@@ -1,4 +1,50 @@
 <?php
+class myApiButtons{
+	function addToTable($text,$position,$button){
+		$dom = new simple_html_dom();
+		$dom->load($text);
+
+		$tableEl = $dom->find('.'.$position,0);
+		if(!$tableEl){
+			$table = '<table class="'.$position	.'"></table>';
+			$text 	= ($position == 'myApiShareTop') ?  $table.$text : $text.$table;
+			$dom->load($text);
+		}
+		
+		$text 	= $dom->save();
+		$dom->load($text);
+		
+		$rowEl = $dom->find('.'.$position,0)->find('.myApiButtons',0);
+		if(!$rowEl){
+			$tr = '<tr class="myApiButtons"><td><table><tr><td>'.$button.'</td></tr></table></td></tr>';
+			$row = $dom->find('.'.$position,0);
+			$row->innertext = $tr.$row->innertext;
+		}else{
+			$rowEl->find('table',0)->find('tr',0)->innertext = '<td>'.$button.'</td>'.$rowEl->find('table',0)->find('tr',0)->innertext;
+		}
+		
+		$text 	= $dom->save();
+		$dom->load($text);
+		
+		$commentsTable = $dom->find('.myApiShareBottom',0);
+		if($commentsTable){
+			$commentsEl = $commentsTable->find('.myApiCommentsCell',0);
+			if($commentsEl){
+				$buttonRow = $commentsTable->find('.myApiButtons',0);
+				if($buttonRow){
+					$commentsEl->colspan = sizeof($buttonRow->find('td'));
+					$text 	= $dom->save();
+				}
+			}
+		}
+		$dom->clear(); unset($dom);	
+		return $text;
+	}
+}
+
+
+
+
 /*******************************************************************************
 Version: 1.11 ($Rev: 175 $)
 Website: http://sourceforge.net/projects/simplehtmldom/

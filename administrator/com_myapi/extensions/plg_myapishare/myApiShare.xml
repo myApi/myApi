@@ -20,15 +20,17 @@
 	
 	<params addPath="/plugins/content/share/">
 	
-		<param name="share_type" type="list" default="box_count" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">
+		<param name="share_type" type="list" default="button" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">
 			<option value="box_count">PARAM_BOX_COUNT</option>
 			<option value="button_count">PARAM_BUTTON_COUNT</option>
 			<option value="button">PARAM_BUTTON</option>
 			<option value="icon">PARAM_ICON</option>
 			<option value="icon_link">PARAM_ICON_LINK</option>
 		</param>
-		
-		<param name="share_style" type="text" label="PARAM_STYLE_LABEL" description="PARAM_STYLE_DESC" size="30" />
+		<param name="position" type="list" default="myApiShareTop" label="PARAM_POSITION_LABEL" description="PARAM_POSITION_DESC">
+		  	<option value="myApiShareTop">PARAM_POSITION_TOP</option>
+			<option value="myApiShareBottom">PARAM_POSITION_BOTTOM</option>
+		</param>
 		
 		<param name="share_show_on" type="radio" default="all" label="PARAM_SHOW_LABEL" description="PARAM_SHOW_DESC">
 			<option value="all">PARAM_SHOW_ALL</option>
