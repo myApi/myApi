@@ -87,6 +87,10 @@ class MyapiController extends JController {
 				'secret' => $post['params']['secret']
 			));
 			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
+			
+			$model = $this->getModel('realtime');
+			$model->addSubscriptions();
+			
 			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED'));	
 		
 		}catch (FacebookApiException $e) {
@@ -104,6 +108,18 @@ class MyapiController extends JController {
 			$row->delete( $id );
 		}
 		$this->setRedirect("index.php?option=com_myapi&view=users", JText::_('USER_UNLINKED'));
+	}
+	
+	function addSubscriptions(){
+		$model = $this->getModel('realtime');
+		$model->addSubscriptions();
+		$this->setRedirect('index.php?option=com_myapi&view=realtime');
+	}
+	
+	function deleteSubscriptions(){
+		$model = $this->getModel('realtime');
+		$model->deleteSubscriptions();
+		$this->setRedirect('index.php?option=com_myapi&view=realtime');
 	}
 }
 ?>
