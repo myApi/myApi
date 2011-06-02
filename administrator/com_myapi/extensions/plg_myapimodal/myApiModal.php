@@ -54,8 +54,6 @@ class plgSystemmyApiModal extends JPlugin
 		
 		$doc = & JFactory::getDocument();
 		$doc->addScript('plugins'.DS.'system'.DS.'myApiModal'.DS.'myApiModal.js');
-		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiModal'.DS.'myApiModal.css');
-		
 	}
 }
 ?>
