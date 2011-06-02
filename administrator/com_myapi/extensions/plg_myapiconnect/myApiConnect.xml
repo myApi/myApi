@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="system">
+	<name>System - myApiConnect</name>
+	<author>Thomas Welton</author>
+	<creationDate>April 2011</creationDate>
+	<copyright>Copyright (C) 2010</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>thomaswelton@me.com</authorEmail>
+	<authorUrl>www.myapi.co.uk</authorUrl>
+	<version>1.0</version>
+	<description>myApiConnect system plugin - Imports the Facebook PHP and Javascript libraries and renders any FBML inside the page. This is a required plugin for all other myApi products.</description>
+	<files>
+		<filename plugin="myApiConnect">myApiConnect.php</filename>
+		<filename>myApiConnectFacebook.php</filename>
+		<filename>facebookXD.html</filename>
+		<filename>fb_ca_chain_bundle.crt</filename>
+	</files>
+	<params>
+		<param name="appId" type="text" label="Facebook Application ID" description="The Application key provided when creating the facebook application associated with this website." size="30" />
+		<param name="secret" type="text" default="" label="Facebook Secret Key" description="The secret key provided when creating the facebook application associated with this website." size="30" />
+	</params>
+</install>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="content">
+	<name>Content - myApiShare</name>
+	<author>Thomas Welton</author>
+	<creationDate>March 2011</creationDate>
+	<copyright>Copyright (C) 2011</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>thomaswelton@me.com</authorEmail>
+	<authorUrl>http://www.myapi.co.uk</authorUrl>
+	<version>1.0</version>
+	<description>myApiShare plugin</description>
+	<files>
+		<filename plugin="myApiShare">myApiShare.php</filename>
+		<folder>share</folder>
+	</files>
+	
+	<params addPath="/plugins/content/share/">
+	
+	<param name="share_show_on" type="radio" default="all" label="Select an option" description="">
+			<option value="all">Show on all articles &lt;br/&gt;</option>
+		  	<option value="selected">Show on selected article sections and categories (select below) &lt;br/&gt;</option>
+		</param>
+		<param name="share_type" type="list" default="box_count" label="Share button type" description="">
+ 	 		<option value="box_count">box_count</option>
+			<option value="button_count">button_count</option>
+			<option value="button">button</option>
+			<option value="icon">icon</option>
+			<option value="icon_link">icon_link</option>
+		</param>
+		<param name="share_style" type="text" label="CSS Style" description="inline CSS for the share button, enter valid CSS seperate by semicolons like thisexample. margin-left:10px; margin-top:20px; " size="30" />
+ 		<param name="share_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="Sections - Show Share Button" description="Use Ctrl-click to select more than one item.">
+			<option value="-1"></option>
+        </param>
+		
+		<param name="share_categories" type="sqlmultilistx" sql="SELECT * FROM #__categories" key_field="title" value_field="title" default="" multiple="multiple" label="Categories - Show Share Button" description="Use Ctrl-click to select more than one item.">
+			<option value="-1"></option>
+        </param>
+		</params>
+	
+</install>
