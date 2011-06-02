@@ -100,9 +100,10 @@ class MyapiController extends JController {
 		$post 		= JRequest::get('post');	
 		$facebook 	= plgSystemmyApiConnect::getFacebook();
 		try{
-			$data['tab_default_name'] = $post['params']['tab_name'];
 			jimport( 'joomla.application.menu' );
-			$data['profile_tab_url'] = JRoute::_(JURI::root()."index.php?Itemid=".$post['params']['tab_url']);
+			$data['tab_default_name']	= $post['params']['tab_name'];
+			$data['profile_tab_url'] 	= JRoute::_(JURI::root()."index.php?Itemid=".$post['params']['tab_url']);
+			$data['edit_url'] = $data['profile_tab_url'];
 			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','access_token' => $facebook->getAppId().'|'.$facebook->getApiSecret(),'properties'=> json_encode($data)));
 			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiTabs',JText::_('TAB_SAVED'));
 		}catch (FacebookApiException $e) {
