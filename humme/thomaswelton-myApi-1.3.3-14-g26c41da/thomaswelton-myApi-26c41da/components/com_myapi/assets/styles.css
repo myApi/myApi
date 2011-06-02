@@ -1,0 +1,170 @@
+@charset "UTF-8";
+/* CSS Document */
+html,body{
+	width:600px;
+	height:500px;
+	margin:0px;
+	padding:0px;
+	color:#333333;
+	font-family:Verdana, Geneva, sans-serif;
+	overflow:hidden;
+}
+html{
+	background:url(../assets/images/bg.gif) repeat-x bottom #f7f7f7;
+	position:relative;
+}
+input{
+	float:right;
+}
+form a{
+	float:right;
+	color:#333333;
+}
+label{
+	float:left;
+	clear:both;
+	padding:3px;
+}
+label span{
+	vertical-align:middle;
+	padding:3px;
+}
+button{
+	float:left;
+	clear:both;
+}
+p{
+	padding-bottom:10px;
+	font-size:12px;
+	color:#333333;	
+}
+form{
+color: #333;
+float: left;
+font-family: Helvetica, Arial, sans-serif;
+font-size: 12px;
+height: 222px;
+line-height: 15px;
+margin-bottom: 0px;
+margin-left: 10px;
+margin-right: 10px;
+margin-top: 0px;
+padding:0px;
+width: 280px;
+}
+
+h1{
+	background-image: none;
+	color: #666;
+	display: block;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	height: 15px;
+	line-height: 15px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 10px;
+	padding: 0px;
+	text-align: left;
+	vertical-align: bottom;
+	width: 600px;
+}
+h2{
+	font-size:16px;
+	font:Verdana, Geneva, sans-serif;
+}
+.link{
+	text-decoration:underline;
+}
+fieldset{
+	
+border-bottom-color: #CCC;
+border-bottom-style: solid;
+border-bottom-width: 1px;
+border-left-color: #CCC;
+border-left-style: solid;
+border-left-width: 1px;
+border-right-color: #CCC;
+border-right-style: solid;
+border-right-width: 1px;
+border-top-color: #CCC;
+border-top-style: solid;
+border-top-width: 1px;
+color: #333;
+display: block;
+font-family: Helvetica, Arial, sans-serif;
+font-size: 12px;
+height: 175px;
+line-height: 15px;
+margin-bottom: 0px;
+margin-left: 0px;
+margin-right: 0px;
+margin-top: 15px;
+overflow-x: visible;
+overflow-y: visible;
+padding-bottom: 15px;
+padding-left: 15px;
+padding-right: 15px;
+padding-top: 15px;
+width: 248px;
+	
+}
+legend{
+	
+background-color: transparent;
+background-image: none;
+background-origin: padding-box;
+border-bottom-style: none;
+border-left-style: none;
+border-right-style: none;
+border-top-style: none;
+color: #333;
+display: block;
+font-family: Helvetica, Arial, sans-serif;
+font-size: 18px;
+font-weight: bold;
+height: 15px;
+line-height: 15px;
+margin-bottom: 0px;
+margin-left: 0px;
+margin-right: 179px;
+margin-top: 0px;
+overflow-x: visible;
+overflow-y: visible;
+padding-bottom: 0px;
+padding-left: 10px;
+padding-right: 10px;
+padding-top: 0px;
+text-align: left;
+width: 49px;
+}
+#h2{
+	
+color: #333;
+display: block;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 16px;
+font-weight: normal;
+height: 15px;
+line-height: 15px;
+margin-bottom: 13px;
+margin-left: 0px;
+margin-right: -20px;
+margin-top: 13px;
+overflow-x: visible;
+overflow-y: visible;
+padding-bottom: 10px;
+padding-left: 10px;
+padding-right: 10px;
+padding-top: 10px;
+text-align: left;
+vertical-align: bottom;
+width: 560px;
+}
+.myapiAjaxForm{
+	width:280px;
+	margin:0px 10px 0px 10px;
+	float:left;
+}

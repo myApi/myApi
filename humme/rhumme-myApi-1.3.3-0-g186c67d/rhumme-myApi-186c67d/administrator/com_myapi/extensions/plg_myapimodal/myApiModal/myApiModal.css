@@ -1,0 +1,224 @@
+@charset "UTF-8";
+/* CSS Document */
+
+table.myapi input.search {
+  background:white url(facebook.com/images/magglass.png) no-repeat scroll 3px 4px;
+  padding-left:17px;
+ }
+table.myapi input,table.myapi textarea,table.myapi select {
+  border:1px solid #BDC7D8;
+  font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+  font-size:11px;
+  padding:3px;
+ }
+ table.myapiinput:focus,table.myapi textarea:focus,table.myapi select:focus {border-color:#687FB0}
+ table.myapi .field {border:1px solid #bdc7d8; padding:2px}
+ table.myapi .field:focus {border-color:#687FB0}
+ table.myapi textarea.field {width:98.5%;height:100px}
+ table.myapi button,input.myapicancel {
+  padding:1px 3px 1px 4px; 
+  font-size:1em; cursor:pointer; 
+  background:#3b5998; color:#fff; 
+  border:1px solid #0e1f5b; 
+  border-left-color:#D9DFEA; 
+  border-top-color:#D9DFEA;
+ }
+ table.myapi button.next, input.myapicancel {
+   background:#ddd;
+   color:#111;
+   border:1px solid #666;
+   border-left-color:#ddd;
+   border-top-color:#ddd
+ }
+
+
+ table.myapi td.headers { width:330px; height:25px; padding:10px;text-size:11px; }
+ /* Facebook Box Header */
+ table.myapi td.headers h2 
+ { 
+  background-color:#D8DFEA;
+  border-top:1px solid #3B5998;
+  color:#3B5998;
+  font-size:12px;
+  padding:0px 6px; 
+  margin:0;
+  font-weight:bold;
+ }
+
+
+table.myapi{font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+  font-size:11px;
+  color: #333333;}
+
+table.myapi td{padding:0px 0px;text-size:11px;  }
+
+
+ /* Facebook Box Header */
+ table.myapi td.headers
+ { 
+  background-color:#D8DFEA;
+  border-top:1px solid #3B5998;
+  color:#333333 !important;
+  font-size:10px;
+  margin:0px;
+  padding:0px;
+  font-weight:bold;
+ }
+/* from facebook */
+		.generic_dialog {
+height:0;
+left:0;
+overflow:visible;
+position:fixed; /*dw*/
+top:0;
+width:100%;
+}
+#generic_dialog_iframe {
+left:0;
+position:absolute;
+top:0;
+z-index:3;
+}
+.generic_dialog .generic_dialog_popup {
+position:absolute;
+height:0;
+overflow:visible;
+position:relative;
+}
+.generic_dialog div.dialog_loading {
+background-color:#F2F2F2;
+border:1px solid #606060;
+font-size:24px;
+padding:10px;
+}
+#generic_dialog_overlay {
+display:block;
+left:0;
+position:absolute;
+top:0;
+width:100%;
+z-index:100;
+}
+.dialog_body .dialog_content_img {
+float:left;
+margin-right:15px;
+}
+.dialog_body .dialog_content_txt {
+float:left;
+padding-bottom:5px;
+width:300px;
+}
+.dialog_body .dialog_content_body {
+padding-bottom:13px;
+}
+.dialog_body .form_label {
+padding-right:5px;
+}
+.dark_dialog_overlay {
+background-image:url(facebook-overlay.png);
+background-repeat:repeat;
+}
+* html .dark_dialog_overlay {
+background-color:transparent;
+background-image:url(blank.gif);
+}
+.full_bleed .pop_dialog_table td.pop_content .dialog_body {
+padding:0;
+}
+table.pop_dialog_table {
+position:relative;
+border-collapse:collapse;
+direction:ltr;
+margin:auto;
+table-layout:fixed;
+width:465px;
+}
+td.pop_topleft, td.pop_topright, td.pop_bottomleft, td.pop_bottomright {
+height:10px;
+overflow:hidden;
+padding:0 !important;
+width:10px !important;
+}
+td.pop_topleft {
+background:transparent url(facebook-pop-dialog-sprite.png) no-repeat scroll 0 0;
+}
+td.pop_topright {
+background:transparent url(facebook-pop-dialog-sprite.png) no-repeat scroll 0 -10px;
+}
+td.pop_bottomleft {
+background:transparent url(facebook-pop-dialog-sprite.png) no-repeat scroll 0 -20px;
+}
+td.pop_bottomright {
+background:transparent url(facebook-pop-dialog-sprite.png) no-repeat scroll 0 -30px;
+}
+td.pop_top, td.pop_bottom {
+background:transparent url(facebook-pop-dialog-sprite.png) repeat-x scroll 0 -40px;
+}
+td.pop_side {
+background:transparent url(facebook-pop-dialog-sprite.png) repeat-y scroll -10px 0;
+}
+td.pop_content {
+background-color:white;
+direction:ltr;
+padding:0;
+}
+.pop_dialog_rtl td.pop_content {
+direction:rtl;
+}
+td.pop_content .dialog_title {
+	width: auto;
+background:#6D84B4 none repeat scroll 0 0;
+border:1px solid #3B5998;
+color:white;
+font-size:14px;
+font-weight:bold;
+margin:0;
+padding:5px;
+}
+td.pop_content h2.dialog_loading {
+background:#6D84B4 url(facebook-indicator_white_small.gif) no-repeat scroll 400px 10px;
+padding-right:40px;
+}
+td.pop_content h2 span {
+display:block;
+padding:4px 10px 5px;
+}
+td.pop_content .dialog_content {
+position:relative;
+background:#FFFFFF none repeat scroll 0 0;
+border-color:#555555;
+border-style:solid;
+border-width:0 1px 1px;
+}
+td.pop_content .dialog_body {
+position:relative;
+overflow:auto;
+border-bottom:1px solid #CCCCCC;
+padding:10px;
+}
+td.pop_content .dialog_summary {
+background:#F2F2F2 none repeat scroll 0 0;
+border-bottom:1px solid #CCCCCC;
+padding:8px 10px;
+}
+td.pop_content .dialog_buttons {
+background:#F2F2F2 none repeat scroll 0 0;
+padding:8px;
+text-align:right;
+}
+td.pop_content .dialog_buttons input {
+margin-left:5px;
+}
+td.pop_content .dialog_buttons_msg {
+float:left;
+padding:5px 0 0;
+}
+td.pop_content .dialog_footer {
+background:#F2F2F2 none repeat scroll 0 50%;
+}
+ 
+#fb-modal	{ display:none; }
+.info		{ width:280px; float:left; font-size:11px; color:#666; }
+.info b	{ color:#000; }
+.image	{ width:200px; float:left; margin-right:10px; }
+ 

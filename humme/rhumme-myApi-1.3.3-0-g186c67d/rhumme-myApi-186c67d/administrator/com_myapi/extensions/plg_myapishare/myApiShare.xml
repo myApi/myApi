@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="content">
+	<name>Content - myApiShare</name>
+	<author>Thomas Welton</author>
+	<creationDate>March 2011</creationDate>
+	<copyright>Copyright (C) 2011</copyright>
+	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+	<authorEmail>thomaswelton@me.com</authorEmail>
+	<authorUrl>http://www.myapi.co.uk</authorUrl>
+	<version>1.0</version>
+	<description>PLUGIN DESCRIPTION</description>
+	<files>
+		<filename plugin="myApiShare">myApiShare.php</filename>
+		<folder>share</folder>
+	</files>
+	
+	<languages>
+		<language tag="en-GB">languages/en-GB.plg_content_myapishare.ini</language>
+	</languages>
+	
+	<params addPath="/plugins/content/share/">
+	
+		<param name="share_type" type="list" default="box_count" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">
+			<option value="box_count">PARAM_BOX_COUNT</option>
+			<option value="button_count">PARAM_BUTTON_COUNT</option>
+			<option value="button">PARAM_BUTTON</option>
+			<option value="icon">PARAM_ICON</option>
+			<option value="icon_link">PARAM_ICON_LINK</option>
+		</param>
+		
+		<param name="share_style" type="text" label="PARAM_STYLE_LABEL" description="PARAM_STYLE_DESC" size="30" />
+		
+		<param name="share_show_on" type="radio" default="all" label="PARAM_SHOW_LABEL" description="PARAM_SHOW_DESC">
+			<option value="all">PARAM_SHOW_ALL</option>
+			<option value="selected">PARAM_SHOW_SELECT</option>
+		</param>
+	
+ 		<param name="share_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="PARAM_SECTIONS_LABEL" description="PARAM_MULTI">
+			<option value="-1"></option>
+        </param>
+		
+		<param name="share_categories" type="sqlmultilistx" sql="SELECT * FROM #__categories" key_field="title" value_field="title" default="" multiple="multiple" label="PARAM_CAT_LABEL" description="PARAM_MULTI">
+			<option value="-1"></option>
+        </param>
+	</params>
+	
+</install>
