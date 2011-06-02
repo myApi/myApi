@@ -105,6 +105,7 @@ $query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')."  ADD ( `access_toke
 $query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')." MODIFY `uid` bigint(255) unsigned NOT NULL;";
 $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('userId')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('userId').");";
 $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('uid')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('uid').");";
+$query[] = "UPDATE ".$db->nameQuote('#__plugins')." SET  ".$db->nameQuote('element')." =  ".$db->quote('myApiUser')." WHERE ".$db->nameQuote('element')." =  ".$db->quote('myapiuser');
 foreach($query as $sql){
 	$db->setQuery($sql);
 	$db->query();	
