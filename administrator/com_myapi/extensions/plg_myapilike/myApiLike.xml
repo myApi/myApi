@@ -15,7 +15,8 @@
 	</files>
 	
 	<languages>
-		<language tag="en-GB">languages/en-GB.plg_content_myApiLike.ini</language>
+		<language tag="en-GB">languages/en-GB.plg_content_myapilike.ini</language>
+		<language tag="nb-NO">languages/nb-NO.plg_content_myapilike.ini</language>
 	</languages>
 	
 	<params addPath="/plugins/content/like/">
@@ -40,11 +41,6 @@
 			<option value="dark">PARAM_SCHEME_DARK</option>
 		</param>
 		
-		<param name="position" type="list" default="myApiShareTop" label="PARAM_POSITION_LABEL" description="PARAM_POSITION_DESC">
-		  	<option value="myApiShareTop">PARAM_POSITION_TOP</option>
-			<option value="myApiShareBottom">PARAM_POSITION_BOTTOM</option>
-		</param>
-		
 		<param name="verb" type="list" default="like" label="PARAM_ACTION_LABEL" description="PARAM_ACTION_DESC">
  	 		<option value="like">PARAM_ACTION_LIKE</option>
 			<option value="recommend">PARAM_ACTION_RECOMMEND</option>
@@ -61,7 +57,7 @@
 		
 		
 		<param name="width" type="text" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" default="250" size="30" />
-		
+		<param name="like_style" type="text" label="PARAM_STYLE_LABEL" description="PARAM_STYLE_DESC" size="30" />
 		
 		<param name="like_show_on" type="radio" default="all" label="PARAM_SHOW_LABEL" description="PARAM_SHOW_DESC">
 			<option value="all">PARAM_SHOW_ALL</option>
