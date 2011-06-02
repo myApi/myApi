@@ -200,7 +200,9 @@ class plgContentmyApiComment extends JPlugin
 	
 	function addFbJs($xid){
 		global $fbAsyncInitJs;
-		$fbAsyncInitJs .= "try{ var query = FB.Data.query('select id from comment where xid=\"$xid\"', 'xid'); query.wait(function(rows) { $('".$xid."commentLink').setHTML('".JText::_('ADD_COMMENT')." ('+rows.length+')'); }); }catch(e){}";	
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$app_id = $facebook->getAppId();
+		$fbAsyncInitJs .= "var query".$xid." = FB.Data.query('select id from comment where xid=\"$xid\" ; '); query".$xid.".wait(function(result) { if(result.length > 0){ $('".$xid."commentLink').setHTML('".JText::_('ADD_COMMENT')." ('+result.length+')'); } });";	
 	}
 
     function bind( $array, $ignore = '' )
