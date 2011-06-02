@@ -38,7 +38,7 @@ jimport( 'joomla.plugin.plugin');
 class plgSystemmyApiModal extends JPlugin
 {
 	
-	function plgSystemmyApiConnect(&$subject, $config)
+	function plgSystemmyApiModal(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 	}
