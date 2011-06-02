@@ -70,5 +70,12 @@ class MyapiViewPlugin extends JView {
 	function _myApiConnect(){
 		$this->assignRef('aside',JHTML::_('image', 'plugins/system/fbapp.png', null));
 	}
+	
+	function _myApiTabs(){
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$pageLink = 'http://www.facebook.com/apps/application.php?id='.$facebook->getAppId();
+		$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', 'plugins/system/addtab.png', null);
+		$this->assignRef('aside',$sideContent);
+	}
 }
 ?>
