@@ -51,6 +51,15 @@ class plgSystemmyApiConnect extends JPlugin
 		return $facebook;
 	}
 	
+	
+	function onAfterDispatch(){
+		
+		JHTML::_('behavior.mootools');
+		$doc = & JFactory::getDocument();
+		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');	
+		
+	}
+	
 	function onAfterRender(){
 		global $mainframe, $fbAsyncInitJs;
 		$document=& JFactory::getDocument();   

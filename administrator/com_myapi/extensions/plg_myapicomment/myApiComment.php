@@ -144,7 +144,7 @@ class plgContentmyApiComment extends JPlugin
 			if($comments_show_on == 'all')
 				$comment_show = true;
 			
-			
+		
 			if($comment_show && $hasAccess ){
 				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" colorscheme="'.$comments_scheme.'"></fb:comments>';
 				
@@ -176,7 +176,7 @@ class plgContentmyApiComment extends JPlugin
 		
 				$tableEl = $dom->find('.myApiShareBottom',0);
 				if(!$tableEl){
-					$table = '<table class="myApiShareBottom"></table>';
+					$table = '<table class="myApiShareBottom myApiShareTable"></table>';
 					$article->text = $article->text.$table;
 					$dom->load($article->text);
 				}

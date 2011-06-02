@@ -6,7 +6,7 @@ class myApiButtons{
 
 		$tableEl = $dom->find('.'.$position,0);
 		if(!$tableEl){
-			$table = '<table class="'.$position	.'"></table>';
+			$table = '<table class="'.$position	.' myApiShareTable"></table>';
 			$text 	= ($position == 'myApiShareTop') ?  $table.$text : $text.$table;
 			$dom->load($text);
 		}
