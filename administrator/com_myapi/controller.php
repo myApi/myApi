@@ -66,18 +66,15 @@ class MyapiController extends JController {
 	}
 	
 	function save_myApiConnect() {
-		$root = JURI::root();
-		$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-		$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-		$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
 		$post = JRequest::get('post');
-		$rootArray = explode(':',$root);
-		$root = $rootArray[0];
-		$connectURL = 'http://'.$root.'/';
-		$baseDomain = $root;
+		$u =& JURI::getInstance(JURI::root());
+		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+		$host = (substr($u->getHost(),0,4) == 'www.') ? substr($u->getHost(),4) : $u->getHost();
+		$connectURL = $u->getScheme().'://'.$host.$port.$u->getPath();
+		$baseDomain = $host;
 		
 		$data['base_domain'] 	= $baseDomain;
-		$data['uninstall_url'] 	= JURI::base().'index.php?option=com_myapi&task=deauthorizeCallback';
+		$data['uninstall_url'] 	= JURI::root().'index.php?option=com_myapi&task=deauthorizeCallback';
 		$data['connect_url'] 	= $connectURL;
 		
 		try{
