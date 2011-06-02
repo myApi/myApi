@@ -14,5 +14,6 @@
     </files>
 	<languages>
 		<language tag="en-GB">languages/en-GB.plg_authentication_myapiauth.ini</language>
+		<language tag="no-NO">languages/nb-NO.plg_authentication_myapiauth.ini</language>
 	</languages>
 </install>

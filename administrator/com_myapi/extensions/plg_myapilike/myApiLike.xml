@@ -16,6 +16,7 @@
 	
 	<languages>
 		<language tag="en-GB">languages/en-GB.plg_content_myapilike.ini</language>
+		<language tag="nb-NO">languages/nb-NO.plg_content_myapilike.ini</language>
 	</languages>
 	
 	<params addPath="/plugins/content/like/">
