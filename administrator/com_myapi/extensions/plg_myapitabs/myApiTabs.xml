@@ -16,6 +16,7 @@
 	
 	<languages>
 		<language tag="en-GB">languages/en-GB.plg_system_myApiTabs.ini</language>
+		<language tag="nb-NO">languages/nb-NO.plg_system_myApiTabs.ini</language>
 	</languages>
 	
 	<params>

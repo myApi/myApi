@@ -16,11 +16,11 @@
 		<filename>fb_ca_chain_bundle.crt</filename>
 		<filename>myApiDom.php</filename>
 		<filename>fbapp.png</filename>
-		<folder>myApiConnect</folder>
 	</files>
 	
 	<languages>
-		<language tag="en-GB">languages/en-GB.plg_system_myApiConnect.ini</language>
+		<language tag="en-GB">languages/en-GB.plg_system_myapiconnect.ini</language>
+		<language tag="nb-NO">languages/nb-NO.plg_system_myapiconnect.ini</language>
 	</languages>
 	
 	<params>

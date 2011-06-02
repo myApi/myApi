@@ -19,6 +19,7 @@
 	
 	<languages>
 		<language tag="en-GB">languages/en-GB.mod_myapi_fbrecommendations.ini</language>
+		<language tag="nb-NO">languages/nb-NO.mod_myapi_fbrecommendations.ini</language>
 	</languages>
 	
 	<params>	
