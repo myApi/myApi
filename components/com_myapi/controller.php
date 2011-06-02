@@ -84,7 +84,6 @@ class MyapiController extends JController {
 								$statusCall = $facebook->api('/'.$uid.'/statuses','get',array('access_token' => $access_token,'limit' => 1));
 								$changes['community_users']['status'] = $statusCall['data'][0]['message'];
 							} catch (FacebookApiException $e) {
-								error_log('From myApi subscribtion callback - '.$e);
 								return;
 							}
 						}
@@ -113,7 +112,6 @@ class MyapiController extends JController {
 								$query = "UPDATE ".$db->nameQuote('#__'.$key)." JOIN ".$db->nameQuote('#__myapi_users')." ON ".$db->nameQuote('#__'.$key.'.'.$integrations[$key])." = ".$db->nameQuote('#__myapi_users.userId')."   SET ".implode(',',$setArray)." WHERE ".$db->nameQuote('#__myapi_users.uid')." = ".$db->quote($uid);
 								$db->setQuery($query);
 								$db->query();
-								error_log('subscription update = ' . print_r($db, true));
 							}
 						}
 					}
@@ -121,7 +119,6 @@ class MyapiController extends JController {
 					
 				case 'permissions':
 					foreach($updates['entry'] as $entry){
-						error_log('permissions update = ' . print_r($updates, true));
 						foreach($updates['entry'] as $entry){
 							$uid 	= $entry['uid'];
 							$db 	= JFactory::getDBO();
