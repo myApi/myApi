@@ -234,7 +234,7 @@ class MyapiController extends JController {
 					$return = ($return == '') ? JURI::base() : $return;
 					$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
 				}else{ 
-					$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
+					$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$error->message); 
 				}
 			}else{
 				$this->setRedirect($return,JText::_('NO_SESSION'));
