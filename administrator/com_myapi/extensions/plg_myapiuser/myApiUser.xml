@@ -15,6 +15,7 @@
 	
 	<languages>
 		<language tag="en-GB">languages/en-GB.plg_user_myApiUser.ini</language>
+		<language tag="nb-NO">languages/nb-NO.plg_user_myApiUser.ini</language>
 	</languages>
 	
 </install>

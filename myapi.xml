@@ -38,6 +38,7 @@
     </files>
 	<languages folder="components/language">
     	<language tag="en-GB">en-GB/en-GB.com_myapi.ini</language>
+		<language tag="nb-NO">nb-NO/nb-NO.com_myapi.ini</language>
    	</languages>
 
 
@@ -72,6 +73,7 @@
 	
 		<languages folder="administrator/language">
 			<language tag="en-GB">en-GB/en-GB.com_myapi.ini</language>
+			<language tag="nb-NO">nb-NO/nb-NO.com_myapi.ini</language>
 		</languages>
  	</administration>
 </install>
