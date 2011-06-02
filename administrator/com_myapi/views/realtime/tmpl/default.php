@@ -29,54 +29,39 @@
  **   You should have received a copy of the GNU General Public License	    **
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
- *****************************************************************************/
-jimport( 'joomla.application.component.view');
+ *************************************************************************/ ?>
 
-class MyapiViewPlugin extends JView {
-    function display($tpl = null) {
-		$db = JFactory::getDBO();
-		$query = "SELECT id FROM #__plugins WHERE element =".$db->quote(JRequest::getVar('plugin'));
-		$db->setQuery($query);
-		$id = $db->loadResult();
-		
-		$row 	=& JTable::getInstance('plugin');
-		$row->load($id);
-		
-		$plugin = & JPluginHelper::getPlugin($row->folder, $row->element);
-		if(is_object($plugin)){
-			$lang =& JFactory::getLanguage();
-			$lang->load( 'plg_' . trim( $row->folder ) . '_' . trim( $row->element ), JPATH_ADMINISTRATOR );
-			
-			$doc =& JFactory::getDocument();
-			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
-			JToolBarHelper::title(JText::_(strtoupper($row->element).'_HEADER'), 'facebook.png');
-			
-			$paramsdata = $plugin->params;
-			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.$row->folder.DS.$row->element.'.xml';
-			$params = new JParameter( $paramsdata, $paramsdefs );
-			$this->assignRef('params',$params);
-			$this->assignRef('plugin',$row);
-			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
-			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
-			
-			$funcname = '_'.$row->element;
-			if(method_exists('MyapiViewPlugin','_'.$row->element)) $this->$funcname();
-		}else{
-			global $mainframe;
-			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));		
-		}
-		parent::display($tpl);
-    }
-	
-	function _myApiConnect(){
-		$this->assignRef('aside',JHTML::_('image', 'plugins/system/fbapp.png', null));
-	}
-	
-	function _myApiTabs(){
-		$facebook = plgSystemmyApiConnect::getFacebook();
-		$pageLink = 'http://www.facebook.com/apps/application.php?id='.$facebook->getAppId();
-		$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', 'plugins/system/addtab.png', null);
-		$this->assignRef('aside',$sideContent);
-	}
-}
-?>
+<form action="index.php" method="post" name="adminForm">
+	<input type="hidden" name="option" value="com_myapi" />
+    <input type="hidden" name="task" value="" />
+    <input type="hidden" name="boxchecked" value="0" />
+    <input type="hidden" name="controller" value="myapi" />
+	<?php echo JHTML::_( 'form.token' ); ?>
+    	
+    <h2><?php echo JText::_('SUBSCRIPTIONS_H2') ?></h2>
+    <p><?php echo JText::_('SUBSCRIPTIONS_DESC') ?></p>
+    
+    <?php if(sizeof($this->subscriptions['data']) == 0): ?>
+    	<h3><?php echo JText::_('NOTICE') ?></h3>
+        <p><?php echo JText::_('SUBSCRIPTIONS_NONE') ?></p>	
+    <?php endif; ?>
+    
+	<table class="adminlist">
+		<tr>
+			<th class="top_row" width="20"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count( $this->subscriptions['data']); ?>);" /></th>
+            <th class="top_row"><?php echo JText::_('OBJECT'); ?></th>
+            <th class="top_row"><?php echo JText::_('CALLBACK'); ?></th>
+            <th class="top_row"><?php echo JText::_('FIELDS'); ?></th>
+            <th class="top_row"><?php echo JText::_('ACTIVE'); ?></th>
+		</tr>
+        <?php foreach ($this->subscriptions['data'] as $index => $result): ?>
+        <tr>
+            <td><?php echo JHTML::_( 'grid.id', $index, $result['object']); ?></td>
+            <td><?php echo $result['object']; ?></td>
+            <td><?php echo $result['callback_url']; ?></td>
+            <td><?php echo implode(',',$result['fields']); ?></td>
+            <td><?php echo $result['active']; ?></td>
+        </tr>
+		<?php endforeach; ?>
+    </table>
+</form>

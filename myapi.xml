@@ -48,6 +48,8 @@
 			<menu link="option=com_myapi&amp;view=users">Users</menu>
 			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiConnect">App Settings</menu>
 			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiOpenGraph">Open Graph</menu>
+			<menu link="option=com_myapi&amp;view=realtime">Real Time Subscriptions</menu>
+			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiTabs">Tab Application</menu>
 			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiComment">Comment</menu>
 			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiShare">Share</menu>
 			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiLike">Like</menu>

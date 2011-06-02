@@ -12,7 +12,7 @@
  **                       `Y8P'                       o888o            	    **
  **                                                                         **
  **                                                                         **
- **   Joomla! 1.5 Plugin myApiConnect                                       **
+ **   Joomla! 1.5 Plugin myApiTabs                                     		**
  **   @Copyright Copyright (C) 2011 - Thomas Welton                         **
  **   @license GNU/GPL http://www.gnu.org/copyleft/gpl.html                 **	
  **                                                                         **	
@@ -31,87 +31,87 @@
  **                                                                         **			
  *****************************************************************************/
 jimport( 'joomla.plugin.plugin');
+class plgSystemmyApiTabs extends JPlugin{
+	
+	static $ogptags = array();
 
-class plgSystemmyApiConnect extends JPlugin
-{
-	function plgSystemmyApiConnect(&$subject, $config){
+	function plgSystemmyApiTabs(&$subject, $config){
 		parent::__construct($subject, $config);
+		
 	}
 	
-	function getFacebook(){
-		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$params = new JParameter( $plugin->params );
-		 
-		require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
-		$facebook =  new myApiFacebook(array(
-			'appId'  => $params->get('appId'),
-			'secret' => $params->get('secret'),
-			'cookie' => true, // enable optional cookie support
-		));	
-		return $facebook;
+	function onAfterInitialise(){
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$signedRequest = $facebook->getSignedRequest();
+		$session =& JFactory::getSession();
+		if(is_array($signedRequest)){
+			JRequest::setVar('tmpl','component');
+			if(isset($signedRequest['user_id'])){
+				$user = JFactory::getUser();
+				if($user->guest){
+					global $mainframe;
+					$options['uid'] = $signedRequest['user_id'];
+					$mainframe->login($signedRequest['user_id'],$options);
+				}
+			}
+		}
+		$method = $_SERVER['REQUEST_METHOD'];  
+		if($session->get( 'fbtmpl' ) == '1'){
+			JRequest::setVar('tmpl','component');
+		}
+		
+		if(JRequest::getVar('tmpl') == 'component')
+			$session->set( 'fbtmpl','1');
 	}
-
+	
 	function onAfterDispatch(){
-		JHTML::_('behavior.mootools');
-		$doc = & JFactory::getDocument();
-		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');	
+		if(JRequest::getVar('tmpl') == 'component'){
+			global $fbAsyncInitJs;
+			$fbAsyncInitJs .= ' FB.Canvas.setAutoResize(); ';
+			$document = JFactory::getDocument();
+			//This was added to stop Kunea doing an automatic JS redirect, is has code that removes the redirect if the user clicks the page
+			$document->addScriptDeclaration('window.addEvent("domready",function(){ $(document.body).fireEvent("click"); try{ jQuery("body").trigger("click"); }catch(e){} });');	
+			$document->addStyleDeclaration('html{margin:0px; padding:0px;}body{margin:0px; padding:0px; width:520px; overflow-x:hidden;}');
+		}
 	}
-
+	
 	function onAfterRender(){
-		global $mainframe, $fbAsyncInitJs;
+		global $mainframe;
 		$document=& JFactory::getDocument();   
 		
-		if($document->getType() != 'html' || $mainframe->isAdmin()) 
-			return;
-			
-
-		$plugin	=& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$params = new JParameter( $plugin->params );  
+		$session =& JFactory::getSession();
+		$session->set( 'fbtmpl','0');
 		
-		$u =& JURI::getInstance( JURI::base() );
-		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
-		$xdPath	= $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'plugins/system/facebookXD.html';
-		
-		$locale = ($params->get("locale") == '') ? 'en_US' : $params->get("locale");	
-		
-		$js 	= <<<EOD
-/* <![CDATA[ */		
-window.addEvent('domready',function(){
-	(function() {
-		var e = document.createElement('script'); e.async = true;
-		e.src = document.location.protocol +
-		  '//connect.facebook.net/{$locale}/all.js';
-		document.getElementById('fb-root').appendChild(e);
-	}());
-});
-window.fbAsyncInit = function() {
-     FB.init({appId: "{$params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
-	 {$fbAsyncInitJs};
-};
-/* ]]> */
-EOD;
-		unset($fbAsyncInitJs);
-		
+		if($document->getType() != 'html' || $mainframe->isAdmin() || JRequest::getVar('tmpl') != 'component') return;
+	
 		$buffer = JResponse::getBody();
 		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
 		$dom = new simple_html_dom();
 		$dom->load($buffer);
 		
-		$htmlEl = $dom->find('html',0);
-		$xmlns = 'xmlns:fb';
-		$htmlEl->$xmlns = "http://www.facebook.com/2008/fbml";
+		$links = $dom->find('a');
+		foreach($links as $index => $object){
+			if(JURI::isInternal($object->href) && $object->href != '#'){
+				$u =& JURI::getInstance($object->href);
+				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+				$scheme = ($u->getScheme() == '') ? '' : $u->getScheme().'://';
+				$fragment = ($u->getFragment() == '') ? '' : '#'.$u->getFragment();
+				$href	= $scheme.$u->getHost().$port.$u->getPath().'?'.$u->getQuery().'&tmpl=component'.$fragment;
+				$object->href = $href;
+			}else{
+				$object->taget = "_blank";
+			}
+		}
 		
-		//This image points to myapi.co.uk but it is not a backlink and doesn't harm your SEO rankings in anyway. If you want to delete it you can but the rest of the code is vital.
-		$host = JURI::getInstance(JURI::current());
-		$pixelTag = ($host->getScheme() == 'http') ? '<img src="http://myapi.co.uk/index.php?option=com_pixeltag&appid='.$params->get('appId').'&domain='.JURI::base().'" style="border:0px;" alt="fbPixel"/>' : '';
-		$FeatureLoader_javascript = '<div id="fb-root">'.$pixelTag.'</div><script type="text/javascript">document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
-		
-		$bodyEl = $dom->find('body',0);
-		$bodyEl->innertext .= $FeatureLoader_javascript;
+		$forms = $dom->find('form');
+		foreach($forms as $index => $object){
+			$object->action .= '?&tmpl=component';
+		}
 		
 		JResponse::setBody( $dom );		
 		$dom->clear(); 
 		unset($dom);	
+		
 	}
 	
 }

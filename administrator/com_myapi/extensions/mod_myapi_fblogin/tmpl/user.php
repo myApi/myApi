@@ -33,7 +33,7 @@
 
 <div id="myApiLoginWrapper" class="<?php echo $classSfx; ?>">
 		<?php if(!$linked): ?> 
-        	<fb:login-button id="fbLoginButton" show-faces="<?php echo $show_faces; ?>" width="<?php echo $width; ?>" max-rows="<?php echo $max_rows; ?>" onlogin="myapi.auth.newLink('<?php echo JUtility::getToken(); ?>','<?php echo $loginUrl; ?>');" perms="email,user_likes,publish_stream,offline_access"><?php echo $linkText; ?></fb:login-button>
+        	<fb:login-button id="fbLoginButton" show-faces="<?php echo $show_faces; ?>" width="<?php echo $width; ?>" max-rows="<?php echo $max_rows; ?>" onlogin="myapi.auth.newLink('<?php echo JUtility::getToken(); ?>','<?php echo $loginUrl; ?>');" perms="<?php echo $permissions; ?>"><?php echo $linkText; ?></fb:login-button>
         <?php else: ?>
         	<?php if($avatar != ''): ?>
         		<img src="images/comprofiler/<?php echo $avatar; ?> " style="margin: 0px 1px 3px 1px; border-width:0px;">

@@ -55,12 +55,13 @@ $pkgs = array('mod_myapi_fblogin'=> array('name' => JText::_('INSTALL_FBLOGIN'),
 			  'plg_myapicomment'=> array('name' => JText::_('INSTALL_FBCOMMENT'),  'db' => 'myApiComment'), 
 			  'plg_myapiconnect'=> array('name' => JText::_('INSTALL_FBCONNECT'), 'db' => 'myApiConnect'),
 			  'plg_myapishare'=> array('name' => JText::_('INSTALL_FBSHARE'), 'db' => 'myApiShare'),
-			  'plg_myapilike'=> array('name' => JText::_('INSTALL_FBLIKE'), 'db' => 'myApiLike'),
 			  'plg_myapisend'=> array('name' => JText::_('INSTALL_FBSEND'), 'db' => 'myApiSend'),
+			  'plg_myapilike'=> array('name' => JText::_('INSTALL_FBLIKE'), 'db' => 'myApiLike'),
 			  'plg_myapimodal'=> array('name' => JText::_('INSTALL_FBMODAL'), 'db' => 'myApiModal'),
 			  'plg_myapiopengraph'=> array('name' => JText::_('INSTALL_FBOPENGRAPH'), 'db' => 'myApiOpenGraph'),
 			  'plg_myapiopengraphcontent'=> array('name' => JText::_('INSTALL_FBOPENGRAPHCONTENT'), 'db' => 'myApiOpenGraphContent'),
-			  'plg_myapiuser'=> array('name' => JText::_('INSTALL_FBUSER'), 'db' => 'myApiUser'));
+			  'plg_myapiuser'=> array('name' => JText::_('INSTALL_FBUSER'), 'db' => 'myApiUser'),
+			  'plg_myapitabs'=> array('name' => JText::_('INSTALL_FBTABS'), 'db' => 'myApiTabs'));
 
 foreach( $pkgs as $pkg => $pkgarray ){
  $msgcolor = "";
@@ -104,6 +105,7 @@ $query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')."  ADD ( `access_toke
 $query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')." MODIFY `uid` bigint(255) unsigned NOT NULL;";
 $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('userId')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('userId').");";
 $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('uid')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('uid').");";
+$query[] = "UPDATE ".$db->nameQuote('#__plugins')." SET  ".$db->nameQuote('element')." =  ".$db->quote('myApiUser')." WHERE ".$db->nameQuote('element')." =  ".$db->quote('myapiuser');
 foreach($query as $sql){
 	$db->setQuery($sql);
 	$db->query();	

@@ -53,12 +53,12 @@ class plgContentmyApiShare extends JPlugin
 			// Load plugin params info
 			$myapiparama = new JParameter($plugin->params);
 			
-			$share_sections = $myapiparama->get('share_sections');
-			$share_categories = $myapiparama->get('share_categories');
-			$share_show_on = $myapiparama->get('share_show_on');
-			$share_type = $myapiparama->get('share_type');
-			$share_style = $myapiparama->get('share_style');
-			$share_show = false;
+			$share_sections 	= $myapiparama->get('share_sections');
+			$share_categories 	= $myapiparama->get('share_categories');
+			$share_show_on 		= $myapiparama->get('share_show_on');
+			$share_type 		= $myapiparama->get('share_type');
+			$position			= $myapiparama->get('position','myApiShareTop');
+			$share_show 		= false;
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			
@@ -97,12 +97,10 @@ class plgContentmyApiShare extends JPlugin
 				$u =& JURI::getInstance( JURI::base().$link );
 				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 				$link = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
-				$newtext = '<fb:share-button class="url" href="'.$link.'" style="'.$share_style.'" type="'.$share_type.'"></fb:share-button>';
+				$button = '<fb:share-button class="url" href="'.$link.'" type="'.$share_type.'"></fb:share-button>';
 				
-				$com_params = &JComponentHelper::getParams( 'com_myapi' );
-				
-				$newtext = $newtext.$article->text;
-				$article->text = $newtext;
+				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				$article->text = myApiButtons::addToTable($article->text,$position,$button);
 			}
 		}
 

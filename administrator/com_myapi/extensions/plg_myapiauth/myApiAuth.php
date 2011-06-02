@@ -54,34 +54,25 @@ class plgAuthenticationmyApiAuth extends JPlugin
       	if(!is_array($uid)){
 			$db =& JFactory::getDBO();
 			
-			$query = "SELECT #__users.id FROM ".$db->nameQuote('#__myapi_users')." JOIN #__users ON #__myapi_users.userId = #__users.id WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid)." AND #__users.block = '0'";
+			$query = "SELECT #__users.id,#__myapi_users.access_token FROM ".$db->nameQuote('#__myapi_users')." JOIN #__users ON #__myapi_users.userId = #__users.id WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid)." AND #__users.block = '0'";
 			$db->setQuery( $query );
 			$db->query();
-			$id = $db->loadResult();
-			
-			if($id != ''){       
-				//If facebook user had a linked account
-				$query = "SELECT ".$db->nameQuote('username')." FROM ".$db->nameQuote('#__users')." WHERE ".$db->nameQuote('id')." = ".$db->quote($id);
-				$db->setQuery( $query );
-				$db->query();
-				$username = $db->loadResult();
-				
-				if($username != ''){
-					$user = JFactory::getUser($id);
-					$response->status			= JAUTHENTICATE_STATUS_SUCCESS;
-					$response->error_message	= '';
-					$response->username = $user->username;
-					return true;
+			$result = $db->loadAssoc();
+			$id = $result['id'];
+			if($id != ''){      
+				if($result['access_token'] == ''){
+					$facebook = plgSystemmyApiConnect::getFacebook();
+					$facebookSession = $facebook->getSession();
+					$query = "UPDATE ".$db->nameQuote('#__myapi_users')." SET ".$db->nameQuote('access_token')." = ".$db->nameQuote($facebookSession['access_token'])." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
+					$db->setQuery($query);
+					$db->query();	
 				}
-				else{
-					$query = "DELETE FROM ".$db->nameQuote('#__myapi_users')." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
-					$db->setQuery( $query );
-					$db->query();
-					
-					$response->status = JAUTHENTICATE_STATUS_FAILURE;
-					$response->error_message = JText::_('USER_DELETED');
-					return false;
-				}
+				 
+				$user = JFactory::getUser($id);
+				$response->status			= JAUTHENTICATE_STATUS_SUCCESS;
+				$response->error_message	= '';
+				$response->username = $user->username;
+				return true;
 			}
 			else{
 				$response->status = JAUTHENTICATE_STATUS_FAILURE;

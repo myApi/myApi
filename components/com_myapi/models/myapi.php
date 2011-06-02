@@ -45,5 +45,12 @@ class MyapiModelMyapi extends JModel {
 		  $db->query();
 		  return 'tn'.$db->loadResult();
 	}
+	
+	//Get the permissions required
+	// for now this just returns an array but in future it will only requests permsissions needed
+	// for example without jomsocial integration we don't need user_status.
+	function getPerms(){
+		return array('email','user_likes','publish_stream','offline_access','user_about_me','user_status');
+	}
 }
 ?>

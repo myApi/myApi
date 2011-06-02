@@ -31,8 +31,11 @@
  **                                                                         **			
  *****************************************************************************/
 
-if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook() || !file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'myapi.php'))
+if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook() || !file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php'))
 	return;
+	
+require_once JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php';
+$myApiModel = new MyapiModelMyapi;
 
 $doc =& JFactory::getDocument();
 $doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi.js');
@@ -43,6 +46,7 @@ $classSfx 			= $params->get('moduleclass_sfx');
 $width				= $params->get('login_width');
 $show_faces 		= $params->get('login_facepile');
 $max_rows 			= $params->get('login_facepileRows');
+$permissions 		= implode(',',$myApiModel->getPerms());
 
 if($params->get('login_userRedirect') != '1'){
 	//same page
@@ -81,8 +85,6 @@ if($user->guest){
 	else { 
 		$linked = true; 
 		//Get User Avatar
-		require_once JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php';
-		$myApiModel = new MyapiModelMyapi;
 		$avatar = $myApiModel->getAvatar();
 	}
 	require(JModuleHelper::getLayoutPath('mod_myapi_fbLogin','user'));	

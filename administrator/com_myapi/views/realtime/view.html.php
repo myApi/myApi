@@ -32,51 +32,18 @@
  *****************************************************************************/
 jimport( 'joomla.application.component.view');
 
-class MyapiViewPlugin extends JView {
+class MyapiViewRealtime extends JView {
     function display($tpl = null) {
-		$db = JFactory::getDBO();
-		$query = "SELECT id FROM #__plugins WHERE element =".$db->quote(JRequest::getVar('plugin'));
-		$db->setQuery($query);
-		$id = $db->loadResult();
+		JToolBarHelper::title(JText::_('SUBSCRIPTIONS_HEADER'));
+		JToolBarHelper::addNew('addSubscriptions', JText::_('ADD_SUBSCRIPTIONS'));
+		JToolBarHelper::deleteList(JText::_('DELETE_SUBSCRIPTIONS_DESC'),'deleteSubscriptions', JText::_('DELETE_SUBSCRIPTIONS'));
 		
-		$row 	=& JTable::getInstance('plugin');
-		$row->load($id);
+		$model 			= $this->getModel('realtime');
+		$subscriptions 	= $model->getSubscriptions();
 		
-		$plugin = & JPluginHelper::getPlugin($row->folder, $row->element);
-		if(is_object($plugin)){
-			$lang =& JFactory::getLanguage();
-			$lang->load( 'plg_' . trim( $row->folder ) . '_' . trim( $row->element ), JPATH_ADMINISTRATOR );
-			
-			$doc =& JFactory::getDocument();
-			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
-			JToolBarHelper::title(JText::_(strtoupper($row->element).'_HEADER'), 'facebook.png');
-			
-			$paramsdata = $plugin->params;
-			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.$row->folder.DS.$row->element.'.xml';
-			$params = new JParameter( $paramsdata, $paramsdefs );
-			$this->assignRef('params',$params);
-			$this->assignRef('plugin',$row);
-			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
-			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
-			
-			$funcname = '_'.$row->element;
-			if(method_exists('MyapiViewPlugin','_'.$row->element)) $this->$funcname();
-		}else{
-			global $mainframe;
-			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));		
-		}
+		$this->assignRef('subscriptions',$subscriptions);
 		parent::display($tpl);
     }
 	
-	function _myApiConnect(){
-		$this->assignRef('aside',JHTML::_('image', 'plugins/system/fbapp.png', null));
-	}
-	
-	function _myApiTabs(){
-		$facebook = plgSystemmyApiConnect::getFacebook();
-		$pageLink = 'http://www.facebook.com/apps/application.php?id='.$facebook->getAppId();
-		$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', 'plugins/system/addtab.png', null);
-		$this->assignRef('aside',$sideContent);
-	}
 }
 ?>

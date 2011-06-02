@@ -66,18 +66,15 @@ class MyapiController extends JController {
 	}
 	
 	function save_myApiConnect() {
-		$root = JURI::root();
-		$root = (substr($root,0,7) == 'http://') ? substr($root,7) : $root;
-		$root = (substr($root,0,4) == 'www.') ? substr($root,4) : $root;
-		$root = (substr($root,-1,1) == '/') ? substr($root,0,-1) : $root;
 		$post = JRequest::get('post');
-		$rootArray = explode(':',$root);
-		$root = $rootArray[0];
-		$connectURL = 'http://'.$root.'/';
-		$baseDomain = $root;
+		$u =& JURI::getInstance(JURI::root());
+		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+		$host = (substr($u->getHost(),0,4) == 'www.') ? substr($u->getHost(),4) : $u->getHost();
+		$connectURL = $u->getScheme().'://'.$host.$port.$u->getPath();
+		$baseDomain = $host;
 		
 		$data['base_domain'] 	= $baseDomain;
-		$data['uninstall_url'] 	= JURI::base().'index.php?option=com_myapi&task=deauthorizeCallback';
+		$data['uninstall_url'] 	= JURI::root().'index.php?option=com_myapi&task=deauthorizeCallback';
 		$data['connect_url'] 	= $connectURL;
 		
 		try{
@@ -87,12 +84,31 @@ class MyapiController extends JController {
 				'secret' => $post['params']['secret']
 			));
 			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
+			
+			$model = $this->getModel('realtime');
+			$model->addSubscriptions();
+			
 			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED'));	
 		
 		}catch (FacebookApiException $e) {
 			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED_ERROR').$e);		
 		}
 		
+	}
+	
+	function save_myApiTabs(){
+		$post 		= JRequest::get('post');	
+		$facebook 	= plgSystemmyApiConnect::getFacebook();
+		try{
+			jimport( 'joomla.application.menu' );
+			$data['tab_default_name']	= $post['params']['tab_name'];
+			$data['profile_tab_url'] 	= JRoute::_(JURI::root()."index.php?Itemid=".$post['params']['tab_url']);
+			$data['edit_url'] = $data['profile_tab_url'];
+			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','access_token' => $facebook->getAppId().'|'.$facebook->getApiSecret(),'properties'=> json_encode($data)));
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiTabs',JText::_('TAB_SAVED'));
+		}catch (FacebookApiException $e) {
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiTabs',JText::_('TAB_SAVED_ERROR').$e);
+		}
 	}
 
 	//Deletes the link between a joomla and facebook user
@@ -104,6 +120,18 @@ class MyapiController extends JController {
 			$row->delete( $id );
 		}
 		$this->setRedirect("index.php?option=com_myapi&view=users", JText::_('USER_UNLINKED'));
+	}
+	
+	function addSubscriptions(){
+		$model = $this->getModel('realtime');
+		$model->addSubscriptions();
+		$this->setRedirect('index.php?option=com_myapi&view=realtime');
+	}
+	
+	function deleteSubscriptions(){
+		$model = $this->getModel('realtime');
+		$model->deleteSubscriptions();
+		$this->setRedirect('index.php?option=com_myapi&view=realtime');
 	}
 }
 ?>

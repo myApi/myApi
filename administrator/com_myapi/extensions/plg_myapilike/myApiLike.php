@@ -54,11 +54,11 @@ class plgContentmyApiLike extends JPlugin
 			$color_scheme 		= $myapiparama->get('color_scheme');
 			$verb 				= $myapiparama->get('verb');
 			$width 				= $myapiparama->get('width');
-			$like_style 		= $myapiparama->get('like_style');
 			$font 				= $myapiparama->get('like_font');
 			$ref 				= $myapiparama->get('like_ref');
 			$show_send 			= ($myapiparama->get('show_send') == 1) ? 'true' : 'false';
 			$show_faces 		= ($myapiparama->get('show_faces') == 1) ? 'true' : 'false';
+			$position			= $myapiparama->get('position','myApiShareTop');
 			$like_show 			= false;
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
@@ -91,10 +91,10 @@ class plgContentmyApiLike extends JPlugin
 				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 				$link = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
 				
-				$newtext	= '<span style="'.$like_style.'"><fb:like href="'.$link.'" layout="'.$layout_style.'" show_faces="'.$show_faces.'" width="'.$width.'" action="'.$verb.'" colorscheme="'.$color_scheme.'" font="'.$font.'" send="'.$show_send.'" ref="'.$ref.'"></fb:like></span>';
-		
-				$newtext 		= $newtext.$article->text;
-				$article->text 	= $newtext;
+				$button = '<fb:like href="'.$link.'" layout="'.$layout_style.'" show_faces="'.$show_faces.'" width="'.$width.'" action="'.$verb.'" colorscheme="'.$color_scheme.'" font="'.$font.'" send="'.$show_send.'" ref="'.$ref.'"></fb:like>';
+				
+				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				$article->text = myApiButtons::addToTable($article->text,$position,$button);
 			}
 		}
 	}

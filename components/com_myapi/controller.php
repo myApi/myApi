@@ -33,6 +33,113 @@ class MyapiController extends JController {
 		parent::display();
 	}
 	
+	function facebookRealTime(){
+		$integrations 	= array('users' => 'id','k2_users' => 'userID','community_users' => 'userid');
+		$method 		= $_SERVER['REQUEST_METHOD'];  
+		global $mainframe;    
+		
+		//Callback verification                                                 
+		if ($method == 'GET' && JRequest::getVar('hub_mode','','get') == 'subscribe' && JRequest::getVar('hub_verify_token','','get') == $mainframe->getCfg( 'secret' )) {
+		  	echo JRequest::getVar('hub_challenge','','get');
+			$mainframe->close();
+		} else if ($method == 'POST') {                                   
+			$updates = json_decode(file_get_contents("php://input"), true); 
+		  	
+			ignore_user_abort(true); 
+			set_time_limit(0);
+			$content = '';
+			if (strlen($content) < 256) {
+			   $content = str_pad($content, 256); // IE hack
+			}
+			header("HTTP/1.1 200 OK");
+			header("Content-Length: ".strlen($content));
+			echo $content;
+			flush();
+			
+		  	switch($updates['object']){
+				case 'user':
+					foreach($updates['entry'] as $entry){
+						$uid	= $entry['uid'];
+						$db 	= JFactory::getDBO();
+						$query 	= "SELECT ".$db->nameQuote('access_token')." FROM ".$db->nameQuote('#__myapi_users')." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
+						$db->setQuery($query);
+						$access_token = $db->loadResult();
+						try {
+							$facebook = plgSystemmyApiConnect::getFacebook();
+							$me = $facebook->api('/'.$uid.'?metadata=1','get',array('access_token' => $access_token));
+						} catch (FacebookApiException $e) {
+							return;
+						}
+						
+						$changes = array();
+						if(in_array('name',$entry['changed_fields']) ){
+							$changes['users']['name'] = $changes['k2_users']['userName'] = $me['name'];
+						}
+						if(in_array('email',$entry['changed_fields']) ){
+							$changes['users']['email'] = $me['email'];
+						}
+						if(in_array('status',$entry['changed_fields']) ){
+							try {
+								$facebook = plgSystemmyApiConnect::getFacebook();
+								$statusCall = $facebook->api('/'.$uid.'/statuses','get',array('access_token' => $access_token,'limit' => 1));
+								$changes['community_users']['status'] = $statusCall['data'][0]['message'];
+							} catch (FacebookApiException $e) {
+								return;
+							}
+						}
+						if(in_array('about_me',$entry['changed_fields']) ){
+							$changes['k2_users']['description'] = $me['bio'];
+						}
+						if(in_array('username',$entry['changed_fields']) ){
+							$changes['k2_users']['url'] = $me['link'];
+						}
+						if(in_array('pic',$entry['changed_fields']) ){
+							$dest		= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
+							$avatar		= 'facebookUID'.$uid.'.jpg';
+							$avatarData = $facebook->api(array('method' => 'fql.query','query' => 'SELECT pic FROM user WHERE uid = "'.$uid.'";', 'access_token' => $access_token));
+							$buffer		= file_get_contents($avatarData[0]['pic']);
+							jimport( 'joomla.filesystem.file' );
+							JFile::write($dest,$buffer);
+						} 
+						
+						if(sizeof($changes) > 0){
+							foreach($changes as $key => $array){
+								$db			= JFactory::getDBO();
+								$setArray 	= array();
+								foreach($array as $col => $val){
+									$setArray[] = $db->nameQuote($col)." = ".$db->quote($val);	
+								}
+								$query = "UPDATE ".$db->nameQuote('#__'.$key)." JOIN ".$db->nameQuote('#__myapi_users')." ON ".$db->nameQuote('#__'.$key.'.'.$integrations[$key])." = ".$db->nameQuote('#__myapi_users.userId')."   SET ".implode(',',$setArray)." WHERE ".$db->nameQuote('#__myapi_users.uid')." = ".$db->quote($uid);
+								$db->setQuery($query);
+								$db->query();
+							}
+						}
+					}
+				break;
+					
+				case 'permissions':
+					foreach($updates['entry'] as $entry){
+						foreach($updates['entry'] as $entry){
+							$uid 	= $entry['uid'];
+							$db 	= JFactory::getDBO();
+							$query 	= "UPDATE ".$db->nameQuote('#__myapi_users')." SET ".$db->nameQuote('access_token')." = ".$db->quote('')." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
+							$db->setQuery($query);	
+							$db->query();
+							
+							$query = "SELECT ".$db->nameQuote('userId')." FROM ".$db->nameQuote('#__myapi_users')." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
+							$db->setQuery($query);
+							if($userId = $db->loadResult()){ 	
+								$mainframe->logout($userId);
+							}
+						}
+					}
+				break;  
+			}
+		
+		  $mainframe->close();           
+		}	
+	}
+	
 	function deauthorizeCallback(){
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		$signedRequest = $facebook->getSignedRequest();
@@ -125,7 +232,6 @@ class MyapiController extends JController {
 			$options['uid'] = $uid;
 			$error = $mainframe->login($uid,$options);
 			if(!is_object($error)){
-				MyapiController::syncPhoto($uid);
 				$return = ($return == '') ? JURI::base() : $return;
 				$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
 			}else{ 

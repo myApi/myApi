@@ -58,6 +58,7 @@ class plgContentmyApiSend extends JPlugin
 			$font 				= $myapiparama->get('send_font');
 			$ref 				= $myapiparama->get('send_ref');
 			$show_send 			= $myapiparama->get('send_send');
+			$position			= $myapiparama->get('position','myApiShareTop');
 			$send_show 			= false;
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
@@ -91,10 +92,10 @@ class plgContentmyApiSend extends JPlugin
 				$u =& JURI::getInstance( JURI::base().$link );
 				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 				$link = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
-				$newtext	= '<fb:send href="'.$link.'" colorscheme="'.$color_scheme.'" font="'.$font.'" ref="'.$ref.'"></fb:send>';
+				$button	= '<fb:send href="'.$link.'" colorscheme="'.$color_scheme.'" font="'.$font.'" ref="'.$ref.'"></fb:send>';
 		
-				$newtext 		= $newtext.$article->text;
-				$article->text 	= $newtext;
+				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				$article->text = myApiButtons::addToTable($article->text,$position,$button);
 			}
 		}
 	}
