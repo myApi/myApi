@@ -44,7 +44,8 @@ class MyapiViewPlugin extends JView {
 		
 		$plugin = & JPluginHelper::getPlugin($row->folder, $row->element);
 		if(is_object($plugin)){
-			JPlugin::loadLanguage( 'plg_'.$row->folder.'_'.strtolower(JRequest::getVar('plugin')) , JPATH_ADMINISTRATOR );
+			$lang =& JFactory::getLanguage();
+			$lang->load( 'plg_' . trim( $row->folder ) . '_' . trim( $row->element ), JPATH_ADMINISTRATOR );
 			
 			$doc =& JFactory::getDocument();
 			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
