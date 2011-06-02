@@ -37,6 +37,8 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 
 	function plgSystemmyApiOpenGraph(&$subject, $config){
 		parent::__construct($subject, $config);
+		if(!class_exists('plgSystemmyApiConnect')) return;
+		
 		$cache = & JFactory::getCache('plgSystemmyApiOpenGraph - FB Admins query');
 		$cache->setCaching( 1 );
 		$config 	=& JFactory::getConfig();
@@ -85,7 +87,7 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 	function onAfterRender(){
 		global $mainframe;
 		$document = JFactory::getDocument(); 
-		if($document->getType() != 'html' || $mainframe->isAdmin()) return;
+		if(!class_exists('plgSystemmyApiConnect') || $document->getType() != 'html' || $mainframe->isAdmin()) return;
 		
 		$buffer = JResponse::getBody();
 		

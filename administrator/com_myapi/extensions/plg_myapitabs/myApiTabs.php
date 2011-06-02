@@ -41,6 +41,9 @@ class plgSystemmyApiTabs extends JPlugin{
 	}
 	
 	function onAfterInitialise(){
+		if(!class_exists('plgSystemmyApiConnect') || $document->getType() != 'html' || $mainframe->isAdmin()) 
+			return;
+		
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		$signedRequest = $facebook->getSignedRequest();
 		$session =& JFactory::getSession();
@@ -65,7 +68,7 @@ class plgSystemmyApiTabs extends JPlugin{
 	}
 	
 	function onAfterDispatch(){
-		if(JRequest::getVar('tmpl') == 'component'){
+		if(JRequest::getVar('tmpl') == 'component' && class_exists('plgSystemmyApiConnect')){
 			global $fbAsyncInitJs;
 			$fbAsyncInitJs .= ' FB.Canvas.setAutoResize(); ';
 			$document = JFactory::getDocument();
@@ -82,7 +85,7 @@ class plgSystemmyApiTabs extends JPlugin{
 		$session =& JFactory::getSession();
 		$session->set( 'fbtmpl','0');
 		
-		if($document->getType() != 'html' || $mainframe->isAdmin() || JRequest::getVar('tmpl') != 'component') return;
+		if( !class_exists('plgSystemmyApiConnect') || $document->getType() != 'html' || $mainframe->isAdmin() || JRequest::getVar('tmpl') != 'component') return;
 	
 		$buffer = JResponse::getBody();
 		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
