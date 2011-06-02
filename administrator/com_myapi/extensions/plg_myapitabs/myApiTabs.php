@@ -41,7 +41,8 @@ class plgSystemmyApiTabs extends JPlugin{
 	}
 	
 	function onAfterInitialise(){
-		if(!class_exists('plgSystemmyApiConnect') || $document->getType() != 'html' || $mainframe->isAdmin()) 
+		global $mainframe;
+		if(!class_exists('plgSystemmyApiConnect') || $mainframe->isAdmin()) 
 			return;
 		
 		$facebook = plgSystemmyApiConnect::getFacebook();
