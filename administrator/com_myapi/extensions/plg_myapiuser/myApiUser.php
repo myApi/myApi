@@ -37,113 +37,14 @@ defined('_JEXEC') or die( 'Restricted access' );
 jimport('joomla.plugin.plugin');
 
 class plgUsermyApiUser extends JPlugin {
-
-
-	function plgUserJoomla(& $subject, $config) {
+	
+	function plgUsermyApiUser(& $subject, $config) {
 		parent::__construct($subject, $config);
 	}
 
-
-	
-	function onAfterDeleteUser($user, $succes, $msg)
-	{
+	function onAfterDeleteUser($user, $succes, $msg){
 		$db =& JFactory::getDBO();
-		$db->setQuery('DELETE FROM #__myapi_users WHERE userId ='.$db->Quote($user['id']));
-		$db->Query();	
+		$db->setQuery('DELETE FROM #__myapi_users WHERE userId ='.$db->quote($user['id']));
+		$db->query();
 	}
-	
-	
-	
-	
-	function onLoginUser($user, $options = array())
-	{
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php')){ return; }
-		if(@$options['uid'] == ''){  return; }
-		global $mainframe;
-		if($mainframe->isAdmin() || strpos($_SERVER["PHP_SELF"], "index.php") === false) { return; }
-		
-		
-		$db =& JFactory::getDBO();
-		
-		jimport('joomla.user.helper');
-		$instance =& $this->_getUser($user, $options);
-		
-		$uid = $options['uid'];
-		if($uid && $instance->id != ''):
-		  $query = "SELECT ".$db->nameQuote('userId').",".$db->nameQuote('access_token')." FROM ".$db->nameQuote('#__myapi_users')." WHERE uid =".$db->quote($uid);
-		  $db->setQuery( $query );
-		  $result = $db->loadAssoc();
-		  $count = $db->getAffectedRows();
-		  
-		  $facebook = plgSystemmyApiConnect::getFacebook();
-			  $facebookSession = $facebook->getSession();
-		  
-		  if($count == 0)
-		  {
-			  jimport( 'joomla.filesystem.folder' );
-			  if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
-				  JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
-				  
-			  $dest = JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$facebookSession['uid'].'.jpg';
-			  $avatar = 'facebookUID'.$facebookSession['uid'].'.jpg';
-			  $buffer = file_get_contents('https://graph.facebook.com/'.$facebookSession['uid'].'/picture',$dest);
-			  jimport( 'joomla.filesystem.file' );
-			  JFile::write($dest,$buffer);
-			
-			  $query = "INSERT INTO ".$db->nameQuote('#__myapi_users')."  (userId,uid,access_token,avatar) VALUES (".$db->quote($instance->id).",".$db->quote($uid).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
-			  $db->setQuery( $query );
-			  $db->query();
-		  }
-		  else{
-			  //A connect user has logged in
-			  if($result['access_token'] == ''){
-				   $query = "UPDATE ".$db->nameQuote('#__myapi_users')." SET  ".$db->nameQuote('access_token')." = ".$db->quote($facebookSession['access_token'])." WHERE ".$db->nameQuote('userId')." = ".$db->quote($result['userId']);
-			  $db->setQuery( $query );
-			  $db->query();
-			  }
-		  }
-		endif;
-	}
-	
-	
-	function &_getUser($user, $options = array())
-	{
-		$instance = new JUser();
-		if($id = intval(JUserHelper::getUserId($user['username'])))  {
-			$instance->load($id);
-			return $instance;
-		}
-
-		//TODO : move this out of the plugin
-		jimport('joomla.application.component.helper');
-		$config   = &JComponentHelper::getParams( 'com_users' );
-		$usertype = $config->get( 'new_usertype', 'Registered' );
-
-		$acl =& JFactory::getACL();
-
-		$instance->set( 'id'			, 0 );
-		$instance->set( 'name'			, $user['fullname'] );
-		$instance->set( 'username'		, $user['username'] );
-		$instance->set( 'password_clear'	, $user['password_clear'] );
-		$instance->set( 'email'			, $user['email'] );	// Result should contain an email (check)
-		$instance->set( 'gid'			, $acl->get_group_id( '', $usertype));
-		$instance->set( 'usertype'		, $usertype );
-
-		//If autoregister is set let's register the user
-		$autoregister = isset($options['autoregister']) ? $options['autoregister'] :  $this->params->get('autoregister', 1);
-
-		if($autoregister)
-		{
-			if(!$instance->save()) {
-				return JError::raiseWarning('', $instance->getError());
-			}
-		} else {
-			// No existing user and autoregister off, this is a temporary user
-			$instance->set( 'tmp_user', true );
-		}
-
-		return $instance;
-	}
-	
-	
 }
