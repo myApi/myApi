@@ -219,26 +219,28 @@ class MyapiController extends JController {
 	
 	//This task logs in a user
 	function facebookLogin() {
-		global $mainframe;
-		$facebook = plgSystemmyApiConnect::getFacebook();
-		
-		$session	= $facebook->getSession();
-		$uid 		= $session['uid'];
-		$return 	= base64_decode(JRequest::getVar('return',''));
 		$user 		= JFactory::getUser();
-		
-		if($uid && $user->guest){
-			$options['return'] = $return;
-			$options['uid'] = $uid;
-			$error = $mainframe->login($uid,$options);
-			if(!is_object($error)){
-				$return = ($return == '') ? JURI::base() : $return;
-				$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
-			}else{ 
-				$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
+		$return 	= base64_decode(JRequest::getVar('return',''));
+		if($user->guest){
+			$facebook = plgSystemmyApiConnect::getFacebook();
+			$session	= $facebook->getSession();
+			$uid 		= $session['uid'];
+			if($uid){
+				global $mainframe;
+				$options['return'] = $return;
+				$options['uid'] = $uid;
+				$error = $mainframe->login($uid,$options);
+				if(!is_object($error)){
+					$return = ($return == '') ? JURI::base() : $return;
+					$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
+				}else{ 
+					$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$uid); 
+				}
+			}else{
+				$this->setRedirect($return,JText::_('NO_SESSION'));
 			}
 		}else{
-			$this->setRedirect($return,JText::_('NO_SESSION'));
+			$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
 		}
 	}
 	
@@ -286,9 +288,31 @@ class MyapiController extends JController {
 		$facebook->setSession(array('access_token' => JRequest::getVar('access_token'), 'sig' => JRequest::getVar('sig'), 'uid' => JRequest::getVar('uid'),'expires' => JRequest::getVar('expires'),'secret' => JRequest::getVar('secret'),'session_key' => JRequest::getVar('session_key'),'base_domain' => JRequest::getVar('base_domain')));
 		$session = $facebook->getSession();
 		
-		if($num_rows == 0){ 
-			MyapiController::showRegisterWindow(); 
+		if($num_rows == 0){
+			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
+			$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
+			global $fbUser;
+			$fbUser = $facebookmodel->getLoggedInUser(JRequest::getVar('access_token',NULL));
+			
+			$db 			= JFactory::getDBO();
+			$query 			= "SELECT COUNT(".$db->nameQuote('id').") FROM ".$db->nameQuote('#__users')." WHERE ".$db->nameQuote('email')." = ".$db->quote($fbUser['email']);
+			$db->setQuery($query);
+			$registeredEmail = $db->loadResult();
+			if($registeredEmail){
+				MyapiController::showRegisterWindow(); 
+			}else{
+				MyapiController::newUser();
+				
+				$data = array();
+				$data[] =  "document.myApiLoginForm.submit();";
+				echo json_encode($data);
+				$mainframe->close(); 
+			}
 		}else{
+			$options['return'] = JRequest::getVar('return');
+			$options['uid'] = $uid;
+			$error = $mainframe->login($uid,$options);
+			
 			$data = array();
 			$data[] =  "document.myApiLoginForm.submit();";
 			echo json_encode($data);
@@ -336,7 +360,7 @@ class MyapiController extends JController {
 	{
 		global $mainframe;
 
-		$return = base64_decode(JRequest::getVar('return','','post'));
+		$return = base64_decode(JRequest::getVar('return',''));
 		// Get required system objects
 		$user 		= clone(JFactory::getUser());
 		$pathway 	=& $mainframe->getPathway();
@@ -351,9 +375,13 @@ class MyapiController extends JController {
 			$newUsertype = 'Registered';
 		}
 		
-		require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
-		$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser = $facebookmodel->getLoggedInUser();
+		global $fbUser;
+		if(!is_object($fbUser)){
+			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
+			$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
+			$fbUser = $facebookmodel->getLoggedInUser();
+		}
+		
 		if($fbUser['username'] != ''){
 			$newuserName = $fbUser['username'];
 		}else{

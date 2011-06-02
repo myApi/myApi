@@ -48,20 +48,20 @@ class MyapiModelFacebook extends JModel {
 		parent::__construct();
     }
 	
-	
-	
-	
 	/*
 	Function name: getLoggedInUser
 	Parameters: None
 	Returns: Returns the UID of the currently logged in user, or false.  Checks for an expired session
 	*/
-	function getLoggedInUser() {
+	function getLoggedInUser($access_token = NULL) {
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		try {
-		 $me = $facebook->api('/me?metadata=1');
+			if(is_null($access_token))
+		 		$me = $facebook->api('/me?metadata=1');
+			else
+				$me = $facebook->api('/me?metadata=1','get',array('access_token' => $access_token));
+				
 		} catch (FacebookApiException $e) {
-		  error_log($e);
 		  return false;
 		}
 		return $me;

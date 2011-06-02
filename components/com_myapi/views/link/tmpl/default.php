@@ -77,18 +77,11 @@
                             <input type="hidden" name="option" value="com_myapi" />
                             <tr>
                                 <td width="120" rowspan="2"><fb:profile-pic uid="loggedinuser" facebook-logo="false" linked="false" size="s"></fb:profile-pic></td>
-                                <td><?php echo JText::_('NEW_ACCOUNT_CLICK'); ?> <?php echo (!$fbUser['liked']) ? JText::_('NEW_ACCOUNT_CLICK_LIKE') : JText::_('NEW_ACCOUNT_CLICK_REGISTER');  ?></td>
+                                <td><?php echo JText::_('NEW_ACCOUNT_CLICK'); ?> <?php echo JText::_('NEW_ACCOUNT_CLICK_REGISTER');  ?></td>
                             <tr>
                                 <td>
-									<?php 	
-									if(!$fbUser['liked']): 
-										$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-										$com_params = new JParameter( $plugin->params );
-									?>
-                                    	<fb:like href="http://www.facebook.com/apps/application.php?id=<?php echo $com_params->get('appId'); ?>" show_faces="false" layout="button_count" width="50"></fb:like>
-                                    <?php else: ?>
                                     	<button class="button" type="submit"><?php echo JText::_('REGISTER'); ?></button>
-                                    <?php endif; ?>
+                                  
                                	</td>
                             </tr>
                         </table>
@@ -124,7 +117,7 @@
                                 <td colspan="2"><button class="button" type="submit"><?php echo JText::_('LOGIN'); ?></button></td>
                             </tr>
                             <tr>
-                                <td colspan="2"><a href="<?php echo $forgotPass; ?>"><?php echo JText::_('FORGOT_PASS?'); ?></a><br  />
+                                <td colspan="2"><a href="<?php echo $forgotPass; ?>"><?php echo JText::_('FORGOT_PASS'); ?></a><br  />
                                     <a href="<?php echo $forgotUser; ?>"><?php echo JText::_('FORGOT_USERNAME'); ?></a></td>
                             </tr>
                         </table>
