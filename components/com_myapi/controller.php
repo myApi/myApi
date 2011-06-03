@@ -272,6 +272,24 @@ class MyapiController extends JController {
 		$this->setRedirect($return,$message);
 	}
 	
+	function deleteLink(){
+		JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
+		$user = JFactory::getUser();
+		if(!$user->guest){
+			$db = JFactory::getDBO();
+			$query = "DELETE FROM ".$db->nameQuote('#__myapi_users')." WHERE ".$db->nameQuote('userId')." = ".$db->quote($user->id);
+			$db->setQuery($query);
+			$db->query();
+			
+			 if(!$db->getErrorNum()){
+				JFactory::getApplication()->enqueueMessage( JText::_('FACEBOOK_UNLINKED') );	
+			}else{
+				JError::raiseWarning( 100, JText::_('FACEBOOK_UNLINKED_ERROR') );	
+			}
+			$this->setRedirect(base64_decode(JRequest::getVar('return')));	
+		}
+	}
+	
 	//A function called via ajax to see is a Facebook user is linked to a Joomla user
 	function isLinked(){
 		global $mainframe;

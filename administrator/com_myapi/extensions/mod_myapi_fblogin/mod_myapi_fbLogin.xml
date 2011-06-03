@@ -47,6 +47,11 @@
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</param>
+		
+		<param name="login_unlink" type="radio" default="0" label="PARAM_UNLINK_LABEL" description="PARAM_UNLINK_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
 	</params>
 		
 </install>

@@ -33,7 +33,10 @@
 
 <div id="myApiLoginWrapper" class="<?php echo $classSfx; ?>">
 		<?php if(!$linked): ?> 
-        	<fb:login-button id="fbLoginButton" show-faces="<?php echo $show_faces; ?>" width="<?php echo $width; ?>" max-rows="<?php echo $max_rows; ?>" onlogin="myapi.auth.newLink('<?php echo JUtility::getToken(); ?>','<?php echo $loginUrl; ?>');" perms="<?php echo $permissions; ?>"><?php echo $linkText; ?></fb:login-button>
+        	<fb:login-button id="fbLoginButton" width="<?php echo $width; ?>" max-rows="<?php echo $max_rows; ?>" onlogin="myapi.auth.newLink('<?php echo JUtility::getToken(); ?>','<?php echo $loginUrl; ?>');" perms="<?php echo $permissions; ?>"><?php echo $linkText; ?></fb:login-button>
+            <?php if($show_faces == '1') : ?>
+				<div class="myApiFacepile"><fb:facepile width="<?php echo $width; ?>" max-rows="<?php echo $max_rows; ?>"></fb:facepile></div>
+			<?php endif; ?>
         <?php else: ?>
         	<?php if($avatar != ''): ?>
         		<img src="images/comprofiler/<?php echo $avatar; ?> " style="margin: 0px 1px 3px 1px; border-width:0px;">
@@ -47,5 +50,9 @@
             <input type="hidden" name="task" value="logout" />
             <input type="submit" name="Submit" class="button" value="Log out">
         </form>
+        
+        <?php if($linked && $unlink == '1'): ?> 
+        	<a href="<?php echo JRoute::_('index.php?option=com_myapi&task=deleteLink&return='.base64_encode(JURI::getInstance()->toString()).'&'.JUtility::getToken().'=1'); ?>">Delete facebook link.</a>
+       	<?php endif; ?>
 </div>
 

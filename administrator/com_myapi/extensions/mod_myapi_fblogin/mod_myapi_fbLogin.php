@@ -71,6 +71,8 @@ if($user->guest){
 	require(JModuleHelper::getLayoutPath('mod_myapi_fbLogin','guest'));	
 	
 }else{
+	$unlink	= $params->get('login_unlink','0');
+	
 	$db = JFactory::getDBO();
 	$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." WHERE userId =".$db->quote($user->id);
 	$db->setQuery($query);
