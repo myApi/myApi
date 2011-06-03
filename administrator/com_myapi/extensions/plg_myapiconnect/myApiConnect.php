@@ -41,8 +41,13 @@ class plgSystemmyApiConnect extends JPlugin
 	function getFacebook(){
 		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
 		$params = new JParameter( $plugin->params );
-		 
-		require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+		
+		try{ 
+			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+		}catch(Exception $e){
+			JError::raiseWarning( 100, $e->getMessage());
+		}
+		
 		$facebook =  new myApiFacebook(array(
 			'appId'  => $params->get('appId'),
 			'secret' => $params->get('secret'),
