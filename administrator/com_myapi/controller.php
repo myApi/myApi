@@ -133,5 +133,59 @@ class MyapiController extends JController {
 		$model->deleteSubscriptions();
 		$this->setRedirect('index.php?option=com_myapi&view=realtime');
 	}
+	
+	function addPages(){
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages"));
+		$user = $facebook->getSession();
+		if($user){
+			$permissions = $facebook->api("/me/permissions");
+			if(!array_key_exists('manage_pages', $permissions['data'][0]) ) {
+				$this->setRedirect($login);
+			}else{
+				$pages = $facebook->api('me/accounts');
+				$db = JFactory::getDBO();
+				$count = 0;
+				foreach($pages['data'] as $page){
+					if($page['category'] != 'Website'){
+						$pageLink = $facebook->api('/'.$page['id']);
+						$query = "INSERT INTO ".$db->nameQuote('#__myapi_pages')." (".$db->nameQuote('pageId').",".$db->nameQuote('access_token').",".$db->nameQuote('name').",".$db->nameQuote('link').",".$db->nameQuote('category').") VALUES (".$db->quote($page['id']).",".$db->quote($page['access_token']).",".$db->quote($page['name']).",".$db->quote($pageLink['link']).",".$db->quote($page['category']).") ".
+										"ON DUPLICATE KEY UPDATE ".$db->nameQuote('access_token')." = ".$db->quote($page['access_token'])." , ".$db->nameQuote('name')." = ".$db->quote($page['name'])."; ";
+						$db->setQuery($query);
+						$db->query();
+						if($db->getErrorNum()){
+							JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$db->getErrorMsg() );	
+						}else{
+							$count++;
+						}
+					}
+				}
+				
+				if($count > 0){
+					JFactory::getApplication()->enqueueMessage( sprintf(JText::_('PAGES_ADDED'),$count) );	
+				}
+				$this->setRedirect('index.php?option=com_myapi&view=pages');
+			}
+		}else{
+			$this->setRedirect($login);
+		}	
+	}
+	
+	function deletePages(){
+		JRequest::checkToken() or die( 'Invalid Token' );
+		$db = JFactory::getDBO();
+		$quoted = array();
+		foreach($_POST['cid'] as $id) $quoted[] = $db->quote($id);
+		$ids = implode(',',$quoted);
+		$query = "DELETE FROM ".$db->nameQuote('#__myapi_pages')." WHERE ".$db->nameQuote('pageId')." IN (".$ids.");";
+		$db->setQuery($query);
+		$db->query();
+		if($db->getErrorNum()){
+			JError::raiseWarning( 100, JText::_('PAGES_UNLINKED_ERROR').' '.$db->getErrorMsg() );	
+		}else{
+			JFactory::getApplication()->enqueueMessage( sprintf(JText::_('PAGES_UNLINKED'),$db->getAffectedRows()) );
+		}
+		$this->setRedirect("index.php?option=com_myapi&view=pages");
+	}
 }
 ?>
