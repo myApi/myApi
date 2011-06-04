@@ -48,15 +48,25 @@ class plgSystemmyApiConnect extends JPlugin
 			JError::raiseWarning( 100, $e->getMessage());
 		}
 		
-		$facebook =  new myApiFacebook(array(
-			'appId'  => $params->get('appId'),
-			'secret' => $params->get('secret'),
-			'cookie' => true, // enable optional cookie support
-		));	
-		return $facebook;
+		if( $params->get('appId') == '' || $params->get('secret') == ''){
+			JError::raiseWarning( 100, 'myApi requires a Facebook Application ID');
+			return false;	
+		}else{
+			$facebook =  new myApiFacebook(array(
+				'appId'  => $params->get('appId'),
+				'secret' => $params->get('secret'),
+				'cookie' => true, // enable optional cookie support
+			));	
+			return $facebook;
+		}
 	}
 
 	function onAfterDispatch(){
+		global $mainframe;
+		$document=& JFactory::getDocument(); 
+		if($document->getType() != 'html' || $mainframe->isAdmin())
+			return;
+			
 		JHTML::_('behavior.mootools');
 		$doc = & JFactory::getDocument();
 		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');	
@@ -66,14 +76,14 @@ class plgSystemmyApiConnect extends JPlugin
 		global $mainframe, $fbAsyncInitJs;
 		$document=& JFactory::getDocument();   
 		
-		if($document->getType() != 'html' || $mainframe->isAdmin()) 
+		if($document->getType() != 'html' || ($mainframe->isAdmin() && JRequest::getCmd('option') != 'com_myapi')) 
 			return;
 			
 
 		$plugin	=& JPluginHelper::getPlugin('system', 'myApiConnect');
 		$params = new JParameter( $plugin->params );  
 		
-		$u =& JURI::getInstance( JURI::base() );
+		$u =& JURI::getInstance( JURI::root() );
 		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 		$xdPath	= $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'plugins/system/facebookXD.html';
 		

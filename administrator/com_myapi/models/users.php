@@ -40,7 +40,7 @@ class MyapiModelUsers extends JModel {
 	
 	function __construct() {
 		parent::__construct();
-		global $mainframe, $option;
+		global $mainframe;
 		 
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');		
 		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
@@ -49,11 +49,11 @@ class MyapiModelUsers extends JModel {
  		$this->setState('limit', $limit);
 		
 		//for sortable columns
-		$filter_order     = $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order', '#__jos_myapi_users.userId', 'cmd' );
-        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
+		$filter_order     = $mainframe->getUserStateFromRequest(  'myapi_users_filter_order', 'filter_order', '#__jos_myapi_users.userId', 'cmd' );
+        $filter_order_Dir = $mainframe->getUserStateFromRequest( 'myapi_users_filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
  
-        $this->setState('filter_order', $filter_order);
-        $this->setState('filter_order_Dir', $filter_order_Dir);
+        $this->setState( 'myapi_users_filter_order', $filter_order);
+        $this->setState( 'myapi_users_filter_order_Dir', $filter_order_Dir);
     }
 	
 	function getUsers(){
@@ -88,19 +88,73 @@ class MyapiModelUsers extends JModel {
 	
 	function _buildQuery(){  
 	  $db = JFactory::getDBO();
-	  $query = "SELECT * FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__users.id')." ".$this->_buildContentOrderBy();
+	  $query = "SELECT * FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__users.id')." ".$this->_buildWhereClause()." ".$this->_buildContentOrderBy();
 	  return $query;
+	}
+	
+	function _buildWhereClause(){
+		global $mainframe;
+		$db = JFactory::getDBO();
+		
+		$type	= $mainframe->getUserStateFromRequest( 'myapi_users_filter_type', 'filter_type', '0', 'string');
+		$search	= $mainframe->getUserStateFromRequest( 'myapi_users_search', 'search', '', 'string' );
+		if (strpos($search, '"') !== false) {
+			$search = str_replace(array('=', '<'), '', $search);
+		}
+		$search = JString::strtolower($search);
+		
+		if($type != '0'){
+			if ( $type == 'Public Frontend' )
+			{
+				$where[] = ' #__users.usertype = \'Registered\' OR #__users.usertype = \'Author\' OR #__users.usertype = \'Editor\' OR #__users.usertype = \'Publisher\' ';
+			}
+			else if ( $type == 'Public Backend' )
+			{
+				$where[] = '#__users.usertype = \'Manager\' OR #__users.usertype = \'Administrator\' OR #__users.usertype = \'Super Administrator\' ';
+			}
+			else
+			{
+				$where[] = '#__users.usertype = LOWER( '.$db->quote($type).' ) ';
+			}	
+		}
+		
+		if (isset( $search ) && $search!= ''){
+			$searchEscaped = $db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where[] = '#__users.username LIKE '.$searchEscaped.' OR #__users.email LIKE '.$searchEscaped.' OR #__users.name LIKE '.$searchEscaped;
+		}
+		
+		if(is_array(@$where)){
+			return "WHERE ".implode(" AND ",$where);
+		}else{
+			return;
+		}
 	}
   
   	function _buildContentOrderBy(){
-		global $mainframe, $option;
+		global $mainframe;
 		$orderby = '';
-		$filter_order     = $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order');
-		$filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir');
+		$filter_order     = $mainframe->getUserStateFromRequest( 'myapi_users_filter_order', 'filter_order');
+		$filter_order_Dir = $mainframe->getUserStateFromRequest( 'myapi_users_filter_order_Dir', 'filter_order_Dir');
 		if(!empty($filter_order) && !empty($filter_order_Dir) ){
 			$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
 		}
 		return $orderby;
+	}
+	
+	function getUserTypesList(){
+		global $mainframe;
+		$db = JFactory::getDBO();
+		
+		$query = 'SELECT name AS value, name AS text'
+			. ' FROM #__core_acl_aro_groups'
+			. ' WHERE name != "ROOT"'
+			. ' AND name != "USERS"';
+		
+		$db->setQuery( $query );
+		$types[]	= JHTML::_('select.option',  '0', '- '. JText::_( 'Select Group' ) .' -' );
+		foreach( $db->loadObjectList() as $obj ) $types[] = JHTML::_('select.option',  $obj->value, JText::_( $obj->text ) );
+		
+		return JHTML::_('select.genericlist',   $types, 'filter_type', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text',  $mainframe->getUserStateFromRequest( 'myapi_users_filter_type', 'filter_type', 0, 'string' ));	
 	}
 	
 }

@@ -81,5 +81,8 @@ var myapi = {
 			}
 		  );
 		}
+	},
+	addFriend: function(uid){
+		FB.ui({method: 'friends', display: 'popup', id: uid });	
 	}
 };

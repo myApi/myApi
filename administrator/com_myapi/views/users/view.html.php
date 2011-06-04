@@ -34,20 +34,27 @@
 jimport( 'joomla.application.component.view');
 class MyapiViewUsers extends JView {
     function display($tpl = null) {
-		global $mainframe, $option;
-       	$model 		= $this->getModel('users');
-		
+		global $mainframe;
+		$model 		= $this->getModel('users');
 		$items 				= $model->getData();      
 		$pagination			= $model->getPagination();
-		$lists['order'] 	= $mainframe->getUserStateFromRequest(  $option.'filter_order', 'filter_order');
-		$lists['order_Dir'] = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir');
+		$lists['order'] 	= $mainframe->getUserStateFromRequest(  'myapi_users_filter_order', 'filter_order');
+		$lists['order_Dir'] = $mainframe->getUserStateFromRequest( 'myapi_users_filter_order_Dir', 'filter_order_Dir');
+		
+		$search				= $mainframe->getUserStateFromRequest( 'myapi_users_search', 'search', '', 'string' );
+		if (strpos($search, '"') !== false) {
+			$search = str_replace(array('=', '<'), '', $search);
+		}
+		$lists['search'] = JString::strtolower($search);
+		$lists['type'] = $model->getUserTypesList();
 		
 		$this->assignRef( 'lists', $lists );
 		$this->assignRef('pagination', $pagination);
 		$this->assignRef("users", $items);
 		
 		$doc =& JFactory::getDocument();
-		$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
+		$doc->addStyleSheet( JURI::root().'plugins/system/myApiConnect/myApi.css' );
+		$doc->addScript(JURI::root().'components/com_myapi/assets/js/myApi.js');
 		JToolBarHelper::title(JText::_('USERS_HEADER'), 'facebook.png');
 		JToolBarHelper::deleteList(JText::_('UNLINK_USER_DESC'),'unlinkUser', JText::_('UNLINK_USER'));
 

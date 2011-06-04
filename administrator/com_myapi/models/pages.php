@@ -41,5 +41,113 @@ class MyapiModelPages extends JModel {
 		$db->setQuery($query);
 		return $db->loadAssocList();
 	}
+	
+	var $_total = null;
+  	var $_pagination = null;
+	
+	function __construct() {
+		parent::__construct();
+		global $mainframe;
+		 
+        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');		
+		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		
+		$this->setState('limitstart', $limitstart);
+ 		$this->setState('limit', $limit);
+		
+		//for sortable columns
+		$filter_order     = $mainframe->getUserStateFromRequest(  'myapi_pages_filter_order', 'filter_order', '#__jos_myapi_pages.name', 'cmd' );
+        $filter_order_Dir = $mainframe->getUserStateFromRequest( 'myapi_pages_filter_order_Dir', 'filter_order_Dir', 'asc', 'word' );
+		$filter_category		= $mainframe->getUserStateFromRequest( 'myapi_pages_filter_category',		'filter_category', 		0,			'string' );
+		$search				= $mainframe->getUserStateFromRequest( 'myapi_pages_search',			'search', 			'',			'string' );
+ 
+        $this->setState('myapi_pages_filter_order', $filter_order);
+        $this->setState('myapi_pages_filter_order_Dir', $filter_order_Dir);
+		$this->setState('myapi_pages_filter_category', $filter_category);
+		$this->setState('myapi_pages_search', $search);
+    }
+	
+	function getData(){
+		if(empty($this->_data)){
+			$query = $this->_buildQuery();
+			$this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit')); 
+		}
+		return $this->_data;
+	}
+	function getTotal(){
+		if (empty($this->_total)) {
+			$query = $this->_buildQuery();
+			$this->_total = $this->_getListCount($query);    
+		}
+		return $this->_total;
+	}
+	function getPagination(){
+		if (empty($this->_pagination)) {
+			jimport('joomla.html.pagination');
+			$this->_pagination = new JPagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit') );
+		}
+		return $this->_pagination;
+	}
+	
+	function _buildQuery(){  
+	  $db = JFactory::getDBO();
+	  $query = "SELECT * FROM ".$db->nameQuote('#__myapi_pages')." ".$this->_buildWhereClause()." ".$this->_buildContentOrderBy();
+	  return $query;
+	}
+	
+	function _buildWhereClause(){
+		global $mainframe;
+		$db = JFactory::getDBO();
+		
+		$category 	= $mainframe->getUserStateFromRequest( 'myapi_pages_filter_category', 'filter_category', '0', 'string');
+		$search		= $mainframe->getUserStateFromRequest( 'myapi_pages_search', 'search', '', 'string' );
+		if (strpos($search, '"') !== false) {
+			$search = str_replace(array('=', '<'), '', $search);
+		}
+		$search = JString::strtolower($search);
+		
+		if($category != '0')
+			$where[] = " ".$db->nameQuote('#__myapi_pages.category')." = ".$db->quote($category)." ";
+		
+		if (isset( $search ) && $search!= ''){
+			$searchEscaped = $db->quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where[] = ' ( #__myapi_pages.name LIKE '.$searchEscaped.' OR #__myapi_pages.pageId = '.$searchEscaped.' ) ';
+		}
+		
+		if(is_array(@$where)){
+			return "WHERE ".implode(" AND ",$where);
+		}else{
+			return;
+		}
+	}
+  
+  	function _buildContentOrderBy(){
+		global $mainframe;
+		$orderby = '';
+		$filter_order     = $mainframe->getUserStateFromRequest( 'myapi_pages_filter_order', 'filter_order');
+		$filter_order_Dir = $mainframe->getUserStateFromRequest( 'myapi_pages_filter_order_Dir', 'filter_order_Dir');
+		if(!empty($filter_order) && !empty($filter_order_Dir) ){
+			$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
+		}
+		return $orderby;
+	}
+	
+	function getCategories(){
+		$db = JFactory::getDBO();
+		$query = "SELECT ".$db->nameQuote('category')." FROM ".$db->nameQuote('#__myapi_pages')." GROUP BY ".$db->nameQuote('category');
+		$db->setQuery($query);
+		$db->query();
+		return $db->loadObjectList();	
+	}
+	
+	function getCategoriesList(){
+		global $mainframe;
+		$cats = $this->getCategories();
+		$catOptions = array(JHTML::_('select.option', 0, '- '.JText::_('CATEGORY_SELECT').' -' ));
+		foreach($cats as $cat){
+			$catOptions[] = JHTML::_('select.option',  $cat->category, $cat->category );	
+		}
+		return JHTML::_('select.genericlist',   $catOptions, 'filter_category', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text',  $mainframe->getUserStateFromRequest( 'myapi_pages_filter_category', 'filter_category', 0, 'string' ));
+	}
 }
 ?>

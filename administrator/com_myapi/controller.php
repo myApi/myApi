@@ -136,7 +136,7 @@ class MyapiController extends JController {
 	
 	function addPages(){
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages"));
+		$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages","next" => JURI::base().'index.php?option=com_myapi&task=addPages',"cancel" => JURI::base()));
 		$user = $facebook->getSession();
 		if($user){
 			$permissions = $facebook->api("/me/permissions");
