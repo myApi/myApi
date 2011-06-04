@@ -84,9 +84,7 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 					error_log('myApi unable to calculate link for the article id '.$article->id);
 					return;
 				}
-				$u =& JURI::getInstance( JURI::base().$link );
-				$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
-				$articleURL = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
+				$articleURL = JRoute::_($link,true,-1);
 				$rawText = strip_tags($article->introtext);
 				$newTags = array();
 				$newTags['og:title'] 		= $article->title;

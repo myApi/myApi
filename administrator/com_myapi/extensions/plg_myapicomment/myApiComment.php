@@ -74,10 +74,7 @@ class plgContentmyApiComment extends JPlugin
 				error_log('myApi unable to calculate link for the article id '.$article->id);
 				return;
 			}
-				
-			$u =& JURI::getInstance( JURI::base().$link );
-			$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
-			$commentURL = 'http://'.$u->getHost().$port.$u->getPath().'?'.$u->getQuery();
+			$commentURL = JRoute::_($link,true,-1);
 			
 			$base = JURI::base();
 			$doc = & JFactory::getDocument();
