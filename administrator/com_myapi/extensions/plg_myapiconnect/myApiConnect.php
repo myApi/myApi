@@ -45,12 +45,14 @@ class plgSystemmyApiConnect extends JPlugin
 		try{ 
 			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
 		}catch(Exception $e){
-			JError::raiseWarning( 100, $e->getMessage());
+			return JError::raiseError( 100, $e->getMessage());
 		}
 		
 		if( $params->get('appId') == '' || $params->get('secret') == ''){
-			JError::raiseWarning( 100, 'myApi requires a Facebook Application ID');
-			return false;	
+			if( !is_object(JError::getError()) || (!is_array(JError::getError()->info)) ||  !(is_array(JError::getError()->info) && JError::getError()->info['myApi'] == 100))
+				return JError::raiseWarning( 100, 'myApi requires a Facebook Application ID',array('myApi' =>'100'));
+			return
+				false;
 		}else{
 			$facebook =  new myApiFacebook(array(
 				'appId'  => $params->get('appId'),

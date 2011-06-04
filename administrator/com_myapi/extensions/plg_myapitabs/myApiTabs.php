@@ -46,26 +46,28 @@ class plgSystemmyApiTabs extends JPlugin{
 			return;
 		
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		$signedRequest = $facebook->getSignedRequest();
-		$session =& JFactory::getSession();
-		if(is_array($signedRequest)){
-			JRequest::setVar('tmpl','component');
-			if(isset($signedRequest['user_id'])){
-				$user = JFactory::getUser();
-				if($user->guest){
-					global $mainframe;
-					$options['uid'] = $signedRequest['user_id'];
-					$mainframe->login($signedRequest['user_id'],$options);
+		if(!$facebook){
+			$signedRequest = $facebook->getSignedRequest();
+			$session =& JFactory::getSession();
+			if(is_array($signedRequest)){
+				JRequest::setVar('tmpl','component');
+				if(isset($signedRequest['user_id'])){
+					$user = JFactory::getUser();
+					if($user->guest){
+						global $mainframe;
+						$options['uid'] = $signedRequest['user_id'];
+						$mainframe->login($signedRequest['user_id'],$options);
+					}
 				}
 			}
+			$method = $_SERVER['REQUEST_METHOD'];  
+			if($session->get( 'fbtmpl' ) == '1'){
+				JRequest::setVar('tmpl','component');
+			}
+			
+			if(JRequest::getVar('tmpl') == 'component')
+				$session->set( 'fbtmpl','1');
 		}
-		$method = $_SERVER['REQUEST_METHOD'];  
-		if($session->get( 'fbtmpl' ) == '1'){
-			JRequest::setVar('tmpl','component');
-		}
-		
-		if(JRequest::getVar('tmpl') == 'component')
-			$session->set( 'fbtmpl','1');
 	}
 	
 	function onAfterDispatch(){

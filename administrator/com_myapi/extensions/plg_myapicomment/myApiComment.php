@@ -62,6 +62,8 @@ class plgContentmyApiComment extends JPlugin
 		{
 			JPlugin::loadLanguage( 'plg_content_myapicomment' , JPATH_ADMINISTRATOR );
 			$facebook = plgSystemmyApiConnect::getFacebook();
+			if(!$facebook){ return; }
+			
 			$xid = urlencode('articlecomment'.$article->id);
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
