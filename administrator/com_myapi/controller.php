@@ -76,7 +76,7 @@ class MyapiController extends JController {
 		$data['base_domain'] 	= $baseDomain;
 		$data['uninstall_url'] 	= JURI::root().'index.php?option=com_myapi&task=deauthorizeCallback';
 		$data['connect_url'] 	= $connectURL;
-		
+		$facebook = null;
 		try{
 			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
 			$facebook = new myApiFacebook(array(
@@ -84,16 +84,20 @@ class MyapiController extends JController {
 				'secret' => $post['params']['secret']
 			));
 			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
+		}catch (FacebookApiException $e) {
+			JError::raiseWarning( 100, JText::_('APP_SAVED_ERROR').$e);
+		}
+		
+		if(!is_null($facebook)){
+			JFactory::getApplication()->enqueueMessage(JText::_('APP_SAVED'));
 			
 			$model = $this->getModel('realtime');
 			$model->addSubscriptions();
-			
-			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED'));	
 		
-		}catch (FacebookApiException $e) {
-			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect',JText::_('APP_SAVED_ERROR').$e);		
+			$this->addPages('index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
+		}else{
+			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
 		}
-		
 	}
 	
 	function save_myApiTabs(){
@@ -134,13 +138,20 @@ class MyapiController extends JController {
 		$this->setRedirect('index.php?option=com_myapi&view=realtime');
 	}
 	
-	function addPages(){
+	function addPages($end = 'index.php?option=com_myapi&view=pages'){
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages","next" => JURI::base().'index.php?option=com_myapi&task=addPages',"cancel" => JURI::base()));
+		$endUrl = base64_decode(JRequest::getVar('endUrl',base64_encode($end)));
+		$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages","next" => JURI::base().'index.php?option=com_myapi&task=addPages&endUrl='.base64_encode($end),"cancel" => JURI::base()));
 		$user = $facebook->getSession();
 		if($user){
-			$permissions = $facebook->api("/me/permissions");
-			if(!array_key_exists('manage_pages', $permissions['data'][0]) ) {
+			$permissions = null;
+			try{
+				$permissions = $facebook->api("/me/permissions");
+			}catch (FacebookApiException $e) {
+				JError::raiseWarning( 100, $e );
+			}
+			
+			if(!is_array($permissions) || !array_key_exists('manage_pages', $permissions['data'][0]) ) {
 				$this->setRedirect($login);
 			}else{
 				$pages = $facebook->api('me/accounts');
@@ -164,7 +175,7 @@ class MyapiController extends JController {
 				if($count > 0){
 					JFactory::getApplication()->enqueueMessage( sprintf(JText::_('PAGES_ADDED'),$count) );	
 				}
-				$this->setRedirect('index.php?option=com_myapi&view=pages');
+				$this->setRedirect($endUrl);
 			}
 		}else{
 			$this->setRedirect($login);
