@@ -15,6 +15,7 @@
 		<filename>index.html</filename>
 		<filename>tmpl/default.php</filename>
 		<filename>tmpl/index.html</filename>
+		<folder>elements</folder>
 	</files>
 	
 	<languages>
@@ -22,11 +23,11 @@
 		<language tag="nb-NO">languages/nb-NO.mod_myapi_fbActivity.ini</language>
 	</languages>
 	
-	<params>	
+	<params addPath="/modules/mod_myapi_fbActivity/elements/">	
 		<param name="moduleclass_sfx" type="text" default="" label="PARAM_CLASS_SFX_LABEL" description="PARAM_CLASS_SFX_DESC" />
 		<param name="activity_width" type="text" default="180" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" size="30" />
 		<param name="activity_height" type="text" default="" label="PARAM_HEIGHT_LABEL" description="PARAM_HEIGHT_DESC" size="30" />
-		<param name="activity_border" type="text" default="" label="PARAM_BORDER_LABEL" description="PARAM_BORDER_DESC" size="30" />
+		<param name="activity_border" type="color" default="" label="PARAM_BORDER_LABEL" description="PARAM_BORDER_DESC" size="30" />
 		<param name="activity_header" type="radio" default="1" label="PARAM_HEADER_LABEL" description="PARAM_HEADER_DESC">
 		  	<option value="0">NO</option>
 		  	<option value="1">YES</option>

@@ -33,7 +33,7 @@
 
 <?php if($pageLink != ""): ?>
 	<div class="<?php echo $classSfx; ?>">
-   		<fb:like-box href="<?php echo $pageLink; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" colorscheme="<?php echo $scheme; ?>" show_faces="<?php echo $faces; ?>" stream="<?php echo $stream; ?>" header="<?php echo $header; ?>"></fb:like-box>
+   		<fb:like-box href="<?php echo $pageLink; ?>" width="<?php echo $width; ?>" height="<?php echo $height; ?>" colorscheme="<?php echo $scheme; ?>" show_faces="<?php echo $faces; ?>" stream="<?php echo $stream; ?>" header="<?php echo $header; ?>" border_color="<?php echo $border; ?>"></fb:like-box>
         <div style="clear:both;"></div>
   	</div>
 <?php elseif($user->usertype == 'Administrator' || $user->usertype == 'Super Administrator'): ?>

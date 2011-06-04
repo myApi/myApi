@@ -12,53 +12,61 @@
  **                       `Y8P'                       o888o            	    **
  **                                                                         **
  **                                                                         **
- **   Joomla! 1.5 Module myApi_fbfan                                        **
+ **   Joomla! 1.5 Module mod_myapi_fbFan                                    **
  **   @Copyright Copyright (C) 2011 - Thomas Welton                         **
  **   @license GNU/GPL http://www.gnu.org/copyleft/gpl.html                 **	
  **                                                                         **	
- **   myApi_fbfan is free software: you can redistribute it and/or modify   **
- **   it under the terms of the GNU General Public License as published by  **
- **   the Free Software Foundation, either version 3 of the License, or	    **	
- **   (at your option) any later version.                                   **
+ **   mod_myapi_fbFan is free software: you can redistribute it and/or      **
+ **   modify it under the terms of the GNU General Public License as        **
+ **   published by the Free Software Foundation, either version 3 of the    **	
+ **   License, or (at your option) any later version.                       **
  **                                                                         **
- **   myApi_fbfan is distributed in the hope that it will be useful,	    **
+ **   mod_myapi_fbFan is distributed in the hope that it will be useful,    **
  **   but WITHOUT ANY WARRANTY; without even the implied warranty of	    **
  **   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         **
  **   GNU General Public License for more details.                          **
  **                                                                         **
  **   You should have received a copy of the GNU General Public License	    **
- **   along with myApi_fbfan.  If not, see <http://www.gnu.org/licenses/>.	**
+ **   along with mod_myapi_fbFan. If not, see <http://www.gnu.org/licenses/>**
  **                                                                         **			
  *****************************************************************************/
-
-if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook())
-	return;
-			 
-$classSfx 		= $params->get('moduleclass_sfx');
-$width 			= $params->get('fan_width');
-$height 		= $params->get('fan_height');
-$header		 	= $params->get('fan_header');
-$stream 		= $params->get('fan_stream');
-$scheme 		= $params->get('fan_scheme');
-$faces	 		= $params->get('fan_faces');
-$pageLink 		= $params->get('fan_href');
-$border 		= $params->get('fan_border');
-
-if($pageLink == ''){
-	require_once (dirname(__FILE__).DS.'helper.php');
-	
-	$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-	$com_params = new JParameter( $plugin->params );
-
-	$profile_id = $com_params->get('appId');
-	$cache = & JFactory::getCache('modmyapifbFanHelper');
-	$cache->setCaching( 1 );
-	$pageLink = $cache->call( array( 'modmyapifbFanHelper', 'getPageLink') ,$profile_id  );
+ 
+class JElementColor extends JElement{
+	function fetchElement($name, $value, &$node, $control_name){
+		static $embedded;
+		if(!$embedded){
+			$js = "window.addEvent('domready',function(){
+					Element.extend({
+						getSiblings: function() {
+							return this.getParent().getChildren().remove(this);
+						}
+					});
+					
+					$$('.rainbowbtn').each(function(item){
+						item.color=new MooRainbow(item.id, {
+							startColor: [58, 142, 246],
+							wheel: true,
+							id:item.id+'x',
+							onChange: function(color) {
+							item.getSiblings()[0].value = color.hex;
+							},
+							onComplete: function(color) {
+							item.getSiblings()[0].value = color.hex;
+							},
+							imgPath: '".JURI::root()."modules/mod_myapi_fbFan/elements/moorainbow/images/'
+						});
+					});
+				});";
+				
+			$document = JFactory::getDocument();
+			$document->addScriptDeclaration($js);
+			$document->addScript(JURI::root()."modules/mod_myapi_fbFan/elements/moorainbow/mooRainbow.js");
+			$document->addStyleSheet(JURI::root()."modules/mod_myapi_fbFan/elements/moorainbow/mooRainbow.css");
+			$embedded=true;
+		} 
+		$html = '<input name="'.$control_name.'['.$name.']" type="text" class="inputbox" id="'.$control_name.$name.'" value="'.$value.'" size="10" />'.
+            	'<button type="button" id="img'.$name.'" class="rainbowbtn">'.JText::_('COLOR_PICKER').'</button>';	
+		
+		return $html;
+	}
 }
-
-$user = JFactory::getUser();
-
-require(JModuleHelper::getLayoutPath('mod_myapi_fbFan','default'));
-
-?>
-
