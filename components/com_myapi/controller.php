@@ -268,8 +268,26 @@ class MyapiController extends JController {
 		$credentials['password'] = JRequest::getString('passwd', '', 'post', JREQUEST_ALLOWRAW);
  
 		$error = $mainframe->login($credentials, $options);
-		$message = (JError::isError($error)) ? $error->message : JText::_( 'LOGGED_IN_FACEBOOK' );
-		$this->setRedirect($return,$message);
+		
+		if(JError::isError($error)){
+			JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$error->message );
+		}else{
+			$facebook = plgSystemmyApiConnect::getFacebook();
+			$facebookSession = $facebook->getSession();
+			$avatar = 'facebookUID'.$facebookSession['uid'].'.jpg';
+			$user = JFactory::getUser();
+			$db		= JFactory::getDBO();
+			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
+			$db->setQuery($query);
+			$db->query();
+			if($db->getErrorNum()){
+				JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$db->getErrorMsg() );	
+			}else{
+				JFactory::getApplication()->enqueueMessage(JText::_( 'LOGGED_IN_FACEBOOK'));
+			}
+			
+		}
+		$this->setRedirect($return);
 	}
 	
 	function deleteLink(){
@@ -298,15 +316,23 @@ class MyapiController extends JController {
 		$db 	= JFactory::getDBO();
 		$uid 	= JRequest::getVar('fbId','','get');
 		$query 	= "SELECT userId FROM ".$db->nameQuote('#__myapi_users')." WHERE uid =".$db->quote($uid);
+		
+		$query = "SELECT #__users.id,#__myapi_users.access_token,#__myapi_users.userId,#__users.block FROM ".$db->nameQuote('#__myapi_users')." LEFT JOIN #__users ON #__myapi_users.userId = #__users.id WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
 		$db->setQuery($query);
 		$db->query();
 		$num_rows = $db->getNumRows();
-		$query_id = $db->loadResult();
+		$result = $db->loadAssoc();
 		
 		$facebook->setSession(array('access_token' => JRequest::getVar('access_token'), 'sig' => JRequest::getVar('sig'), 'uid' => JRequest::getVar('uid'),'expires' => JRequest::getVar('expires'),'secret' => JRequest::getVar('secret'),'session_key' => JRequest::getVar('session_key'),'base_domain' => JRequest::getVar('base_domain')));
 		$session = $facebook->getSession();
 		
-		if($num_rows == 0){
+		if($num_rows > 0 && $result['id'] != $result['userId']){
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'tables');
+			$row =& JTable::getInstance('myapiusers', 'Table');
+			$row->delete($result['userId']);	
+		}
+		
+		if($num_rows == 0 || ($result['id'] != $result['userId'])){
 			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'facebook.php';
 			$facebookmodel = new myapiModelfacebook;  //Bring the myAPI facebook model
 			global $fbUser;
@@ -327,10 +353,6 @@ class MyapiController extends JController {
 				$mainframe->close(); 
 			}
 		}else{
-			$options['return'] = JRequest::getVar('return');
-			$options['uid'] = $uid;
-			$error = $mainframe->login($uid,$options);
-			
 			$data = array();
 			$data[] =  "document.myApiLoginForm.submit();";
 			echo json_encode($data);
@@ -473,8 +495,9 @@ class MyapiController extends JController {
 			myapiController::_sendMail($user, $password);
 	
 			$message = JText::_( 'LOGGED_IN_FACEBOOK' );
-			
-			$options['fake_array'] = "This mainframe->login needs and array passed to it";
+			$options['return'] = $return;
+			$options['uid'] = $fbUser['id'];
+			$options['silent'] = true;
 			$error = $mainframe->login($fbUser['id'],$options);
 			$user = JFactory::getUser();
 			

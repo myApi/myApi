@@ -54,31 +54,45 @@ class plgAuthenticationmyApiAuth extends JPlugin
       	if(!is_array($uid)){
 			$db =& JFactory::getDBO();
 			
-			$query = "SELECT #__users.id,#__myapi_users.access_token FROM ".$db->nameQuote('#__myapi_users')." JOIN #__users ON #__myapi_users.userId = #__users.id WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid)." AND #__users.block = '0'";
+			$query = "SELECT #__users.id,#__myapi_users.access_token,#__myapi_users.userId,#__users.block FROM ".$db->nameQuote('#__myapi_users')." LEFT JOIN #__users ON #__myapi_users.userId = #__users.id WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
 			$db->setQuery( $query );
 			$db->query();
 			$result = $db->loadAssoc();
 			$id = $result['id'];
-			if($id != ''){      
-				if($result['access_token'] == ''){
-					$facebook = plgSystemmyApiConnect::getFacebook();
-					$facebookSession = $facebook->getSession();
-					$query = "UPDATE ".$db->nameQuote('#__myapi_users')." SET ".$db->nameQuote('access_token')." = ".$db->nameQuote($facebookSession['access_token'])." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
-					$db->setQuery($query);
-					$db->query();	
+			
+			if($result['block'] == 0){
+				if($id != ''){      
+					if($result['access_token'] == ''){
+						$facebook = plgSystemmyApiConnect::getFacebook();
+						$facebookSession = $facebook->getSession();
+						$query = "UPDATE ".$db->nameQuote('#__myapi_users')." SET ".$db->nameQuote('access_token')." = ".$db->nameQuote($facebookSession['access_token'])." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
+						$db->setQuery($query);
+						$db->query();	
+					}
+					 
+					$user = JFactory::getUser($id);
+					$response->status			= JAUTHENTICATE_STATUS_SUCCESS;
+					$response->error_message	= '';
+					$response->username = $user->username;
+					return true;
+				}else{
+					if($result['userId'] != ''){
+						JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'tables');
+						$row =& JTable::getInstance('myapiusers', 'Table');
+						$row->delete($result['userId']);
+						$response->error_message = JText::_('ACCOUNT_DELETED');	
+					}else{
+						$response->error_message = JText::_('NOT_LINKED');		
+					}
+					$response->status = JAUTHENTICATE_STATUS_FAILURE;
+					return false;
 				}
-				 
-				$user = JFactory::getUser($id);
-				$response->status			= JAUTHENTICATE_STATUS_SUCCESS;
-				$response->error_message	= '';
-				$response->username = $user->username;
-				return true;
-			}
-			else{
+			}else{
+				$response->error_message = JText::_('ACCOUNT_BLOCKED');
 				$response->status = JAUTHENTICATE_STATUS_FAILURE;
-				$response->error_message = JText::_('NOT_LINKED');
 				return false;
 			}
+			
 		}
 	 }
 }
