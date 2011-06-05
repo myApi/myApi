@@ -77,7 +77,15 @@ class plgContentmyApiSend extends JPlugin
 				elseif($send_categories == $article->category) $send_show = true;
 			}
 			
-			if(($send_show) || ($send_show_on == 'all')){
+			if(JRequest::getVar('view','','get') == 'article'){	
+				$viewAccess = $myapiparama->get("send_view_article","1");
+			}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
+				$viewAccess = $myapiparama->get("send_view_blog","1");
+			}else{
+				$viewAccess = $myapiparama->get("send_view_list","1");
+			}
+			
+			if( (($send_show) || ($send_show_on == 'all')) && ($viewAccess)){
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
 				if(isset($article->slug)){

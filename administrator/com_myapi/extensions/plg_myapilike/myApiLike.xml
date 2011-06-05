@@ -77,6 +77,22 @@
 			<option value="-1"></option>
         </param>
 		
+		<param name="like_view_article" type="radio" default="1" label="PARAM_ARTICLE_LABEL" description="PARAM_VIEW_DESC">
+		  	<option value="1">SHOW</option>
+			<option value="0">HIDE</option>
+		</param>
+		
+		<param name="like_view_list" type="radio" default="1" label="PARAM_LIST_LABEL" description="PARAM_VIEW_DESC">
+		 	<option value="1">SHOW</option>
+			<option value="0">HIDE</option>
+		</param>
+		
+		<param name="like_view_blog" type="radio" default="1" label="PARAM_BLOG_LABEL" description="PARAM_VIEW_DESC">
+		  	 	<option value="1">SHOW</option>
+				<option value="0">HIDE</option>
+		</param>
+		
+		
 		<param name="like_ref" type="text" default="" label="PARAM_REF_LABEL" description="PARAM_REF_DESC" size="30" />
 	</params>
 	

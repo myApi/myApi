@@ -60,6 +60,7 @@ class plgContentmyApiLike extends JPlugin
 			$show_faces 		= ($myapiparama->get('show_faces') == 1) ? 'true' : 'false';
 			$position			= $myapiparama->get('position','myApiShareTop');
 			$like_show 			= false;
+			$viewAccess			= false;
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			
@@ -77,7 +78,15 @@ class plgContentmyApiLike extends JPlugin
 				elseif($like_categories == $article->category) $like_show = true;
 			}
 			
-			if(($like_show) || ($like_show_on == 'all')){
+			if(JRequest::getVar('view','','get') == 'article'){	
+				$viewAccess = $myapiparama->get("like_view_article","1");
+			}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
+				$viewAccess = $myapiparama->get("like_view_blog","1");
+			}else{
+				$viewAccess = $myapiparama->get("like_view_list","1");
+			}
+			
+			if( (($like_show) || ($like_show_on == 'all'))  && $viewAccess ){
 				if(isset($article->slug)){
 					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);

@@ -81,7 +81,15 @@ class plgContentmyApiShare extends JPlugin
 				{ if($share_categories == $article->category) { $share_show = true; }	}
 			}
 			
-			if(($share_show) || ($share_show_on == 'all'))
+			if(JRequest::getCmd('view','','get') == 'article'){	
+				$viewAccess = $myapiparama->get("share_view_article","1");
+			}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
+				$viewAccess = $myapiparama->get("share_view_blog","1");
+			}else{
+				$viewAccess = $myapiparama->get("share_view_list","1");
+			}
+			
+			if((($share_show) || ($share_show_on == 'all')) && ($viewAccess ))
 			{
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
