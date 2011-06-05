@@ -158,15 +158,14 @@ class plgContentmyApiComment extends JPlugin
 			if($comment_show && $hasAccess ){
 				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" colorscheme="'.$comments_scheme.'"></fb:comments>';
 				
-				$comment_link = "<br /><a id='".$xid."commentLink' class='' href='#'>".JText::_('ADD_COMMENT')."</a><br />";
+				$comment_link = "<a id='".$xid."commentLink' class='show' href='#'>".JText::_('ADD_COMMENT')."</a>";
 				
-				
-				$js = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,\"<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'693\'></fb:comments>\"); }); });";
-				
-				$viewType = null;
+				$jsCommentBox = "<fb:comments app_id=\'".$facebook->getAppId()."\' migrated=\'1\' xid=\'".$xid."\' url=\'".$commentURL."\' numposts=\'5\' width=\'693\'></fb:comments>";
+				$modalJs = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,'".$jsCommentBox."'); }); });";
+				$injectJs = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ if(this.hasClass('show')){ this.removeClass('show'); this.setText('".JText::_('HIDE_COMMENTS')."'); var delBox = new Element('div', {'id': '".$xid."delBox'}); delBox.setHTML('".$jsCommentBox."'); delBox.injectInside(this.getParent()); FB.XFBML.parse($('".$xid."delBox'));  } else {  this.setText('".JText::_('ADD_COMMENT')."'); this.addClass('show'); $('".$xid."delBox').remove(); } });  });";
 				
 				if(JRequest::getVar('view','','get') == 'article'){	
-					$viewType = ($comments_view_article == 1) ? 'box' : $viewType = 'link';
+					$viewType = 'article';
 				
 					//Only add noscript comments for article view
 					$cache = & JFactory::getCache('plgContentmyApiComment - Comments for SEO');
@@ -175,9 +174,9 @@ class plgContentmyApiComment extends JPlugin
 					$comments = $cache->call( array( 'plgContentmyApiComment', 'getComments'),$xid);
 					$article->text .= "<noscript><h3>Comments for ".$article->title."</h3>".$comments."</noscript>";
 				}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
-					$viewType = ($comments_view_blog == 1) ? 'box' : $viewType = 'link';
+					$viewType = 'blog';
 				}else{
-					$viewType = ($comments_view_list == 1) ? 'box' : $viewType = 'link';
+					$viewType = 'link';
 				}
 				
 				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
@@ -191,17 +190,37 @@ class plgContentmyApiComment extends JPlugin
 					$dom->load($article->text);
 				}
 				
-				$commentEl = ($viewType == 'box') ? $comment_box : $comment_link;
-				//$colspan = ($buttons = $dom->find('.myApiShareBottom',0)->find('.myApiButtons',0)) ?  sizeof($buttons->find('td')) : 1;
-				$tr = '<tr class="myApiComments"><td class="myApiCommentsCell">'.$commentEl.'</td></tr>';
-				$row = $dom->find('.myApiShareBottom',0);
-				$row->innertext .= $tr;
-				
-				if($viewType == 'link'){
-					$doc->addScriptDeclaration($js);
-					plgContentmyApiComment::addFbJs($xid);
+				switch($myapiparama->get('comments_view_'.$viewType)){
+					case 1:
+						$commentEl = $comment_box;	
+					break;
+					
+					case 2:
+						$commentEl = $comment_link;
+						$doc->addScriptDeclaration($modalJs);	
+						plgContentmyApiComment::addFbJs($xid);
+					break;
+					
+					case 3:
+						$commentEl = $comment_link;
+						$doc->addScriptDeclaration($injectJs);
+						plgContentmyApiComment::addFbJs($xid);
+					break;
+					
+					default:
+						$commentEl = NULL;
+					break;
+						
 				}
-				$article->text 	= $dom->save();
+				
+				if(!is_null($commentEl)){
+					$tr = '<tr class="myApiComments"><td class="myApiCommentsCell">'.$commentEl.'</td></tr>';
+					$row = $dom->find('.myApiShareBottom',0);
+					$row->innertext .= $tr;
+					
+					$article->text 	= $dom->save();
+				}
+				
 				$dom->clear(); unset($dom);
 			}
 		}

@@ -24,19 +24,6 @@ class myApiButtons{
 		}
 		
 		$text 	= $dom->save();
-		$dom->load($text);
-		
-		$commentsTable = $dom->find('.myApiShareBottom',0);
-		if($commentsTable){
-			$commentsEl = $commentsTable->find('.myApiCommentsCell',0);
-			if($commentsEl){
-				$buttonRow = $commentsTable->find('.myApiButtons',0);
-				if($buttonRow){
-					$commentsEl->colspan = sizeof($buttonRow->find('td'));
-					$text 	= $dom->save();
-				}
-			}
-		}
 		$dom->clear(); unset($dom);	
 		return $text;
 	}

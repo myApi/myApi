@@ -30,12 +30,14 @@
 		<param name="comments_view_article" type="radio" default="1" label="PARAM_ARTICLE_LABEL" description="PARAM_VIEW_DESC">
 			<option value="1">PARAM_VIEW_BOX</option>
 		  	<option value="2">PARAM_VIEW_LINK</option>
+			<option value="3">PARAM_VIEW_TOGGLE</option>
 			<option value="0">PARAM_VIEW_NONE</option>
 		</param>
 		
 		<param name="comments_view_list" type="radio" default="2" label="PARAM_LIST_LABEL" description="PARAM_VIEW_DESC">
 			<option value="1">PARAM_VIEW_BOX</option>
 		  	<option value="2">PARAM_VIEW_LINK</option>
+			<option value="3">PARAM_VIEW_TOGGLE</option>
 			<option value="0">PARAM_VIEW_NONE</option>
 			
 		</param>
@@ -43,6 +45,7 @@
 		<param name="comments_view_blog" type="radio" default="2" label="PARAM_BLOG_LABEL" description="PARAM_VIEW_DESC">
 			<option value="1">PARAM_VIEW_BOX</option>
 		  	<option value="2">PARAM_VIEW_LINK</option>
+			<option value="3">PARAM_VIEW_TOGGLE</option>
 			<option value="0">PARAM_VIEW_NONE</option>
 		</param>
 		
