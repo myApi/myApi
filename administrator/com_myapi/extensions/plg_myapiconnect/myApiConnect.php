@@ -120,7 +120,7 @@ EOD;
 		
 		//This image points to myapi.co.uk but it is not a backlink and doesn't harm your SEO rankings in anyway. If you want to delete it you can but the rest of the code is vital.
 		$host = JURI::getInstance(JURI::current());
-		$pixelTag = ($host->getScheme() == 'http') ? '<img src="http://myapi.co.uk/index.php?option=com_pixeltag&amp;appid='.$params->get('appId').'&amp;domain='.JURI::base().'" style="border:0px;" alt="fbPixel"/>' : '';
+		$pixelTag = ($host->getScheme() == 'http') ? '<img src="http://www.myapi.co.uk/index.php?option=com_pixeltag&amp;appid='.$params->get('appId').'&amp;domain='.JURI::base().'" style="border:0px;" alt="fbPixel"/>' : '';
 		$FeatureLoader_javascript = '<div id="fb-root">'.$pixelTag.'</div><script type="text/javascript">document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
 		
 		$bodyEl = $dom->find('body',0);
