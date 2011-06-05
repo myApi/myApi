@@ -567,5 +567,161 @@ class MyapiController extends JController {
 			}
 		}
 	}
+	
+	function commentCreate(){
+		global $mainframe;
+		$href 	= JRequest::getVar('commentlink',NULL,'get');
+		$db		=& JFactory::getDBO();
+		$query 	= "INSERT IGNORE INTO ".$db->nameQuote('#__myapi_comment_mail')." (".$db->nameQuote('href').") VALUES (".$db->quote($href).");"; 
+		$db->setQuery($query);
+		$db->query();
+		
+		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+		$commentParams = new JParameter($plugin->params);
+		$commentSend = $commentParams->get('comments_email',1);
+		
+		if(intval($commentSend) == 1)
+			$this->commentQueueSend($commentSend);
+			
+		$mainframe->close();	
+	}
+	
+	
+	function commentQueueSend(){
+		global $mainframe;
+		//get the comment queue
+		$db = JFactory::getDBO();
+		$query = "SELECT ".$db->nameQuote('href')." FROM ".$db->nameQuote('#__myapi_comment_mail');
+		$db->setQuery($query);
+		$commentQueue = $db->loadResultArray();
+		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+		$commentParams = new JParameter($plugin->params);
+		$commentSend = $commentParams->get('comments_email',1);
+		if($db->getAffectedRows() > 0 && intval($commentSend) > 0){
+			$facebook 	= plgSystemmyApiConnect::getFacebook();
+			if($facebook){
+				
+				$component = JComponentHelper::getComponent( 'com_myapi' );
+				$params = new JParameter( $component->params );
+				$lastEmailTime = $params->get('commentEmailTime',time()-(60*60*24*7*4));
+				$newEmailTime = time();
+				
+				//Get the admins
+				$db		=& JFactory::getDBO();
+				$query = 'SELECT email' . ' FROM #__users' . ' WHERE LOWER( usertype ) = "super administrator"';
+				$db->setQuery( $query );
+				$recipients = $db->loadResultArray();
+				
+				$emailBody = array();
+				$totalComments = 0;
+				foreach($commentQueue as $index => $eachHref){	
+					$href = parse_url($eachHref);
+					parse_str($href['query']);
+					//Get comments from facebook
+					if(isset($xid)){
+						try{
+							$fbQuery = "SELECT fromid, username, text, xid FROM comment WHERE xid = '".$xid."' AND  time > ".($lastEmailTime)." AND time < ".$newEmailTime." ";
+							$comments = $facebook->api(array('method' => 'fql.query','query' => $fbQuery,'access_token' => $facebook->getAppId().'|'.$facebook->getApiSecret()));
+						} catch (FacebookApiException $e) { return; }
+						
+						if(is_array($comments)){
+							//build email strings
+							$totalComments += sizeof($comments);
+							$emailBody[$xid]['link'] = $eachHref;
+							$emailBody[$xid]['xid'] = $xid;
+							
+							if(substr($xid,0,7) == 'article'){
+								
+							}
+							
+							$articlequery = null;
+							switch(substr($xid,0,2)){
+								case 'k2':
+									$articlequery = "SELECT ".$db->nameQuote('title')." FROM ".$db->nameQuote('#__content')." WHERE ".$db->nameQuote('id')." = ".$db->quote(substr($xid,9));
+								break;
+								
+								case 'ar':
+									$articlequery = "SELECT ".$db->nameQuote('title')." FROM ".$db->nameQuote('#__content')." WHERE ".$db->nameQuote('id')." = ".$db->quote(substr($xid,14));
+								break;		
+							}
+							$articleTitle = '';
+							if(!is_null($articlequery)){
+								$db->setQuery($articlequery);
+								$articleTitle = $db->loadResult();
+							}	
+						 	
+							$intro = sprintf ( JText::_( 'NEW_COMMENT_ARTICLE' ), sizeof($comments),$url,$articleTitle);
+							$emailBody[$xid]['comments']['plain'] = $intro."\n";
+							$emailBody[$xid]['comments']['html'] = '<tr><td colspan="3"><h5 style="margin-bottom:5px; color: #1C2A47; margin-top:10px;">'.$intro.'</h5></td></tr>';
+							foreach($comments as $comment){
+								$username = $facebook->api('/'.$comment['fromid']);
+								$emailBody[$xid]['comments']['plain'] .= "\t".sprintf(JText::_('COMMENT_ITEM'),$username['name'],$comment['text'])."\n";
+								$emailBody[$xid]['comments']['html'] .=	'<tr>'.
+																			'<td width="50"><a href="http://www.facebook.com/profile.php?id='.$username['id'].'" title="'.$username['name'].'"><img border="0" src="https://graph.facebook.com/'.$username['id'].'/picture" width="50" height="50" alt="'.$username['name'].'" /></td>'.
+																			'<td width="10"></td>'.
+																			'<td><a style="color:#3B5998;" href="http://www.facebook.com/profile.php?id='.$username['id'].'" title="'.$username['name'].'"><b style="color:#3B5998;">'.$username['name'].'</b></a><br /><em style="color:#333;">'.$comment['text'].'</em></td>'.
+																		'</tr>';
+							}
+							$emailBody[$xid]['comments']['html'] .=	'<tr><td colspan="3"><hr /></td></tr>';
+							$emailBody[$xid]['comments']['plain'] .= "\n";
+						}
+					}
+				}
+				
+				if(sizeof($emailBody) == 0){ return; }
+				
+				$subject 	= sprintf ( JText::_( 'NEW_COMMENT_SUBJECT' ), $totalComments, sizeof($emailBody));
+				$subject 	= html_entity_decode($subject, ENT_QUOTES);
+				
+				$message_intro = sprintf ( JText::_( 'NEW_COMMENT_INTRO' ), $totalComments,$mainframe->getCfg('sitename'));
+				$message_intro = html_entity_decode($message_intro, ENT_QUOTES);
+				
+				$message_body_plain = $message_intro."\n\n";
+				$message_body_html = '<table align="center" width="500"><tr><td colspan="3"><h2 style="color: #1C2A47; font-size: 16px;">'.$message_intro.'</h2></td></tr>';
+				foreach($emailBody as $array){
+					$message_body_plain .= $array['comments']['plain'];	
+					$message_body_html  .= $array['comments']['html'];		
+				}
+				
+				if(intval($commentSend) == 1){
+					$cronMessage 		 = sprintf(JText::_('CRON_SETUP'),JURI::root().'index.php?option=com_myapi&task=commentQueueSend');	
+					$message_body_plain .= "\n\n\n".$cronMessage;
+					$message_body_html	.=	'<tr><td colspan="3"><sub style="color:#808080; font-size:10px;">'.$cronMessage.'</sub></td></tr>';
+				}
+				
+				$message_body_html .= "</table>";
+				
+				$mailfrom = $mainframe->getCfg( 'mailfrom' );
+				$fromname = $mainframe->getCfg( 'fromname' );
+				
+				$mailer =& JFactory::getMailer();
+				$mailer->addReplyTo(array($mailfrom,$fromname));
+				$mailer->addRecipient($recipients);
+				$mailer->setSubject($subject);
+				$mailer->setBody($message_body_html);
+				$mailer->isHTML(true);
+				$mailer->AltBody = $message_body_plain;
+				
+				$send = $mailer->Send();
+				if ( $send !== true ) {
+					error_log($send->message);
+				} else {
+					$quoted = array();
+					foreach($commentQueue as $value) $quoted[] = $db->quote($value);
+					$query = "DELETE FROM ".$db->nameQuote('#__myapi_comment_mail')." WHERE ".$db->nameQuote('href')." IN (".implode(',',$quoted ).")";
+					$db->setQuery($query);
+					$db->query();
+					
+					$table =& JTable::getInstance('component');
+					$table->loadByOption('com_myapi');
+					$paramData = array('params' => array('commentEmailTime' => $newEmailTime )); 
+					$table->bind( $paramData );
+					$table->check();
+					$table->store();
+				}
+			}
+		}
+		$mainframe->close();			
+	}
 }
 ?>

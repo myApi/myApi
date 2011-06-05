@@ -51,6 +51,12 @@
 		  	<option value="selected">PARAM_SHOW_SELECT</option>
 		</param>
 		
+		<param name="comments_email" type="radio" default="1" label="PARAM_EMAIL_LABEL" description="PARAM_EMAIL_DESC">
+			<option value="0">PARAM_EMAIL_NONE</option>
+		  	<option value="1">PARAM_EMAIL_INSTANT</option>
+			<option value="2">PARAM_EMAIL_CRON</option>
+		</param>
+		
         <param name="comment_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="PARAM_SECTIONS_LABEL" description="PARAM_MULTI">
 			<option value="-1"></option>
         </param>

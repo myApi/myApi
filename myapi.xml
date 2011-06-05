@@ -31,7 +31,14 @@
 					`category` varchar(255) DEFAULT NULL,
 					PRIMARY KEY (`pageId`),
 					FULLTEXT KEY `name` (`name`)
-				) 
+				); 
+			</query>
+			<query>			
+				CREATE TABLE IF NOT EXISTS `#__myapi_comment_mail` (
+					`href` varchar(255) NOT NULL DEFAULT '',
+					PRIMARY KEY (`href`),
+					UNIQUE KEY `href` (`href`)
+				);
 			</query>
 		</queries>
     </install>

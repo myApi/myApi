@@ -38,6 +38,16 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiComment extends JPlugin
 {	
+	function plgContentmyApiComment( &$subject, $params ){
+		parent::__construct( $subject, $params );
+		
+		global $myApiCommentJsAdded;
+		if(! $myApiCommentJsAdded == true){
+			global $fbAsyncInitJs;
+			$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Ajax("index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href),{method: "get"}).request(); });';	
+			$myApiCommentJsAdded = true;
+		}
+	}
 	function getComments($xid){
 		$params  =   array(
 		 'method'    => 'fql.query',
@@ -64,14 +74,15 @@ class plgContentmyApiComment extends JPlugin
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			if(!$facebook){ return; }
 			
-			$xid = urlencode('articlecomment'.$article->id);
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
 			if(isset($article->slug)){
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+				$xid = urlencode('articlecomment'.$article->id);
 			}elseif(method_exists('K2HelperRoute','getItemRoute')){
 				$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
+				$xid = urlencode('k2comment'.$article->id);
 			}else{
 				error_log('myApi unable to calculate link for the article id '.$article->id);
 				return;
