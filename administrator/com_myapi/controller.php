@@ -44,7 +44,7 @@ class MyapiController extends JController {
 	
 	function savePlugin(){
 		JRequest::checkToken() or jexit( 'Invalid Token' );
-
+		
 		$db   	=& JFactory::getDBO();
 		$row  	=& JTable::getInstance('plugin');
 		$row->load(JRequest::getVar('id','','post'));
@@ -54,8 +54,10 @@ class MyapiController extends JController {
 		if (!$row->check()) JError::raiseError(500, $row->getError() );
 		if (!$row->store()) JError::raiseError(500, $row->getError() );
 		
+		
 		$row->checkin();
 		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( "client_id=0" )' );
+
 		//custom logic for saving spefic plugins
 		$funcname = 'save_'.$row->element;
 		if(method_exists('MyapiController','save_'.$row->element)){
@@ -77,23 +79,25 @@ class MyapiController extends JController {
 		$data['uninstall_url'] 	= JURI::root().'index.php?option=com_myapi&task=deauthorizeCallback';
 		$data['connect_url'] 	= $connectURL;
 		$facebook = null;
+		global $postFacebook;
+		$postFacebook = false;
 		try{
 			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
-			$facebook = new myApiFacebook(array(
+			$postFacebook = new myApiFacebook(array(
 				'appId'  => $post['params']['appId'],
 				'secret' => $post['params']['secret']
 			));
-			$app_update = $facebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
+			$app_update = $postFacebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
 		}catch (FacebookApiException $e) {
+			$postFacebook = null;
 			JError::raiseWarning( 100, JText::_('APP_SAVED_ERROR').$e);
 		}
 		
-		if(!is_null($facebook)){
+		if(!is_null($postFacebook)){
 			JFactory::getApplication()->enqueueMessage(JText::_('APP_SAVED'));
 			
 			$model = $this->getModel('realtime');
 			$model->addSubscriptions();
-		
 			$this->addPages('index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
 		}else{
 			$this->setRedirect( 'index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
@@ -139,47 +143,51 @@ class MyapiController extends JController {
 	}
 	
 	function addPages($end = 'index.php?option=com_myapi&view=pages'){
-		$facebook = plgSystemmyApiConnect::getFacebook();
+		global $postFacebook;
+		$facebook = (is_object($postFacebook)) ? $postFacebook : plgSystemmyApiConnect::getFacebook();
 		$endUrl = base64_decode(JRequest::getVar('endUrl',base64_encode($end)));
-		$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages","next" => JURI::base().'index.php?option=com_myapi&task=addPages&endUrl='.base64_encode($end),"cancel" => JURI::base()));
-		$user = $facebook->getSession();
-		if($user){
-			$permissions = null;
-			try{
-				$permissions = $facebook->api("/me/permissions");
-			}catch (FacebookApiException $e) {
-				JError::raiseWarning( 100, $e );
-			}
-			
-			if(!is_array($permissions) || !array_key_exists('manage_pages', $permissions['data'][0]) ) {
-				$this->setRedirect($login);
-			}else{
-				$pages = $facebook->api('me/accounts');
-				$db = JFactory::getDBO();
-				$count = 0;
-				foreach($pages['data'] as $page){
-					if($page['category'] != 'Website'){
-						$pageLink = $facebook->api('/'.$page['id']);
-						$query = "INSERT INTO ".$db->nameQuote('#__myapi_pages')." (".$db->nameQuote('pageId').",".$db->nameQuote('access_token').",".$db->nameQuote('name').",".$db->nameQuote('link').",".$db->nameQuote('category').") VALUES (".$db->quote($page['id']).",".$db->quote($page['access_token']).",".$db->quote($page['name']).",".$db->quote($pageLink['link']).",".$db->quote($page['category']).") ".
-										"ON DUPLICATE KEY UPDATE ".$db->nameQuote('access_token')." = ".$db->quote($page['access_token'])." , ".$db->nameQuote('name')." = ".$db->quote($page['name'])."; ";
-						$db->setQuery($query);
-						$db->query();
-						if($db->getErrorNum()){
-							JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$db->getErrorMsg() );	
-						}else{
-							$count++;
-						}
-					}
+		if($facebook){
+			$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages","next" => JURI::base().'index.php?option=com_myapi&task=addPages&endUrl='.base64_encode($end),"cancel" => JURI::base()));
+			$user = $facebook->getSession();
+			if($user){
+				$permissions = null;
+				try{
+					$permissions = $facebook->api("/me/permissions",'get',array('access_token' => $facebook->getAccessToken()));
+				}catch (FacebookApiException $e) {
 				}
 				
-				if($count > 0){
-					JFactory::getApplication()->enqueueMessage( sprintf(JText::_('PAGES_ADDED'),$count) );	
+				if(!is_array($permissions) || !array_key_exists('manage_pages', $permissions['data'][0]) ) {
+					$this->setRedirect($login);
+				}else{
+					$pages = $facebook->api('me/accounts');
+					$db = JFactory::getDBO();
+					$count = 0;
+					foreach($pages['data'] as $page){
+						if($page['category'] != 'Website'){
+							$pageLink = $facebook->api('/'.$page['id']);
+							$query = "INSERT INTO ".$db->nameQuote('#__myapi_pages')." (".$db->nameQuote('pageId').",".$db->nameQuote('access_token').",".$db->nameQuote('name').",".$db->nameQuote('link').",".$db->nameQuote('category').") VALUES (".$db->quote($page['id']).",".$db->quote($page['access_token']).",".$db->quote($page['name']).",".$db->quote($pageLink['link']).",".$db->quote($page['category']).") ".
+											"ON DUPLICATE KEY UPDATE ".$db->nameQuote('access_token')." = ".$db->quote($page['access_token'])." , ".$db->nameQuote('name')." = ".$db->quote($page['name'])."; ";
+							$db->setQuery($query);
+							$db->query();
+							if($db->getErrorNum()){
+								JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$db->getErrorMsg() );	
+							}else{
+								$count++;
+							}
+						}
+					}
+					
+					if($count > 0){
+						JFactory::getApplication()->enqueueMessage( sprintf(JText::_('PAGES_ADDED'),$count) );	
+					}
+					$this->setRedirect($endUrl);
 				}
-				$this->setRedirect($endUrl);
-			}
+			}else{
+				$this->setRedirect($login);
+			}	
 		}else{
-			$this->setRedirect($login);
-		}	
+			$this->setRedirect($endUrl);	
+		}
 	}
 	
 	function deletePages(){

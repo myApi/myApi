@@ -50,7 +50,8 @@ class plgSystemmyApiConnect extends JPlugin
 		
 		if( $params->get('appId') == '' || $params->get('secret') == ''){
 			if( !is_object(JError::getError()) || (!is_array(JError::getError()->info)) ||  !(is_array(JError::getError()->info) && JError::getError()->info['myApi'] == 100))
-				return JError::raiseWarning( 100, 'myApi requires a Facebook Application ID',array('myApi' =>'100'));
+				JError::raiseWarning( 100, 'myApi requires a Facebook Application ID',array('myApi' =>'100'));
+				return  false;
 			return
 				false;
 		}else{
@@ -71,7 +72,7 @@ class plgSystemmyApiConnect extends JPlugin
 			
 		JHTML::_('behavior.mootools');
 		$doc = & JFactory::getDocument();
-		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');	
+		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');
 	}
 
 	function onAfterRender(){
@@ -88,7 +89,6 @@ class plgSystemmyApiConnect extends JPlugin
 		$u =& JURI::getInstance( JURI::root() );
 		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 		$xdPath	= $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'plugins/system/facebookXD.html';
-		
 		$locale = ($params->get("locale") == '') ? 'en_US' : $params->get("locale");	
 		
 		$js 	= <<<EOD
@@ -103,7 +103,7 @@ window.addEvent('domready',function(){
 });
 window.fbAsyncInit = function() {
      FB.init({appId: "{$params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
-	 {$fbAsyncInitJs};
+	 {$fbAsyncInitJs}
 };
 /* ]]> */
 EOD;

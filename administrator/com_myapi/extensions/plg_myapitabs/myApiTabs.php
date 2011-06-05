@@ -46,7 +46,7 @@ class plgSystemmyApiTabs extends JPlugin{
 			return;
 		
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		if(!$facebook){
+		if($facebook){
 			$signedRequest = $facebook->getSignedRequest();
 			$session =& JFactory::getSession();
 			if(is_array($signedRequest)){

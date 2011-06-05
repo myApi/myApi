@@ -59,8 +59,8 @@ class MyapiViewPlugin extends JView {
 			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
 			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
 			
-			$funcname = '_'.$row->element;
-			if(method_exists('MyapiViewPlugin','_'.$row->element)) $this->$funcname();
+			$funcname = '_'.$row->element.'Side';
+			if(method_exists('MyapiViewPlugin',$funcname)) $this->$funcname();
 		}else{
 			global $mainframe;
 			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));		
@@ -68,15 +68,17 @@ class MyapiViewPlugin extends JView {
 		parent::display($tpl);
     }
 	
-	function _myApiConnect(){
+	function _myApiConnectSide(){
 		$this->assignRef('aside',JHTML::_('image', 'plugins/system/fbapp.png', null));
 	}
 	
-	function _myApiTabs(){
+	function _myApiTabsSide(){
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		$pageLink = 'http://www.facebook.com/apps/application.php?id='.$facebook->getAppId();
-		$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', 'plugins/system/addtab.png', null);
-		$this->assignRef('aside',$sideContent);
+		if($facebook){
+			$pageLink = 'http://www.facebook.com/apps/application.php?id='.$facebook->getAppId();
+			$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', 'plugins/system/addtab.png', null);
+			$this->assignRef('aside',$sideContent);
+		}
 	}
 }
 ?>

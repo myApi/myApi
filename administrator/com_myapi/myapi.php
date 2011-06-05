@@ -22,19 +22,15 @@ define( 'COM_MYAPI_DIR', 'images'.DS.'myapi'.DS );
 define( 'COM_MYAPI_BASE', JPATH_ROOT.DS.COM_MYAPI_DIR );
 define( 'COM_MYAPI_BASEURL', JURI::root().str_replace( DS, '/', COM_MYAPI_DIR ));
 
-
 require_once JPATH_COMPONENT.DS.'controller.php';
 $controller = new MyapiController( );
 $controller->execute( JRequest::getCmd('task'));
 
-
-if((JRequest::getVar('view') != "plugin") && (JRequest::getVar('plugin') != "myApiConnect") && (JRequest::getVar('task','','post') != 'saveAPI')){
-	$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-	$params = new JParameter( $plugin->params );
-	$appId 	= $params->get('appId');
-	$secret = $params->get('secret');
-	if(($appId == '') || ($secret == '')) header('Location: index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
+if( (JRequest::getVar('plugin') != "myApiConnect") && (JRequest::getVar('task','','post') != 'savePlugin')){
+	$facebook = plgSystemmyApiConnect::getFacebook();
+	if(!$facebook){
+		header('Location: index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
+	}
 }
-
 $controller->redirect();
 ?>

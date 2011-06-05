@@ -39,7 +39,8 @@ class MyapiModelRealtime extends JModel {
 	
 	function getRealTimeAccess(){
 		if(is_null($this->access_token)){
-			$facebook = plgSystemmyApiConnect::getFacebook();
+			global $postFacebook;
+			$facebook = (is_object($postFacebook)) ? $postFacebook : plgSystemmyApiConnect::getFacebook();
 			$config 	=& JFactory::getConfig();
 			$token = file_get_contents('https://graph.facebook.com/oauth/access_token?client_id='.$facebook->getAppId().'&client_secret='.$facebook->getApiSecret().'&grant_type=client_credentials');
 			$params = null;
@@ -51,24 +52,30 @@ class MyapiModelRealtime extends JModel {
 	
 	function getSubscriptions(){
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		return $facebook->api('/'.$facebook->getAppId().'/subscriptions','get',array('access_token' => MyapiModelRealtime::getRealTimeAccess() ));
+		if($facebook)
+			return $facebook->api('/'.$facebook->getAppId().'/subscriptions','get',array('access_token' => MyapiModelRealtime::getRealTimeAccess() ));
+		else
+			return false;
 	}
 	
 	function addSubscriptions(){
-		$facebook = plgSystemmyApiConnect::getFacebook();
-		require_once(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php');
-		$myApiModel = new MyapiModelMyapi;
-		$config 	=& JFactory::getConfig();
-		
-		$u =& JURI::getInstance( JURI::root() );
-		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
-		$callback = $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'index.php?option=com_myapi&task=facebookRealTime';
-		try{
-			$subscription = $facebook->api('/'.$facebook->getAppId().'/subscriptions','post',array('object' => 'user', 'fields' => 'email,name,pic,status,about_me,username','callback_url' => $callback, 'verify_token' => $config->getValue( 'config.secret' ), 'access_token' => $this->getRealTimeAccess() ));
-			$subscription = $facebook->api('/'.$facebook->getAppId().'/subscriptions','post',array('object' => 'permissions', 'fields' => implode(',',$myApiModel->getPerms()),'callback_url' => $callback, 'verify_token' => $config->getValue( 'config.secret' ), 'access_token' => $this->getRealTimeAccess() ));
-			JFactory::getApplication()->enqueueMessage( JText::_('SUBSCRIPTIONS_ADDED') );
-		} catch (FacebookApiException $e) {
-			JError::raiseNotice( 100, $e->__toString());		
+		global $postFacebook;
+		$facebook = (is_object($postFacebook)) ? $postFacebook : plgSystemmyApiConnect::getFacebook();
+		if($facebook){
+			require_once(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php');
+			$myApiModel = new MyapiModelMyapi;
+			$config 	=& JFactory::getConfig();
+			
+			$u =& JURI::getInstance( JURI::root() );
+			$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
+			$callback = $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'index.php?option=com_myapi&task=facebookRealTime';
+			try{
+				$subscription = $facebook->api('/'.$facebook->getAppId().'/subscriptions','post',array('object' => 'user', 'fields' => 'email,name,pic,status,about_me,username','callback_url' => $callback, 'verify_token' => $config->getValue( 'config.secret' ), 'access_token' => $this->getRealTimeAccess() ));
+				$subscription = $facebook->api('/'.$facebook->getAppId().'/subscriptions','post',array('object' => 'permissions', 'fields' => implode(',',$myApiModel->getPerms()),'callback_url' => $callback, 'verify_token' => $config->getValue( 'config.secret' ), 'access_token' => $this->getRealTimeAccess() ));
+				JFactory::getApplication()->enqueueMessage( JText::_('SUBSCRIPTIONS_ADDED') );
+			} catch (FacebookApiException $e) {
+				JError::raiseNotice( 100, $e->__toString());		
+			}
 		}
 		return;
 	}
@@ -83,7 +90,6 @@ class MyapiModelRealtime extends JModel {
 			JFactory::getApplication()->enqueueMessage( JText::_('SUBSCRIPTIONS_DELETED') );
 		} catch (FacebookApiException $e) {
 			JError::raiseNotice( 100, $e->__toString() );
-			$mainframe->redirect('index.php?option=com_myapi&view=realtime');
 		}
 		return;
 	}
