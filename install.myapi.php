@@ -107,7 +107,9 @@ $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('userId')." ON ".$db->nameQuote
 $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('uid')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('uid').");";
 $query[] = "UPDATE ".$db->nameQuote('#__plugins')." SET  ".$db->nameQuote('element')." =  ".$db->quote('myApiUser')." WHERE ".$db->nameQuote('element')." =  ".$db->quote('myapiuser');
 foreach($query as $sql){
-	$db->setQuery($sql);
-	$db->query();	
+	try{
+		$db->setQuery($sql);
+		$db->query();	
+	}catch(Exception $e){}
 }
 ?>

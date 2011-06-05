@@ -422,7 +422,7 @@ class MyapiController extends JController {
 			$fbUser = $facebookmodel->getLoggedInUser();
 		}
 		
-		if($fbUser['username'] != ''){
+		if(array_key_exists('username',$fbUser) && $fbUser['username'] != ''){
 			$newuserName = $fbUser['username'];
 		}else{
 			$newuserName = str_replace(' ', '',$fbUser['name']);
@@ -502,9 +502,9 @@ class MyapiController extends JController {
 			$user = JFactory::getUser();
 			
 			JRequest::setVar('K2UserForm',$a = 1);
-			JRequest::setVar('gender',$a = substr($fbUser['gender'],0,1)); 
-			JRequest::setVar('url',$a = $fbUser['link']);
-			JRequest::setVar('description',$a = $fbUser['bio']);
+			JRequest::setVar('gender',$a = substr(@$fbUser['gender'],0,1)); 
+			JRequest::setVar('url',$a = @$fbUser['link']);
+			JRequest::setVar('description',$a = @$fbUser['bio']);
 			
 			$dispatcher =& JDispatcher::getInstance();
 			$dispatcher->trigger('onAfterStoreUser', array($user->getProperties(), true, $result,''));
