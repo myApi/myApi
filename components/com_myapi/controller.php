@@ -221,27 +221,26 @@ class MyapiController extends JController {
 	function facebookLogin() {
 		$user 		= JFactory::getUser();
 		$return 	= base64_decode(JRequest::getVar('return',''));
-		if($user->guest){
-			$facebook = plgSystemmyApiConnect::getFacebook();
-			$session	= $facebook->getSession();
-			$uid 		= $session['uid'];
-			if($uid){
-				global $mainframe;
-				$options['return'] = $return;
-				$options['uid'] = $uid;
-				$error = $mainframe->login($uid,$options);
-				if(!is_object($error)){
-					$return = ($return == '') ? JURI::base() : $return;
-					$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
-				}else{ 
-					$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$error->message); 
-				}
-			}else{
-				$this->setRedirect($return,JText::_('NO_SESSION'));
+		
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$session	= $facebook->getSession();
+		$uid 		= $session['uid'];
+		
+		if($uid){
+			global $mainframe;
+			$options['return'] = $return;
+			$options['uid'] = $uid;
+			$error = $mainframe->login($uid,$options);
+			if(!is_object($error)){
+				$return = ($return == '') ? JURI::base() : $return;
+				$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
+			}else{ 
+				$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$error->message); 
 			}
 		}else{
-			$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
+			$this->setRedirect($return,JText::_('NO_SESSION'));
 		}
+		
 	}
 	
 	function logout(){
