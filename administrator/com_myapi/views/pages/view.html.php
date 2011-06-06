@@ -32,34 +32,52 @@
  *****************************************************************************/
 jimport( 'joomla.application.component.view');
 
+
 class MyapiViewPages extends JView {
     function display($tpl = null) {
 		global $mainframe, $option;
 		
-		JToolBarHelper::title(JText::_('PAGES_HEADER'));
-		JToolBarHelper::addNew('addPages', JText::_('ADD_PAGES'));
-		JToolBarHelper::deleteList(JText::_('DELETE_PAGES_DESC'),'deletePages', JText::_('DELETE_PAGES'));
 		
 		$model 	= $this->getModel('pages');
-
-		$pages 				= $model->getData();      
-		$pagination			= $model->getPagination();
-		$lists['order'] 	= $mainframe->getUserStateFromRequest(  'myapi_pages_filter_order', 'filter_order');
-		$lists['order_Dir'] = $mainframe->getUserStateFromRequest( 'myapi_pages_filter_order_Dir', 'filter_order_Dir');
-		$search				= $mainframe->getUserStateFromRequest( 'myapi_pages_search',			'search', 			'',			'string' );
-		if (strpos($search, '"') !== false) {
-			$search = str_replace(array('=', '<'), '', $search);
+		
+		if(JRequest::getVar('layout','default') == 'default'){
+			JToolBarHelper::title(JText::_('PAGES_HEADER'));
+			JToolBarHelper::custom('composeMessage','send.png','send_f2.png','Post to Wall',false);
+			JToolBarHelper::addNew('addPages', JText::_('ADD_PAGES'));
+			JToolBarHelper::deleteList(JText::_('DELETE_PAGES_DESC'),'deletePages', JText::_('DELETE_PAGES'));
+			$pages 				= $model->getData();      
+			$pagination			= $model->getPagination();
+			$lists['order'] 	= $mainframe->getUserStateFromRequest(  'myapi_pages_filter_order', 'filter_order');
+			$lists['order_Dir'] = $mainframe->getUserStateFromRequest( 'myapi_pages_filter_order_Dir', 'filter_order_Dir');
+			$search				= $mainframe->getUserStateFromRequest( 'myapi_pages_search',			'search', 			'',			'string' );
+			if (strpos($search, '"') !== false) {
+				$search = str_replace(array('=', '<'), '', $search);
+			}
+			$lists['search'] = JString::strtolower($search);
+			$lists['categories'] = $model->getCategoriesList();
+			
+			$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
+			$limitstart = $mainframe->getUserStateFromRequest( 'myapi_pages_.limitstart', 'limitstart', 0, 'int' );
+			
+			$this->assignRef( 'lists', $lists );
+			$this->assignRef('pagination', $pagination);
+			$this->assignRef('pages',$pages);
+		}else{
+			JToolBarHelper::title(JText::_('PAGES_COMPOSE_HEADER'));
+			JToolBarHelper::custom('sendMessage','send.png','send_f2.png',JText::_('POST_TO_WALL'),false);
+			JToolBarHelper::cancel();
+			
+			$cid = JRequest::getVar('cid');
+			$pages = $model->getPageDetails($cid);
+			$menulist = $model->getMenuItemList(JRequest::getVar('menuItem'));
+			$filelist = $model->getFileList(JRequest::getVar('fileList'));
+			
+			$this->assignRef('pages',$pages);
+			$this->assignRef('cid',$cid);
+			$this->assignRef('menulist',$menulist);
+			$this->assignRef('filelist',$filelist);
+			
 		}
-		$lists['search'] = JString::strtolower($search);
-		$lists['categories'] = $model->getCategoriesList();
-		
-		$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
-		$limitstart = $mainframe->getUserStateFromRequest( 'myapi_pages_.limitstart', 'limitstart', 0, 'int' );
-		
-		$this->assignRef( 'lists', $lists );
-		$this->assignRef('pagination', $pagination);
-		$this->assignRef('pages',$pages);
-
 		parent::display($tpl);	
 	}
 	

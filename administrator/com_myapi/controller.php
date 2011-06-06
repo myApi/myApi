@@ -41,6 +41,78 @@ class MyapiController extends JController {
 		parent::__construct();
     }
 	
+	function cancel(){
+		if(JRequest::getVar('view') == 'pages'){
+			JRequest::setVar( 'view', 'pages' );
+    		JRequest::setVar( 'layout', 'default'  );
+    		JRequest::setVar( 'hidemainmenu', 0 );	
+			parent::display();
+		}	
+	}
+	
+	function composeMessage(){
+		JRequest::setVar( 'view', 'pages' );
+    	JRequest::setVar( 'layout', 'send'  );
+    	JRequest::setVar( 'hidemainmenu', 1 );
+ 
+   	 	parent::display();
+	}
+	
+	function sendMessage(){
+		JRequest::checkToken() or jexit( 'Invalid Token' );
+		$cid = JRequest::getVar('cid',NULL,'post');
+		$message = JRequest::getString('message',NULL,'post');
+		
+		if(is_null($cid) || !is_array($cid) || sizeof($cid) == 0 || is_null($message) || $message == ''){
+			//Invalid
+			JError::raiseWarning( 100, JText::_('REQUIRED_FIELDS') );	
+			JRequest::setVar( 'view', 'pages' );
+    		JRequest::setVar( 'layout', 'send'  );
+			parent::display();
+		}else{
+			$facebook = plgSystemmyApiConnect::getFacebook();
+			if(!$facebook){
+				JRequest::setVar( 'view', 'plugin' );
+    			JRequest::setVar( 'plugin', 'myApiConnect'  );	
+				parent::display();
+			}else{
+				$model = $this->getModel('pages');
+				$pages = $model->getPageDetails($cid);
+				$user = JFactory::getUser();
+				
+				$data = array('message' => $message);
+				
+				$link = JRequest::getVar('menuItem','','post');
+				if($link != ''){
+					$link_name = JRequest::getVar('link_name','','post');
+					$link_caption = JRequest::getVar('link_caption','','post');
+					$link_description = JRequest::getVar('link_description','','post');
+					
+					$data['type'] = 'link';
+					$data['link'] = JRoute::_('index.php?Itemid='.$link,true,-1);
+					if($link_name 			!= '') $data['name'] 		= $link_name; 
+					if($link_caption 		!= '') $data['caption'] 	= $link_caption; 
+					if($link_description	!= '') $data['description'] = $link_description; 
+				}
+				
+				$image = JRequest::getVar('fileList','','post');
+				if($image != ''){
+					$data['picture'] = JURI::root().'images/'.$image;	
+				}
+				
+				foreach($pages as $page){
+					try{
+						$facebook->api('/'.$page['pageId'].'/'.'feed', 'post',array_merge(array('access_token' => $page['access_token']),$data));		
+						JFactory::getApplication()->enqueueMessage(JText::_( 'Success').' - '.$page['name']);
+					}catch(FacebookAPIException $e){ JError::raiseWarning( 100, $page['name'].' '.JText::_('Error').' - '.$e ); }	
+				}
+				$this->setRedirect('index.php?option=com_myapi&view=pages');
+			}
+		}
+	}
+	
+	
+	
 	
 	function savePlugin(){
 		JRequest::checkToken() or jexit( 'Invalid Token' );
@@ -147,7 +219,7 @@ class MyapiController extends JController {
 		$facebook = (is_object($postFacebook)) ? $postFacebook : plgSystemmyApiConnect::getFacebook();
 		$endUrl = base64_decode(JRequest::getVar('endUrl',base64_encode($end)));
 		if($facebook){
-			$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages","next" => JURI::base().'index.php?option=com_myapi&task=addPages&endUrl='.base64_encode($end),"cancel" => JURI::base()));
+			$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages,read_stream,publish_stream","next" => JURI::base().'index.php?option=com_myapi&task=addPages&endUrl='.base64_encode($end),"cancel" => JURI::base()));
 			$user = $facebook->getSession();
 			if($user){
 				$permissions = null;
@@ -156,7 +228,7 @@ class MyapiController extends JController {
 				}catch (FacebookApiException $e) {
 				}
 				
-				if(!is_array($permissions) || !array_key_exists('manage_pages', $permissions['data'][0]) ) {
+				if(!is_array($permissions) || !array_key_exists('manage_pages', $permissions['data'][0]) || !array_key_exists('read_stream', $permissions['data'][0]) || !array_key_exists('publish_stream', $permissions['data'][0]) ) {
 					$this->setRedirect($login);
 				}else{
 					$pages = $facebook->api('me/accounts');

@@ -41,7 +41,7 @@
     <input type="hidden" name="filter_order_Dir" value="<?php echo $this->lists['order_Dir']; ?>" />
 	<?php echo JHTML::_( 'form.token' ); ?>
     	
-    <h2><?php echo JText::_('PAGES_H2') ?></h2>
+    <h1><?php echo JText::_('PAGES_H2') ?></h1>
     <p><?php echo JText::_('PAGES_DESC') ?></p>
      
     <table>

@@ -30,10 +30,10 @@
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
  *****************************************************************************/
-
 jimport('joomla.application.component.model');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php');
 
-class MyapiModelPages extends JModel {
+class MyapiModelPages extends MyapiModelMyapi {
   	
 	function getPages(){
 		$db = JFactory::getDBO();	
@@ -148,6 +148,24 @@ class MyapiModelPages extends JModel {
 			$catOptions[] = JHTML::_('select.option',  $cat->category, $cat->category );	
 		}
 		return JHTML::_('select.genericlist',   $catOptions, 'filter_category', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text',  $mainframe->getUserStateFromRequest( 'myapi_pages_filter_category', 'filter_category', 0, 'string' ));
+	}
+	
+	// $ids array of ids returns an array of details
+	function getPageDetails($ids){
+		$db		= JFactory::getDBO();
+		$quoted = array();
+		
+		foreach($ids as $id) $quoted[] = $db->quote($id);
+		
+		$query = "SELECT * FROM ".$db->nameQuote('#__myapi_pages')." WHERE ".$db->nameQuote('pageId')." IN (".implode(',',$quoted).");";
+		$db->setQuery($query);
+		$pages = $db->loadAssocList();
+		if($db->getErrorNum()){
+			JError::raiseWarning( 100, $db->getErrorMsg() );
+			return false;
+		}else{
+			return $pages;
+		}
 	}
 }
 ?>
