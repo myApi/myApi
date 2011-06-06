@@ -131,6 +131,12 @@ class MyapiController extends JController {
 							if($userId = $db->loadResult()){ 	
 								$mainframe->logout($userId);
 							}
+							
+							if( in_array('manage_pages',$entry['changed_fields']) || in_array('publish_stream',$entry['changed_fields']) ){
+								$query 	= "DELETE FROM ".$db->nameQuote('#__myapi_pages')." WHERE ".$db->nameQuote('owner')." = ".$db->quote($uid);
+								$db->setQuery($query);	
+								$db->query();	
+							}
 						}
 					}
 				break;  

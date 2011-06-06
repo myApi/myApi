@@ -102,6 +102,7 @@ foreach( $pkgs as $pkg => $pkgarray ){
 $db = JFactory::getDBO();
 $query = array();
 $query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')."  ADD ( `access_token` varchar(255) NOT NULL,  `avatar` varchar(255) default NULL)";
+$query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_pages')."  ADD ( `owner` bigint(255) unsigned DEFAULT NULL )";
 $query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')." MODIFY `uid` bigint(255) unsigned NOT NULL;";
 $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('userId')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('userId').");";
 $query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('uid')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('uid').");";

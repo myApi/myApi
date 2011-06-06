@@ -237,8 +237,8 @@ class MyapiController extends JController {
 					foreach($pages['data'] as $page){
 						if($page['category'] != 'Website'){
 							$pageLink = $facebook->api('/'.$page['id']);
-							$query = "INSERT INTO ".$db->nameQuote('#__myapi_pages')." (".$db->nameQuote('pageId').",".$db->nameQuote('access_token').",".$db->nameQuote('name').",".$db->nameQuote('link').",".$db->nameQuote('category').") VALUES (".$db->quote($page['id']).",".$db->quote($page['access_token']).",".$db->quote($page['name']).",".$db->quote($pageLink['link']).",".$db->quote($page['category']).") ".
-											"ON DUPLICATE KEY UPDATE ".$db->nameQuote('access_token')." = ".$db->quote($page['access_token'])." , ".$db->nameQuote('name')." = ".$db->quote($page['name'])."; ";
+							$query = "INSERT INTO ".$db->nameQuote('#__myapi_pages')." (".$db->nameQuote('pageId').",".$db->nameQuote('access_token').",".$db->nameQuote('name').",".$db->nameQuote('link').",".$db->nameQuote('category').",".$db->nameQuote('owner').") VALUES (".$db->quote($page['id']).",".$db->quote($page['access_token']).",".$db->quote($page['name']).",".$db->quote($pageLink['link']).",".$db->quote($page['category']).",".$db->quote($user['uid']).") ".
+											"ON DUPLICATE KEY UPDATE ".$db->nameQuote('access_token')." = ".$db->quote($page['access_token'])." , ".$db->nameQuote('name')." = ".$db->quote($page['name'])." , ".$db->nameQuote('owner')." = ".$db->quote($user['uid'])."; ";
 							$db->setQuery($query);
 							$db->query();
 							if($db->getErrorNum()){
