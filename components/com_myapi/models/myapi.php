@@ -52,5 +52,31 @@ class MyapiModelMyapi extends JModel {
 	function getPerms(){
 		return array('email','user_likes','publish_stream','offline_access','user_about_me','user_status');
 	}
+	
+	function _getPageCache($id){
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		return $facebook->api('/'.$id,'get',array($facebook->getAppId().'|'.$facebook->getApiSecret()));
+	}
+	
+	function getPage($id){
+		$cache = & JFactory::getCache('com_myapi - Page '.$id);
+		$cache->setCaching( 1 );
+		$cache->setLifeTime( 60*60*12 );  //Waiting on bug fix change ot 0
+		return $cache->call(array('MyapiModelMyapi','_getPageCache'),$id);
+	}
+	
+	function _getFeedCache($id){
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$feed  =  $facebook->api('/'.$id.'/feed','get',array('limit' => 3));
+		return $feed['data'];	
+	}
+	function getFeed($id){
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$cache = & JFactory::getCache('com_myapi - Feed '.$id);
+		$cache->setCaching( 1 );
+		$cache->setLifeTime( 60*60*12 );  //Waiting on bug fix change ot 0
+		return $cache->call(array('MyapiModelMyapi','_getFeedCache'),$facebook->getAppId());
+		
+	}
 }
 ?>

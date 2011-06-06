@@ -71,6 +71,10 @@ class MyapiModelRealtime extends JModel {
 			$callback = $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'index.php?option=com_myapi&task=facebookRealTime';
 			try{
 				$subscription = $facebook->api('/'.$facebook->getAppId().'/subscriptions','post',array('object' => 'user', 'fields' => 'email,name,pic,status,about_me,username','callback_url' => $callback, 'verify_token' => $config->getValue( 'config.secret' ), 'access_token' => $this->getRealTimeAccess() ));
+				
+				// Waiting on FB bug fix http://bugs.developers.facebook.net/show_bug.cgi?id=18048
+				//$subscription = $facebook->api('/'.$facebook->getAppId().'/subscriptions','post',array('object' => 'page', 'fields' => 'feed','callback_url' => $callback, 'verify_token' => $config->getValue( 'config.secret' ), 'access_token' => $this->getRealTimeAccess() ));
+				//
 				$subscription = $facebook->api('/'.$facebook->getAppId().'/subscriptions','post',array('object' => 'permissions', 'fields' => implode(',',array_merge(array('manage_pages','read_stream','publish_stream'),$myApiModel->getPerms())),'callback_url' => $callback, 'verify_token' => $config->getValue( 'config.secret' ), 'access_token' => $this->getRealTimeAccess() ));
 				JFactory::getApplication()->enqueueMessage( JText::_('SUBSCRIPTIONS_ADDED') );
 			} catch (FacebookApiException $e) {

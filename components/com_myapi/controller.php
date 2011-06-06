@@ -55,7 +55,6 @@ class MyapiController extends JController {
 			header("Content-Length: ".strlen($content));
 			echo $content;
 			flush();
-			
 		  	switch($updates['object']){
 				case 'user':
 					foreach($updates['entry'] as $entry){
@@ -139,7 +138,25 @@ class MyapiController extends JController {
 							}
 						}
 					}
-				break;  
+				break;
+				
+				case 'page':
+					foreach($updates['entry'] as $entry){
+						foreach($updates['entry'] as $entry){
+							$id 	= $entry['uid'];
+							$cache = & JFactory::getCache('com_myapi - Feed '.$id);
+							$cache->clean();
+							$cache = & JFactory::getCache('com_myapi - Page '.$id);
+							$cache->clean();
+							
+							require_once JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php';
+							$myApiModel 	= new MyapiModelMyapi;  //Bring the myAPI facebook model
+							$page = $myApiModel->getPage($id);
+							$feed = $myApiModel->getFeed($id);	
+						}
+					}
+				
+				break;
 			}
 		
 		  $mainframe->close();           
@@ -454,10 +471,16 @@ class MyapiController extends JController {
 			
 		}
 		
-		jimport('joomla.user.helper');
+    	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+    	$randomPassword = "";    
+    	for ($p = 0; $p < 8; $p++) {
+    	    $randomPassword .= $characters[mt_rand(0, strlen($characters))];
+    	}
+		
+		
 		$newUser['name'] = $fbUser['name'];
 		$newUser['username'] = $newuserName;
-		$newUser['password'] = $newUser['password2'] = JUserHelper::genRandomPassword();
+		$newUser['password'] = $newUser['password2'] = $randomPassword;
 		$newUser['email'] = $fbUser['email'];
 		
 		// Bind the post array to the user object
@@ -495,9 +518,8 @@ class MyapiController extends JController {
 			$db->query();
 			
 			// Send registration confirmation mail
-			$password = $newUser['password'];
-			$password = preg_replace('/[\x00-\x1F\x7F]/', '', $password); //Disallow control chars in the email
-			myapiController::_sendMail($user, $password);
+			$cleanPassword = preg_replace('/[\x00-\x1F\x7F]/', '', $randomPassword); //Disallow control chars in the email
+			myapiController::_sendMail($user, $cleanPassword,$fbUser);
 	
 			$message = JText::_( 'LOGGED_IN_FACEBOOK' );
 			$options['return'] = $return;
@@ -521,10 +543,14 @@ class MyapiController extends JController {
 		}
 	}
 	
-	function _sendMail(&$user, $password){
+	function _sendMail(&$user, $password,$fbUser){
 		global $mainframe;
 		$db		=& JFactory::getDBO();
-
+		
+		
+		require_once JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php';
+		$myApiModel 	= new MyapiModelMyapi;  //Bring the myAPI facebook model
+		
 		$name 		= $user->get('name');
 		$email 		= $user->get('email');
 		$username 	= $user->get('username');
@@ -538,10 +564,16 @@ class MyapiController extends JController {
 
 		$subject 	= sprintf ( JText::_( 'Account details for' ), $name, $sitename);
 		$subject 	= html_entity_decode($subject, ENT_QUOTES);
-
-		$message = sprintf ( JText::_( 'SEND_MSG' ), $name, $sitename, $siteURL);
-		$message = html_entity_decode($message, ENT_QUOTES);
-
+		
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		$page = $myApiModel->getPage($facebook->getAppId());
+		$feed = $myApiModel->getFeed($facebook->getAppId());	
+		
+		ob_start();
+	 		include(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'views'.DS.'link'.DS.'tmpl'.DS.'email.php');
+			$html = ob_get_contents();
+		ob_end_clean();	
+		
 		//get all super administrator
 		$query = 'SELECT name, email, sendEmail' .
 				' FROM #__users' .
@@ -555,7 +587,15 @@ class MyapiController extends JController {
 			$mailfrom = $rows[0]->email;
 		}
 
-		JUtility::sendMail($mailfrom, $fromname, $email, $subject, $message);
+		$mailer =& JFactory::getMailer();
+		$mailer->addReplyTo(array($mailfrom,$fromname));
+		$mailer->addRecipient($email);
+		$mailer->setSubject($subject);
+		$mailer->setBody($html);
+		$mailer->isHTML(true);
+		$mailer->AltBody = strip_tags($html);
+		$send = $mailer->Send();
+		
 
 		// Send notification to all administrators
 		$subject2 = sprintf ( JText::_( 'Account details for' ), $name, $sitename);

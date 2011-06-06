@@ -57,9 +57,9 @@ class MyapiModelFacebook extends JModel {
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		try {
 			if(is_null($access_token))
-		 		$me = $facebook->api('/me?metadata=1');
+		 		$me = $facebook->api('/me');
 			else
-				$me = $facebook->api('/me?metadata=1','get',array('access_token' => $access_token));
+				$me = $facebook->api('/me','get',array('access_token' => $access_token));
 				
 		} catch (FacebookApiException $e) {
 		  return false;
