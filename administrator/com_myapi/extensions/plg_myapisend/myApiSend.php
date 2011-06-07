@@ -35,7 +35,7 @@ jimport( 'joomla.plugin.plugin' );
 class plgContentmyApiSend extends JPlugin
 {
 	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
+		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
 		
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '')){

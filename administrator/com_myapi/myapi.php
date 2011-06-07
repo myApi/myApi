@@ -27,9 +27,14 @@ $controller = new MyapiController( );
 $controller->execute( JRequest::getCmd('task'));
 
 if( (JRequest::getVar('plugin') != "myApiConnect") && (JRequest::getVar('task','','post') != 'savePlugin')){
-	$facebook = plgSystemmyApiConnect::getFacebook();
-	if(!$facebook){
-		header('Location: index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
+	if(class_exists('plgSystemmyApiConnect')){
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		if(!$facebook){
+			header('Location: index.php?option=com_myapi&view=plugin&plugin=myApiConnect');
+		}
+	}else{
+		JError::raiseWarning( 100, JText::_('MYAPI_SYSTEM_REQUIRED'));
+		$controller->setRedirect('index.php?option=com_plugins');
 	}
 }
 $controller->redirect();
