@@ -42,7 +42,7 @@ class MyapiViewPages extends JView {
 		
 		if(JRequest::getVar('layout','default') == 'default'){
 			JToolBarHelper::title(JText::_('PAGES_HEADER'));
-			JToolBarHelper::custom('composeMessage','send.png','send_f2.png','Post to Wall',false);
+			JToolBarHelper::custom('composeMessage','send.png','send_f2.png','Post to Wall',true);
 			JToolBarHelper::addNew('addPages', JText::_('ADD_PAGES'));
 			JToolBarHelper::deleteList(JText::_('DELETE_PAGES_DESC'),'deletePages', JText::_('DELETE_PAGES'));
 			$pages 				= $model->getData();      
