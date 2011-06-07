@@ -30,7 +30,7 @@
 		  	<option value="1">YES</option>
 		</param>
 		
-		<param name="layout_style" type="list" default="standard" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">
+		<param name="layout_style" type="list" default="button_count" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">
  	 		<option value="standard">PARAM_LAYOUT_STANDARD</option>
 			<option value="button_count">PARAM_LAYOUT_COUNT</option>
 			<option value="box_count">PARAM_LAYOUT_BOX</option>
@@ -61,7 +61,7 @@
 		</param>
 		
 		
-		<param name="width" type="text" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" default="250" size="30" />
+		<param name="width" type="text" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" default="40" size="30" />
 		
 		
 		<param name="like_show_on" type="radio" default="all" label="PARAM_SHOW_LABEL" description="PARAM_SHOW_DESC">
