@@ -156,6 +156,9 @@ class plgContentmyApiComment extends JPlugin
 			
 		
 			if($comment_show && $hasAccess ){
+				$lang =& JFactory::getLanguage();
+				$lang->load( 'plg_content_myApiComment', JPATH_ADMINISTRATOR );
+				
 				$comment_box = '<fb:comments app_id="'.$facebook->getAppId().'" migrated="1" xid="'.$xid.'" url="'.$commentURL.'" numposts="'.$comments_numposts.'" width="'.$comments_width.'" colorscheme="'.$comments_scheme.'"></fb:comments>';
 				
 				$comment_link = "<a id='".$xid."commentLink' class='show' href='#'>".JText::_('ADD_COMMENT')."</a>";
