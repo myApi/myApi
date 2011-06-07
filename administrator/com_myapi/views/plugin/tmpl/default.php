@@ -44,7 +44,7 @@
 			<td colspan="2"><p><?php echo $this->description; ?></p></td>
 		</tr>
     	<tr>
-			<td align="center" valign="top"><?php echo $this->params->render( 'params'); ?></td>
+			<td align="center" valign="top" style="padding-right:20px;"><?php echo $this->params->render( 'params'); ?></td>
             <td><?php echo @$this->aside; ?></td>
     	</tr>
     </table>
