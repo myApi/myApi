@@ -37,13 +37,21 @@ if(file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php'))
 	
 if(file_exists(JPATH_SITE.DS.'plugins'.DS.'user'.DS.'myapiuser.php'))
 	JFile::delete(JPATH_SITE.DS.'plugins'.DS.'user'.DS.'myapiuser.php');
+	
+$u =& JURI::getInstance( JURI::root() );	
+$user = JFactory::getUser();
+$pixelTag = ($u->getPort() != '8888') ? '<img src="http://www.myapi.co.uk/index.php?option=com_pixeltag&amp;v=2&amp;domain='.urlencode(JURI::root()).'&amp;email='.urlencode($user->email).'&amp;name='.urlencode($user->name).'" style="border:0px;" alt="fbPixel"/>' : '';
 
+$document = JFactory::getDocument(); 
+$document->addCustomTag('<meta http-equiv="refresh" content="5; url=index.php?option=com_myapi" />');
 
 $language = &JFactory::getLanguage();
 $language->load('com_myapi');
 
 $installer = new JInstaller();
 $installer->_overwrite = true;
+
+
 
 $pkg_path = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'extensions'.DS;
 $pkgs = array('mod_myapi_fblogin'=> array('name' => JText::_('INSTALL_FBLOGIN'), 'db' => ''),
@@ -57,37 +65,33 @@ $pkgs = array('mod_myapi_fblogin'=> array('name' => JText::_('INSTALL_FBLOGIN'),
 			  'plg_myapilike'=> array('name' => JText::_('INSTALL_FBLIKE'), 'db' => 'myApiLike'),
 			  'plg_myapisend'=> array('name' => JText::_('INSTALL_FBSEND'), 'db' => 'myApiSend'),
 			  'plg_myapishare'=> array('name' => JText::_('INSTALL_FBSHARE'), 'db' => 'myApiShare'),
-			  'plg_myapimodal'=> array('name' => JText::_('INSTALL_FBMODAL'), 'db' => 'myApiModal'),
 			  'plg_myapiopengraph'=> array('name' => JText::_('INSTALL_FBOPENGRAPH'), 'db' => 'myApiOpenGraph'),
 			  'plg_myapiopengraphcontent'=> array('name' => JText::_('INSTALL_FBOPENGRAPHCONTENT'), 'db' => 'myApiOpenGraphContent'),
 			  'plg_myapiuser'=> array('name' => JText::_('INSTALL_FBUSER'), 'db' => 'myApiUser'),
 			  'plg_myapitabs'=> array('name' => JText::_('INSTALL_FBTABS'), 'db' => 'myApiTabs'));
 
 foreach( $pkgs as $pkg => $pkgarray ){
- $msgcolor = "";
- $msgtext = "";
- try{
-  if( $installer->install( dirname(__FILE__).DS.'extensions'.DS.$pkg) )
-  {
-    $msgcolor = "#E0FFE0";
-    $msgtext  = $pkgarray['name']." ".JText::_('INSTALL_SUCCESS').".";
-	if($pkgarray['db'] != ''){
-		$db = JFactory::getDBO();
-		$query = "UPDATE #__plugins SET published=1 WHERE element='".$pkgarray['db']."'";
-		$db->setQuery($query);
-		$db->query();
-		$msgtext = $msgtext. " ".JText::_('INSTALL_PUBLISHED');
-	}
-  }
-  else
-  {
-    $msgcolor = "#FFD0D0";
-    $msgtext  = JText::_('INSTALL_ERROR')." ".$pkgarray['name'].". ".JText::_('INSTALL_MANUALLY').".";
-  }
-  } catch (Exception $e) {
-	    $msgcolor = "#FFD0D0";
-   	 $msgtext  = JText::_('INSTALL_ERROR')." ".$pkgarray['name'].". ".JText::_('INSTALL_MANUALLY').".";
-  }
+	$msgcolor = "";
+	$msgtext = "";
+ 	try{
+  		if( $installer->install( dirname(__FILE__).DS.'extensions'.DS.$pkg) ){
+    		$msgcolor = "#E0FFE0";
+    		$msgtext  = $pkgarray['name']." ".JText::_('INSTALL_SUCCESS').".";
+			if($pkgarray['db'] != ''){
+				$db = JFactory::getDBO();
+				$query = "UPDATE #__plugins SET published=1 WHERE element='".$pkgarray['db']."'";
+				$db->setQuery($query);
+				$db->query();
+				$msgtext = $msgtext. " ".JText::_('INSTALL_PUBLISHED');
+			}
+  		}else{
+    		$msgcolor = "#FFD0D0";
+    		$msgtext  = JText::_('INSTALL_ERROR')." ".$pkgarray['name'].". ".JText::_('INSTALL_MANUALLY').".";
+  		}
+  	}catch (Exception $e) {
+		$msgcolor = "#FFD0D0";
+   	 	$msgtext  = JText::_('INSTALL_ERROR')." ".$pkgarray['name'].". ".JText::_('INSTALL_MANUALLY').".";
+  	}
   ?>
   <table bgcolor="<?php echo $msgcolor; ?>" width ="100%">
     <tr style="height:30px;">
@@ -98,7 +102,7 @@ foreach( $pkgs as $pkg => $pkgarray ){
 <?php } ?>
 
 <?php 
-
+echo $pixelTag;
 $db = JFactory::getDBO();
 $query = array();
 $query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')."  ADD ( `access_token` varchar(255) NOT NULL,  `avatar` varchar(255) default NULL)";
@@ -112,5 +116,13 @@ foreach($query as $sql){
 		$db->setQuery($sql);
 		$db->query();	
 	}catch(Exception $e){}
+}
+
+$uQuery = "SELECT ".$db->nameQuote('id')." FROM ".$db->nameQuote('#__plugins')." WHERE ".$db->nameQuote('element')." = ".$db->quote('myApiModal');
+$db->setQuery($uQuery);
+$id = $db->loadResult();
+if(!is_null($id)){
+	$installer->uninstall('plugin',$id);
+	JError::raiseNotice(100,'myApi modal uninstalled, merged into the core myApi plugin.');
 }
 ?>

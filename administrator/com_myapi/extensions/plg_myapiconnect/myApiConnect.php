@@ -67,12 +67,13 @@ class plgSystemmyApiConnect extends JPlugin
 	function onAfterDispatch(){
 		global $mainframe;
 		$document=& JFactory::getDocument(); 
-		if($document->getType() != 'html' || $mainframe->isAdmin())
+		if($document->getType() != 'html')
 			return;
 			
 		JHTML::_('behavior.mootools');
 		$doc = & JFactory::getDocument();
-		$doc->addStylesheet('plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');
+		$doc->addStylesheet(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');
+		$doc->addScript(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiModal.js');
 	}
 
 	function onAfterRender(){
@@ -120,8 +121,7 @@ EOD;
 		
 		//This image points to myapi.co.uk but it is not a backlink and doesn't harm your SEO rankings in anyway. If you want to delete it you can but the rest of the code is vital.
 		$host = JURI::getInstance(JURI::current());
-		$pixelTag = ($host->getScheme() == 'http') ? '<img src="http://www.myapi.co.uk/index.php?option=com_pixeltag&amp;appid='.$params->get('appId').'&amp;domain='.JURI::base().'" style="border:0px;" alt="fbPixel"/>' : '';
-		$FeatureLoader_javascript = '<div id="fb-root">'.$pixelTag.'</div><script type="text/javascript">document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
+		$FeatureLoader_javascript = '<div id="fb-root"></div><script type="text/javascript">document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
 		
 		$bodyEl = $dom->find('body',0);
 		$bodyEl->innertext .= $FeatureLoader_javascript;

@@ -25,8 +25,9 @@ var myApiModal = {
 				myApiModal.setHeight();
 			});
 			
-			FB.XFBML.parse(document.getElementById('pop_dialog_table'));
-			
+			if(typeof(FB) !== "undefined"){
+				FB.XFBML.parse(document.getElementById('pop_dialog_table'));
+			}
 			
 			$('fb-modal').opacityFx.start(1);
 		},
