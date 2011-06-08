@@ -42,7 +42,7 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 		if($dom_image){
 			$src = $dom_image->src;
 			if ( (substr($src, 0, 7) != 'http://') && (substr($src, 0, 8) != 'https://') )
-				$src = (substr($src, 0, 1) == '/') ? JURI::base().substr($src, 1) : JURI::base().$src;
+				$src = (substr($src, 0, 1) == '/') ? JURI::root().substr($src, 1) : JURI::root().$src;
 				
 			return $src; 
 		}else{
@@ -53,7 +53,7 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 	function onBeforeContentSave( &$article, $isNew ){
 		$image_src = plgContentmyApiOpenGraphContent::getContentImage($article->introtext);
 		$attribs = new JParameter($article->attribs);
-		$attribs->set('ogimage',$image_src);
+		$attribs->set('myapiimage',$image_src);
 		$article->attribs = $attribs->toString();
 		return true;
 	}
@@ -67,8 +67,8 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 			$row = & JTable::getInstance('content');
 			$row->load($article->id);
 			$attribs = new JParameter($row->attribs);
-			if($attribs->get('ogimage','') == ''){
-				$attribs->set('ogimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
+			if($attribs->get('myapiimage','') == ''){
+				$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
 				$row->attribs = $attribs->toString();
 				$row->bind($row);
 				$row->store();
@@ -92,7 +92,7 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 				$newTags['og:type']	= 'article';
 				$newTags['og:author']	= (is_object($article->author)) ? $article->author->name : $article->author;
 				$newTags['og:url'] 	= $articleURL;
-				if($attribs->get('ogimage','0') != '0') $newTags['og:image'] = $attribs->get('ogimage');
+				if($attribs->get('ogimage','0') != '0') $newTags['og:image'] = $attribs->get('myapiimage');
 				
 				plgSystemmyApiOpenGraph::setTags($newTags);
 			}
