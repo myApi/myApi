@@ -167,7 +167,7 @@ class plgContentmyApiComment extends JPlugin
 				$modalJs = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ myApiModal.open(\"".JText::_('COMMENT_PROMPT')."\",null,'".$jsCommentBox."'); }); });";
 				$injectJs = "window.addEvent('domready',function(){ $('".$xid."commentLink').addEvent('click',function(){ if(this.hasClass('show')){ this.removeClass('show'); this.setText('".JText::_('HIDE_COMMENTS')."'); var delBox = new Element('div', {'id': '".$xid."delBox'}); delBox.setHTML('".$jsCommentBox."'); delBox.injectInside(this.getParent()); FB.XFBML.parse($('".$xid."delBox'));  } else {  this.setText('".JText::_('ADD_COMMENT')."'); this.addClass('show'); $('".$xid."delBox').remove(); } });  });";
 				
-				if(JRequest::getVar('view','','get') == 'article'){	
+				if(JRequest::getVar('view','','get') == 'article' || JRequest::getVar('view','','get') == 'item'){	
 					$viewType = 'article';
 				
 					//Only add noscript comments for article view
@@ -176,10 +176,10 @@ class plgContentmyApiComment extends JPlugin
 					$cache->setLifeTime(60*60*24*2);
 					$comments = $cache->call( array( 'plgContentmyApiComment', 'getComments'),$xid);
 					$article->text .= "<noscript><h3>Comments for ".$article->title."</h3>".$comments."</noscript>";
-				}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
+				}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage') || (JRequest::getVar('view','','get') == 'latest')){
 					$viewType = 'blog';
 				}else{
-					$viewType = 'link';
+					$viewType = 'list';
 				}
 				
 				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
