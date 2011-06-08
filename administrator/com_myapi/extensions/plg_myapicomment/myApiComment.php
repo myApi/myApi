@@ -102,7 +102,7 @@ class plgContentmyApiComment extends JPlugin
 			$comment_categories = $myapiparama->get('comment_categories');
 			$comments_show_on = $myapiparama->get('comments_show_on');
 			$comments_access = $myapiparama->get('comments_access');
-			$comments_width = $myapiparama->get('comments_width');
+			$comments_width = (JRequest::getVar('tmpl') == 'component') ? '520' : $myapiparama->get('comments_width');
 			$comments_numposts = $myapiparama->get('comments_numposts');
 			$comments_scheme = $myapiparama->get('comments_scheme');
 			

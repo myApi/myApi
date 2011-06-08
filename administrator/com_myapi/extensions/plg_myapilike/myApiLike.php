@@ -53,7 +53,7 @@ class plgContentmyApiLike extends JPlugin
 			$layout_style 		= $myapiparama->get('layout_style');
 			$color_scheme 		= $myapiparama->get('color_scheme');
 			$verb 				= $myapiparama->get('verb');
-			$width 				= $myapiparama->get('width');
+			$width 				= (JRequest::getVar('tmpl') == 'component') ? '40' : $myapiparama->get('width');
 			$font 				= $myapiparama->get('like_font');
 			$ref 				= $myapiparama->get('like_ref');
 			$show_send 			= ($myapiparama->get('show_send') == 1) ? 'true' : 'false';
