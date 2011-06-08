@@ -31,7 +31,7 @@
  **                                                                         **			
  *************************************************************************/ ?>
 
-<form action="index.php?option=com_myapi&view=pages&layout=send" method="post" name="adminForm">
+<form action="index.php?option=com_myapi&view=pages&layout=send" method="post" name="adminForm" id="adminForm">
 	<input type="hidden" name="option" value="com_myapi" />
     <input type="hidden" name="view" value="pages" />
     <input type="hidden" name="layout" value="send" />

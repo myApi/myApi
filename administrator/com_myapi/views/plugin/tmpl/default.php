@@ -31,7 +31,7 @@
  **                                                                         **			
  *************************************************************************/ ?>
 
-<form action="index.php" method="post" name="adminForm">
+<form action="index.php" method="post" name="adminForm" id="adminForm">
     <input type="hidden" name="option" value="com_myapi" />
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="0" />
