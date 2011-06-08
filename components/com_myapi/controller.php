@@ -36,7 +36,7 @@ class MyapiController extends JController {
 	function facebookRealTime(){
 		$integrations 	= array('users' => 'id','k2_users' => 'userID','community_users' => 'userid');
 		$method 		= $_SERVER['REQUEST_METHOD'];  
-		global $mainframe;    
+		$mainframe =& JFactory::getApplication();  
 		
 		//Callback verification                                                 
 		if ($method == 'GET' && JRequest::getVar('hub_mode','','get') == 'subscribe' && JRequest::getVar('hub_verify_token','','get') == $mainframe->getCfg( 'secret' )) {
@@ -171,7 +171,7 @@ class MyapiController extends JController {
 		$db->setQuery($query);
 		$db->query();
 		
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$mainframe->close();
 	}
 	
@@ -201,7 +201,7 @@ class MyapiController extends JController {
 			$data[] = "FB.Event.subscribe('edge.create', function(response) { $('myApiNewUserRegForm').submit(); });";
 		}
 		echo json_encode($data);
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$mainframe->close();
 	}
 	
@@ -250,7 +250,7 @@ class MyapiController extends JController {
 		$uid 		= $session['uid'];
 		
 		if($uid){
-			global $mainframe;
+			$mainframe =& JFactory::getApplication();
 			$options['return'] = $return;
 			$options['uid'] = $uid;
 			$error = $mainframe->login($uid,$options);
@@ -267,7 +267,7 @@ class MyapiController extends JController {
 	}
 	
 	function logout(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		$mainframe->logout();
 		$facebook->setSession(null);
@@ -276,7 +276,7 @@ class MyapiController extends JController {
 	}
 	//Joomla user login task
 	function login(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$facebook = plgSystemmyApiConnect::getFacebook();
 
 		$options 				= array();
@@ -332,7 +332,7 @@ class MyapiController extends JController {
 	
 	//A function called via ajax to see is a Facebook user is linked to a Joomla user
 	function isLinked(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
 		$db 	= JFactory::getDBO();
@@ -420,7 +420,7 @@ class MyapiController extends JController {
 	//New user
 	function newUser()
 	{
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 
 		$return = base64_decode(JRequest::getVar('return',''));
 		// Get required system objects
@@ -544,7 +544,7 @@ class MyapiController extends JController {
 	}
 	
 	function _sendMail(&$user, $password,$fbUser){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$db		=& JFactory::getDBO();
 		
 		
@@ -614,7 +614,7 @@ class MyapiController extends JController {
 	}
 	
 	function commentCreate(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$href 	= JRequest::getVar('commentlink',NULL,'get');
 		$db		=& JFactory::getDBO();
 		$query 	= "INSERT IGNORE INTO ".$db->nameQuote('#__myapi_comment_mail')." (".$db->nameQuote('href').") VALUES (".$db->quote($href).");"; 
@@ -633,7 +633,7 @@ class MyapiController extends JController {
 	
 	
 	function commentQueueSend(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		//get the comment queue
 		$db = JFactory::getDBO();
 		$query = "SELECT ".$db->nameQuote('href')." FROM ".$db->nameQuote('#__myapi_comment_mail');

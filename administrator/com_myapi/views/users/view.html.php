@@ -34,7 +34,7 @@
 jimport( 'joomla.application.component.view');
 class MyapiViewUsers extends JView {
     function display($tpl = null) {
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$model 		= $this->getModel('users');
 		$items 				= $model->getData();      
 		$pagination			= $model->getPagination();

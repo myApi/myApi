@@ -62,7 +62,7 @@ class MyapiViewPlugin extends JView {
 			$funcname = '_'.$row->element.'Side';
 			if(method_exists('MyapiViewPlugin',$funcname)) $this->$funcname();
 		}else{
-			global $mainframe;
+			$mainframe =& JFactory::getApplication();
 			$mainframe->redirect('index.php?option=com_plugins&view=plugin&task=edit&cid='.$id,JText::_('ENABLE_PLUGIN'));		
 		}
 		parent::display($tpl);

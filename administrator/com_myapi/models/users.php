@@ -40,7 +40,7 @@ class MyapiModelUsers extends JModel {
 	
 	function __construct() {
 		parent::__construct();
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		 
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');		
 		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
@@ -93,7 +93,7 @@ class MyapiModelUsers extends JModel {
 	}
 	
 	function _buildWhereClause(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$db = JFactory::getDBO();
 		
 		$type	= $mainframe->getUserStateFromRequest( 'myapi_users_filter_type', 'filter_type', '0', 'string');
@@ -131,7 +131,7 @@ class MyapiModelUsers extends JModel {
 	}
   
   	function _buildContentOrderBy(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$orderby = '';
 		$filter_order     = $mainframe->getUserStateFromRequest( 'myapi_users_filter_order', 'filter_order');
 		$filter_order_Dir = $mainframe->getUserStateFromRequest( 'myapi_users_filter_order_Dir', 'filter_order_Dir');
@@ -142,7 +142,7 @@ class MyapiModelUsers extends JModel {
 	}
 	
 	function getUserTypesList(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$db = JFactory::getDBO();
 		
 		$query = 'SELECT name AS value, name AS text'

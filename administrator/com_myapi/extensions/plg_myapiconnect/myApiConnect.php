@@ -63,7 +63,7 @@ class plgSystemmyApiConnect extends JPlugin
 	}
 
 	function onAfterDispatch(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$document=& JFactory::getDocument(); 
 		if($document->getType() != 'html')
 			return;
@@ -75,7 +75,8 @@ class plgSystemmyApiConnect extends JPlugin
 	}
 
 	function onAfterRender(){
-		global $mainframe, $fbAsyncInitJs;
+		$mainframe =& JFactory::getApplication();
+		global $fbAsyncInitJs;
 		$document=& JFactory::getDocument();   
 		
 		if($document->getType() != 'html' || ($mainframe->isAdmin() && JRequest::getCmd('option') != 'com_myapi')) 

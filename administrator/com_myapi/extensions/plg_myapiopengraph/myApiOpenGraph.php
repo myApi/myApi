@@ -77,14 +77,14 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 	}
 	
 	function onAfterDispatch(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$document = JFactory::getDocument(); 
 		if($document->getType() != 'html' || $mainframe->isAdmin()) return;
 		foreach(plgSystemmyApiOpenGraph::$ogptags as $key => $value) $document->addCustomTag('<meta property="'.$key.'" content="'.htmlspecialchars($value).'" />');
 	}
 	
 	function onAfterRender(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$document = JFactory::getDocument(); 
 		if(!class_exists('plgSystemmyApiConnect') || $document->getType() != 'html' || $mainframe->isAdmin()) return;
 		
