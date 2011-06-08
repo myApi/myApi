@@ -38,9 +38,10 @@ jimport('joomla.plugin.plugin');
 
 class plgUsermyApiUser extends JPlugin {
 	
-	function plgUsermyApiUser(& $subject, $config) {
-		parent::__construct($subject, $config);
-	}
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
 
 	function onAfterDeleteUser($user, $succes, $msg){
 		$db =& JFactory::getDBO();

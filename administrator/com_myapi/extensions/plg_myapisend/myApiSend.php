@@ -34,6 +34,11 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiSend extends JPlugin
 {
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
+	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
 		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
 		

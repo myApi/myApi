@@ -34,9 +34,10 @@ jimport( 'joomla.plugin.plugin');
 
 class plgSystemmyApiConnect extends JPlugin
 {
-	function plgSystemmyApiConnect(&$subject, $config){
-		parent::__construct($subject, $config);
-	}
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
 	
 	function getFacebook(){
 		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');

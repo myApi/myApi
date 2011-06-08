@@ -38,10 +38,10 @@ jimport('joomla.event.plugin');
 
 class plgAuthenticationmyApiAuth extends JPlugin
 {
-    function plgAuthenticationmyApiAuth(& $subject, $config)
-	{
-		parent::__construct($subject, $config);
-	}
+    public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
  	
 	function onAuthenticate($uid, $options, &$response )
     {

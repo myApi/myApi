@@ -34,6 +34,11 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiOpenGraphContent extends JPlugin
 {
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
+	
 	function getContentImage($text){
 		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
 		$dom = new simple_html_dom();

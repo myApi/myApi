@@ -35,8 +35,10 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 	
 	static $ogptags = array();
 
-	function plgSystemmyApiOpenGraph(&$subject, $config){
-		parent::__construct($subject, $config);
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+		
 		if(!class_exists('plgSystemmyApiConnect')) return;
 		
 		$cache = & JFactory::getCache('plgSystemmyApiOpenGraph - FB Admins query');

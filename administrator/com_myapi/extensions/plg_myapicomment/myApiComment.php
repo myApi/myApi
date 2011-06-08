@@ -38,9 +38,10 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiComment extends JPlugin
 {	
-	function plgContentmyApiComment( &$subject, $params ){
-		parent::__construct( $subject, $params );
-		
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  		
 		global $myApiCommentJsAdded;
 		if(! $myApiCommentJsAdded == true){
 			global $fbAsyncInitJs;

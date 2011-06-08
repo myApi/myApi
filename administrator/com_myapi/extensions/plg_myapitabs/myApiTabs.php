@@ -35,10 +35,10 @@ class plgSystemmyApiTabs extends JPlugin{
 	
 	static $ogptags = array();
 
-	function plgSystemmyApiTabs(&$subject, $config){
-		parent::__construct($subject, $config);
-		
-	}
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
 	
 	function onAfterInitialise(){
 		global $mainframe;
