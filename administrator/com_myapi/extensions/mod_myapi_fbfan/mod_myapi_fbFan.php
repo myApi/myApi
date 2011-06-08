@@ -30,8 +30,7 @@
  **   along with myApi_fbfan.  If not, see <http://www.gnu.org/licenses/>.	**
  **                                                                         **			
  *****************************************************************************/
-
-if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook())
+if(!class_exists('plgSystemmyApiConnect') || !$facebook = plgSystemmyApiConnect::getFacebook())
 	return;
 			 
 $classSfx 		= $params->get('moduleclass_sfx');
@@ -47,13 +46,9 @@ $border 		= $params->get('fan_border');
 if($pageLink == ''){
 	require_once (dirname(__FILE__).DS.'helper.php');
 	
-	$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-	$com_params = new JParameter( $plugin->params );
-
-	$profile_id = $com_params->get('appId');
 	$cache = & JFactory::getCache('modmyapifbFanHelper');
 	$cache->setCaching( 1 );
-	$pageLink = $cache->call( array( 'modmyapifbFanHelper', 'getPageLink') ,$profile_id  );
+	$pageLink = $cache->call( array( 'modmyapifbFanHelper', 'getPageLink') ,$facebook->getAppId() );
 }
 
 $user = JFactory::getUser();

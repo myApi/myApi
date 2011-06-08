@@ -29,7 +29,7 @@
  		<field name="fan_href" type="text" default="" label="PARAM_HREF_LABEL" description="PARAM_HREF_DESC" size="30" />	
 		<field name="fan_width" type="text" default="180" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" size="30" />
 		<field name="fan_height" type="text" default="" label="PARAM_HEIGHT_LABEL" description="PARAM_HEIGHT_DESC" size="30" />
-		<field name="fan_border" type="color" default="" label="PARAM_BORDER_LABEL" description="PARAM_BORDER_DESC" size="30" addPath="/modules/mod_myapi_fbFan/elements/" />
+		<field name="fan_border" type="color" default="" label="PARAM_BORDER_LABEL" description="PARAM_BORDER_DESC" size="30"  addfieldpath="/modules/mod_myapi_fbFan/fields" />
 		<field name="fan_header" type="radio" default="1" label="PARAM_HEADER_LABEL" description="PARAM_HEADER_DESC">
 		  	<option value="0">NO</option>
 		  	<option value="1">YES</option>

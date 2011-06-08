@@ -31,8 +31,8 @@
  **                                                                         **			
  *****************************************************************************/
  
-class JFormFieldColor extends JFormField{
-	protected function getInput(){
+class JElementColor extends JElement{
+	function fetchElement($name, $value, &$node, $control_name){
 		static $embedded;
 		if(!$embedded){
 			$js = "window.addEvent('domready',function(){
@@ -64,9 +64,8 @@ class JFormFieldColor extends JFormField{
 			$document->addStyleSheet(JURI::root()."modules/mod_myapi_fbFan/elements/moorainbow/mooRainbow.css");
 			$embedded=true;
 		} 
-		$html = '<input name="'.$control_name.'['.$this->name.']" type="text" class="inputbox" id="'.$control_name.$this->name.'" value="'.$this->value.'" size="10" />'.
-            	'<button type="button" id="img'.$this->name.'" class="rainbowbtn">'.JText::_('COLOR_PICKER').'</button>';	
-		
+		$html = '<input name="'.$control_name.'['.$name.']" type="text" class="inputbox" id="'.$control_name.$name.'" value="'.$value.'" size="10" />'.
+            	'<button type="button" id="img'.$name.'" class="rainbowbtn">'.JText::_('COLOR_PICKER').'</button>';	
 		
 		return $html;
 	}
