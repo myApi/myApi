@@ -58,11 +58,11 @@ class plgContentmyApiShare extends JPlugin
 			// Load plugin params info
 			$myapiparama = new JParameter($plugin->params);
 			
-			$share_sections 	= $myapiparama->get('share_sections');
-			$share_categories 	= $myapiparama->get('share_categories');
-			$share_show_on 		= $myapiparama->get('share_show_on');
-			$share_type 		= $myapiparama->get('share_type');
-			$position			= $myapiparama->get('position','myApiShareTop');
+			$share_sections 	= $this->params->get('share_sections');
+			$share_categories 	= $this->params->get('share_categories');
+			$share_show_on 		= $this->params->get('share_show_on');
+			$share_type 		= $this->params->get('share_type');
+			$position			= $this->params->get('position','myApiShareTop');
 			$share_show 		= false;
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
@@ -87,11 +87,11 @@ class plgContentmyApiShare extends JPlugin
 			}
 			
 			if(JRequest::getCmd('view','','get') == 'article'){	
-				$viewAccess = $myapiparama->get("share_view_article","1");
+				$viewAccess = $this->params->get("share_view_article","1");
 			}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
-				$viewAccess = $myapiparama->get("share_view_blog","1");
+				$viewAccess = $this->params->get("share_view_blog","1");
 			}else{
-				$viewAccess = $myapiparama->get("share_view_list","1");
+				$viewAccess = $this->params->get("share_view_list","1");
 			}
 			
 			if((($share_show) || ($share_show_on == 'all')) && ($viewAccess ))

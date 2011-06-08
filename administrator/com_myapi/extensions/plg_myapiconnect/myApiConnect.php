@@ -40,16 +40,13 @@ class plgSystemmyApiConnect extends JPlugin
   	}
 	
 	function getFacebook(){
-		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$params = new JParameter( $plugin->params );
-		
 		try{ 
 			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
 		}catch(Exception $e){
 			return JError::raiseError( 100, $e->getMessage());
 		}
 		
-		if( $params->get('appId') == '' || $params->get('secret') == ''){
+		if( $this->params->get('appId') == '' || $this->params->get('secret') == ''){
 			if( !is_object(JError::getError()) || (!is_array(JError::getError()->info)) ||  !(is_array(JError::getError()->info) && JError::getError()->info['myApi'] == 100))
 				JError::raiseWarning( 100, 'myApi requires a Facebook Application ID',array('myApi' =>'100'));
 				return  false;
@@ -57,8 +54,8 @@ class plgSystemmyApiConnect extends JPlugin
 				false;
 		}else{
 			$facebook =  new myApiFacebook(array(
-				'appId'  => $params->get('appId'),
-				'secret' => $params->get('secret'),
+				'appId'  => $this->params->get('appId'),
+				'secret' => $this->params->get('secret'),
 				'cookie' => true, // enable optional cookie support
 			));	
 			return $facebook;
@@ -91,7 +88,7 @@ class plgSystemmyApiConnect extends JPlugin
 		$u =& JURI::getInstance( JURI::root() );
 		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 		$xdPath	= $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'plugins/system/facebookXD.html';
-		$locale = ($params->get("locale") == '') ? 'en_US' : $params->get("locale");	
+		$locale = ($this->params->get("locale") == '') ? 'en_US' : $this->params->get("locale");	
 		
 		$js 	= <<<EOD
 /* <![CDATA[ */		
@@ -104,7 +101,7 @@ window.addEvent('domready',function(){
 	}());
 });
 window.fbAsyncInit = function() {
-     FB.init({appId: "{$params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
+     FB.init({appId: "{$this->params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
 	 {$fbAsyncInitJs}
 };
 /* ]]> */

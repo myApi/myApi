@@ -99,17 +99,17 @@ class plgContentmyApiComment extends JPlugin
 			// Load plugin params info
 			$myapiparama = new JParameter($plugin->params);
 					
-			$comment_sections = $myapiparama->get('comment_sections');
-			$comment_categories = $myapiparama->get('comment_categories');
-			$comments_show_on = $myapiparama->get('comments_show_on');
-			$comments_access = $myapiparama->get('comments_access');
-			$comments_width = (JRequest::getVar('tmpl') == 'component') ? '520' : $myapiparama->get('comments_width');
-			$comments_numposts = $myapiparama->get('comments_numposts');
-			$comments_scheme = $myapiparama->get('comments_scheme');
+			$comment_sections = $this->params->get('comment_sections');
+			$comment_categories = $this->params->get('comment_categories');
+			$comments_show_on = $this->params->get('comments_show_on');
+			$comments_access = $this->params->get('comments_access');
+			$comments_width = (JRequest::getVar('tmpl') == 'component') ? '520' : $this->params->get('comments_width');
+			$comments_numposts = $this->params->get('comments_numposts');
+			$comments_scheme = $this->params->get('comments_scheme');
 			
-			$comments_view_article = $myapiparama->get('comments_view_article');
-			$comments_view_list = $myapiparama->get('comments_view_list');
-			$comments_view_blog = $myapiparama->get('comments_view_blog');
+			$comments_view_article = $this->params->get('comments_view_article');
+			$comments_view_list = $this->params->get('comments_view_list');
+			$comments_view_blog = $this->params->get('comments_view_blog');
 			
 			$comment_show = false;
 			if(isset($article->sectionid))
@@ -194,7 +194,7 @@ class plgContentmyApiComment extends JPlugin
 					$dom->load($article->text);
 				}
 				
-				switch($myapiparama->get('comments_view_'.$viewType)){
+				switch($this->params->get('comments_view_'.$viewType)){
 					case 1:
 						$commentEl = $comment_box;	
 					break;

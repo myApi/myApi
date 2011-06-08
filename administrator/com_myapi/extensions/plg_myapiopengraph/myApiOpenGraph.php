@@ -47,11 +47,8 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		$connect_plugin 	=& JPluginHelper::getPlugin('system', 'myApiConnect');
 		$connect_params 	= new JParameter( $connect_plugin->params );
 		
-		$plugin =& JPluginHelper::getPlugin('system', 'myApiOpenGraph');
-		$plugin_params = new JParameter( $plugin->params );
-		
 		$db_admins = $cache->call( array( 'plgSystemmyApiOpenGraph', 'getFbAdmins'));
-		$param_admins = ($plugin_params->get('fbadmins') != '') ? explode(',',$plugin_params->get('fbadmins')) : array();
+		$param_admins = ($this->params->get('fbadmins') != '') ? explode(',',$this->params->get('fbadmins')) : array();
 		$admins = array_merge($db_admins,$param_admins);
 		
 		$ogptags_default					= array();
@@ -61,8 +58,8 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		$ogptags_default['og:site_name']	= $config->getValue( 'config.sitename' );
 		$ogptags_default['fb:app_id'] 		= $connect_params->get('appId');
 		$ogptags_default['fb:admins']		= implode(',',$admins);
-		if($plugin_params->get('ogimage') != '' && $plugin_params->get('ogimage') != -1) $ogptags_default['og:image'] = JURI::base().'images/'.$plugin_params->get('ogimage');
-		if($plugin_params->get('fbpageid') != '') $ogptags_default['fb:page_id'] = $plugin_params->get('fbpageid');
+		if($this->params->get('ogimage') != '' && $this->params->get('ogimage') != -1) $ogptags_default['og:image'] = JURI::base().'images/'.$this->params->get('ogimage');
+		if($this->params->get('fbpageid') != '') $ogptags_default['fb:page_id'] = $this->params->get('fbpageid');
 		
 		
 		plgSystemmyApiOpenGraph::setTags($ogptags_default);

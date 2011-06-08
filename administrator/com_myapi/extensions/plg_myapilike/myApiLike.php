@@ -52,18 +52,18 @@ class plgContentmyApiLike extends JPlugin
 			// Load plugin params info
 			$myapiparama = new JParameter($plugin->params);
 			
-			$like_sections 		= $myapiparama->get('like_sections');
-			$like_categories 	= $myapiparama->get('like_categories');
-			$like_show_on 		= $myapiparama->get('like_show_on');
-			$layout_style 		= $myapiparama->get('layout_style');
-			$color_scheme 		= $myapiparama->get('color_scheme');
-			$verb 				= $myapiparama->get('verb');
-			$width 				= (JRequest::getVar('tmpl') == 'component') ? '40' : $myapiparama->get('width');
-			$font 				= $myapiparama->get('like_font');
-			$ref 				= $myapiparama->get('like_ref');
-			$show_send 			= ($myapiparama->get('show_send') == 1) ? 'true' : 'false';
-			$show_faces 		= ($myapiparama->get('show_faces') == 1) ? 'true' : 'false';
-			$position			= $myapiparama->get('position','myApiShareTop');
+			$like_sections 		= $this->params->get('like_sections');
+			$like_categories 	= $this->params->get('like_categories');
+			$like_show_on 		= $this->params->get('like_show_on');
+			$layout_style 		= $this->params->get('layout_style');
+			$color_scheme 		= $this->params->get('color_scheme');
+			$verb 				= $this->params->get('verb');
+			$width 				= (JRequest::getVar('tmpl') == 'component') ? '40' : $this->params->get('width');
+			$font 				= $this->params->get('like_font');
+			$ref 				= $this->params->get('like_ref');
+			$show_send 			= ($this->params->get('show_send') == 1) ? 'true' : 'false';
+			$show_faces 		= ($this->params->get('show_faces') == 1) ? 'true' : 'false';
+			$position			= $this->params->get('position','myApiShareTop');
 			$like_show 			= false;
 			$viewAccess			= false;
 		
@@ -84,11 +84,11 @@ class plgContentmyApiLike extends JPlugin
 			}
 			
 			if(JRequest::getVar('view','','get') == 'article'){	
-				$viewAccess = $myapiparama->get("like_view_article","1");
+				$viewAccess = $this->params->get("like_view_article","1");
 			}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
-				$viewAccess = $myapiparama->get("like_view_blog","1");
+				$viewAccess = $this->params->get("like_view_blog","1");
 			}else{
-				$viewAccess = $myapiparama->get("like_view_list","1");
+				$viewAccess = $this->params->get("like_view_list","1");
 			}
 			
 			if( (($like_show) || ($like_show_on == 'all'))  && $viewAccess ){
