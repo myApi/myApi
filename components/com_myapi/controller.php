@@ -665,7 +665,8 @@ class MyapiController extends JController {
 					//Get comments from facebook
 					if(isset($xid)){
 						try{
-							$fbQuery = "SELECT fromid, username, text, xid FROM comment WHERE xid = '".$xid."' AND  time > ".($lastEmailTime)." AND time < ".$newEmailTime." ";
+							$fbQuery = "SELECT fromid, username, text, xid FROM comment WHERE (xid = '".$xid."' OR object_id in (SELECT post_fbid FROM comment WHERE xid = '".$xid."')) AND  time > ".($lastEmailTime)." AND time < ".$newEmailTime." ";
+							error_log($fbQuery);
 							$comments = $facebook->api(array('method' => 'fql.query','query' => $fbQuery,'access_token' => $facebook->getAppId().'|'.$facebook->getApiSecret()));
 						} catch (FacebookApiException $e) { return; }
 						
@@ -713,7 +714,7 @@ class MyapiController extends JController {
 					}
 				}
 				
-				if(sizeof($emailBody) == 0){ return; }
+				if($totalComments == 0){ return; }
 				
 				$subject 	= sprintf ( JText::_( 'NEW_COMMENT_SUBJECT' ), $totalComments, sizeof($emailBody));
 				$subject 	= html_entity_decode($subject, ENT_QUOTES);
