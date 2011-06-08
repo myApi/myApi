@@ -42,6 +42,11 @@ class plgAuthenticationmyApiAuth extends JPlugin
  		parent::__construct($subject, $config);
  		$this->loadLanguage();
   	}
+	
+	public function onUserAuthenticate($uid, $options, &$response ){
+		$result = $this->onAuthenticate($uid, $options, &$response );
+		return $result;
+	}
  	
 	function onAuthenticate($uid, $options, &$response )
     {
