@@ -39,6 +39,15 @@ class plgContentmyApiOpenGraphContent extends JPlugin
  		$this->loadLanguage();
   	}
 	
+	public function onContentBeforeSave( &$article, $isNew ){
+		$result	= $this->onBeforeContentSave( &$article, $isNew );
+		return $result;
+	}
+	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
+		return $result;
+	}
+	
 	function getContentImage($text){
 		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
 		$dom = new simple_html_dom();

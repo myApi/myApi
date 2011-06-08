@@ -44,6 +44,11 @@ class plgContentmyApiShare extends JPlugin
  		$this->loadLanguage();
   	}
 	
+	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
+		return $result;
+	}
+	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart )
 	{
 		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }

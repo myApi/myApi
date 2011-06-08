@@ -49,6 +49,12 @@ class plgContentmyApiComment extends JPlugin
 			$myApiCommentJsAdded = true;
 		}
 	}
+	
+	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
+		return $result;
+	}
+	
 	function getComments($xid){
 		$params  =   array(
 		 'method'    => 'fql.query',
