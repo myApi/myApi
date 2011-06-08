@@ -32,8 +32,8 @@
  **                                                                         **			
  *****************************************************************************/
  
-class JElementColor extends JElement{
-	function fetchElement($name, $value, &$node, $control_name){
+class JFormFieldColor extends JFormField{
+	protected function getInput(){
 		static $embedded;
 		if(!$embedded){
 			$js = "window.addEvent('domready',function(){

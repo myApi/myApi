@@ -1,4 +1,4 @@
-<?php defined('_JEXEC') or die('Direct Access to this location is not allowed.');
+	<?php defined('_JEXEC') or die('Direct Access to this location is not allowed.');
 /*****************************************************************************
  **                                                                         ** 
  **                                         .o.                   o8o  	    **
@@ -31,8 +31,8 @@
  **                                                                         **			
  *****************************************************************************/
  
-class JElementColor extends JElement{
-	function fetchElement($name, $value, &$node, $control_name){
+class JFormFieldColor extends JFormField{
+	protected function getInput(){
 		static $embedded;
 		if(!$embedded){
 			$js = "window.addEvent('domready',function(){

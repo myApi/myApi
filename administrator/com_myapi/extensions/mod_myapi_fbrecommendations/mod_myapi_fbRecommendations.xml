@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install type="module" version="1.5">
+<extension type="module" version="1.6.0" client="site" method="upgrade">
 	<name>Facebook Recommendations Box</name>
 	<author>Thomas Welton</author> 
 	<creationDate>March 2011</creationDate> 
@@ -23,32 +23,32 @@
 		<language tag="nb-NO">languages/nb-NO.mod_myapi_fbRecommendations.ini</language>
 	</languages>
 	
-	<params addPath="/modules/mod_myapi_fbRecommendations/elements/">	
-		<param name="moduleclass_sfx" type="text" default="" label="PARAM_CLASS_SFX_LABEL" description="PARAM_CLASS_SFX_DESC" />
-		<param name="recommendations_width" type="text" default="180" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" size="30" />
-		<param name="recommendations_height" type="text" default="" label="PARAM_HEIGHT_LABEL" description="PARAM_HEIGHT_DESC" size="30" />
-		<param name="recommendations_border" type="color" default="" label="PARAM_BORDER_LABEL" description="PARAM_BORDER_DESC" size="30" />
-		<param name="recommendations_header" type="radio" default="1" label="PARAM_HEADER_LABEL" description="PARAM_HEADER_DESC">
+	<config><fields name="params"><fieldset name="basic">	
+		<field name="moduleclass_sfx" type="text" default="" label="PARAM_CLASS_SFX_LABEL" description="PARAM_CLASS_SFX_DESC" />
+		<field name="recommendations_width" type="text" default="180" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" size="30" />
+		<field name="recommendations_height" type="text" default="" label="PARAM_HEIGHT_LABEL" description="PARAM_HEIGHT_DESC" size="30" />
+		<field name="recommendations_border" type="color" default="" label="PARAM_BORDER_LABEL" description="PARAM_BORDER_DESC" size="30" addPath="/modules/mod_myapi_fbRecommendations/elements/" />
+		<field name="recommendations_header" type="radio" default="1" label="PARAM_HEADER_LABEL" description="PARAM_HEADER_DESC">
 		  	<option value="0">NO</option>
 		  	<option value="1">YES</option>
-		</param>
+		</field>
 		
-		<param name="recommendations_font" type="list" default="arial" label="PARAM_FONT_LABEL" description="PARAM_FONT_DESC">
+		<field name="recommendations_font" type="list" default="arial" label="PARAM_FONT_LABEL" description="PARAM_FONT_DESC">
 		  	<option value="arial">Arial</option>
 			<option value="lucida grande">Lucida Grande</option>
 			<option value="segoe ui">Segoe Ui</option>
 			<option value="tahoma">Tahoma</option>
 			<option value="trebuchet ms">Trebuchet ms</option>
 			<option value="verdana">Verdana</option>
-		</param>
+		</field>
 			
 			
-		<param name="recommendations_scheme" type="list" default="light" label="PARAM_SCHEME_LABEL" description="PARAM_SCHEME_DESC">
+		<field name="recommendations_scheme" type="list" default="light" label="PARAM_SCHEME_LABEL" description="PARAM_SCHEME_DESC">
 		  	<option value="light">PARAM_SCHEME_LIGHT</option>
 			<option value="dark">PARAM_SCHEME_DARK</option>
-		</param>
+		</field>
 		
-		<param name="recommendations_ref" type="text" default="" label="PARAM_REF_LABEL" description="PARAM_REF_DESC" size="30" />	
-	</params>
+		<field name="recommendations_ref" type="text" default="" label="PARAM_REF_LABEL" description="PARAM_REF_DESC" size="30" />	
+	</fieldset></fields></config>
 		
-</install>
+</extension>

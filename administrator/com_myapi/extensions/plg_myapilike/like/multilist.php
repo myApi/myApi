@@ -39,7 +39,7 @@ defined('JPATH_BASE') or die();
  *
  */
  
-class JElementMultiList extends JElement
+class JFormFieldMultiList extends JFormField
 {
         /**
         * Element name
@@ -47,9 +47,9 @@ class JElementMultiList extends JElement
         * @access       protected
         * @var          string
         */
-        var    $_name = 'MultiList';
+        public $type = 'MultiList';
  
-        function fetchElement($name, $value, &$node, $control_name)
+        protected function getInput()
         {
                 // Base name of the HTML control.
                 $ctrl  = $control_name .'['. $name .']';
