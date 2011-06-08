@@ -41,7 +41,13 @@ class plgSystemmyApiConnect extends JPlugin
 	
 	function getFacebook(){
 		try{ 
-			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+			$version = new JVersion;
+   			$joomla = $version->getShortVersion();
+    		if(substr($joomla,0,3) == '1.6')
+				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnectFacebook.php';
+			else
+				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+			
 		}catch(Exception $e){
 			return JError::raiseError( 100, $e->getMessage());
 		}
@@ -70,8 +76,13 @@ class plgSystemmyApiConnect extends JPlugin
 			
 		JHTML::_('behavior.mootools');
 		$doc = & JFactory::getDocument();
-		$doc->addStylesheet(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');
-		$doc->addScript(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiModal.js');
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+    	$prefix = (substr($joomla,0,3) == '1.6') ? JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConenct' : JURI::root().'plugins'.DS.'system'.DS.'myApiConnect';
+		
+		$doc->addStylesheet($prefix.DS.'myApi.css');
+		$doc->addScript($prefix.DS.'myApiModal.js');
 	}
 
 	function onAfterRender(){
@@ -82,10 +93,6 @@ class plgSystemmyApiConnect extends JPlugin
 		if($document->getType() != 'html' || ($mainframe->isAdmin() && JRequest::getCmd('option') != 'com_myapi')) 
 			return;
 			
-
-		$plugin	=& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$params = new JParameter( $plugin->params );  
-		
 		$u =& JURI::getInstance( JURI::root() );
 		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 		$xdPath	= $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'plugins/system/facebookXD.html';
@@ -110,7 +117,15 @@ EOD;
 		unset($fbAsyncInitJs);
 		
 		$buffer = JResponse::getBody();
-		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+    	if(substr($joomla,0,3) == '1.6')
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+		else
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		
+		
 		$dom = new simple_html_dom();
 		$dom->load($buffer);
 		
