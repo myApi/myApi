@@ -11,7 +11,7 @@
 	<description>PLUGIN DESCRIPTION</description>
 	<files>
 		<filename plugin="myApiComment">myApiComment.php</filename>
-		<folder>comment</folder>
+		<folder>fields</folder>
 	</files>
 	
 	<languages>
@@ -59,12 +59,14 @@
 			<option value="2">PARAM_EMAIL_CRON</option>
 		</field>
 		
-        <field name="comment_sections" type="sqlmultilistx" sql="SELECT * FROM #__sections" key_field="id" value_field="title" default="" multiple="multiple" label="PARAM_SECTIONS_LABEL" description="PARAM_MULTI"  addPath="/plugins/content/comment/">
-			<option value="-1"></option>
-        </field>
+		<field name="comment_categories" type="SQL" class="inputbox" label="PARAM_CAT_LABEL" multiple="true" translate="true" 
+           		query="SELECT * FROM #__categories" 
+			   key_field="title" 
+			   value_field="title" 
+			   description="PARAM_MULTI" 
+			   default="-1"> 
+        	<option value="-1"></option>
+    	</field> 
 		
-		<field name="comment_categories" type="sqlmultilistx" sql="SELECT * FROM #__categories" key_field="title" value_field="title" default="" multiple="multiple" label="PARAM_CAT_LABEL" description="PARAM_MULTI"  addPath="/plugins/content/comment/">
-			<option value="-1"></option>
-        </field>
 	</fieldset></fields></config>
 </extension>
