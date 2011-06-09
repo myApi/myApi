@@ -63,7 +63,7 @@ class plgSystemmyApiConnect extends JPlugin
 		}
 		
 		if( $params->get('appId') == '' || $params->get('secret') == ''){
-			if( !is_object(JError::getError()) || (!is_array(JError::getError()->info)) ||  !(is_array(JError::getError()->info) && JError::getError()->info['myApi'] == 100))
+			if( !is_object(JError::getError()) || (is_object(JError::getError()) && JError::getError()->getCode() != '100') )
 				JError::raiseWarning( 100, 'myApi requires a Facebook Application ID',array('myApi' =>'100'));
 				return  false;
 			return
