@@ -50,7 +50,7 @@ class plgContentmyApiComment extends JPlugin
 		}
 	}
 	
-	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
 		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
 		return $result;
 	}
@@ -72,8 +72,6 @@ class plgContentmyApiComment extends JPlugin
 	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart )
 	{
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
-		
 		//this may fire fron a component other than com_content
 		if(is_object($article) && (@$article->id != '') && (@$_POST['fb_sig_api_key'] == '') && class_exists('plgSystemmyApiConnect'))
 		{
@@ -99,11 +97,6 @@ class plgContentmyApiComment extends JPlugin
 			$base = JURI::base();
 			$doc = & JFactory::getDocument();
 			JHTML::_('behavior.mootools');
-			
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-
-			// Load plugin params info
-			$myapiparama = new JParameter($plugin->params);
 					
 			$comment_sections = $this->params->get('comment_sections');
 			$comment_categories = $this->params->get('comment_categories');
@@ -141,22 +134,27 @@ class plgContentmyApiComment extends JPlugin
 			
 			//After checking categories and sections reset to fasle is not in articel view
 			
-			$user = JFactory::getUser();
-			
-			
-			if($comments_access == '29'){
-				$hasAccess = true;
-			}elseif($comments_access == '30'){
-				if(($user->gid == '23') || ($user->gid == '24') || ($user->gid == '25'))
+			$version = new JVersion;
+        	$joomla = $version->getShortVersion();
+        	if(substr($joomla,0,3) == '1.6'){
+				//will be adding ACL to do this,untill then remove it.
+				$hasAccess = true;	
+			}else{
+				$user = JFactory::getUser();
+				if($comments_access == '29'){
+					$hasAccess = true;
+				}elseif($comments_access == '30'){
+					if(($user->gid == '23') || ($user->gid == '24') || ($user->gid == '25'))
+						$hasAccess = true;
+				}
+				else{
+					if($user->gid >= $comments_access)
+						$hasAccess = true;
+				}
+					
+				if(($comments_access == $user->gid) || ($comments_access == '29') )
 					$hasAccess = true;
 			}
-			else{
-				if($user->gid >= $comments_access)
-					$hasAccess = true;
-			}
-				
-			if(($comments_access == $user->gid) || ($comments_access == '29') )
-				$hasAccess = true;
 			
 			if($comments_show_on == 'all')
 				$comment_show = true;
@@ -189,7 +187,14 @@ class plgContentmyApiComment extends JPlugin
 					$viewType = 'list';
 				}
 				
-				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				$version = new JVersion;
+        		$joomla = $version->getShortVersion();
+        		if(substr($joomla,0,3) == '1.6'){
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}
+				
 				$dom = new simple_html_dom();
 				$dom->load($article->text);
 		
