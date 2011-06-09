@@ -44,24 +44,21 @@ class plgContentmyApiShare extends JPlugin
  		$this->loadLanguage();
   	}
 	
-	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
 		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
 		return $result;
 	}
 	
-	function onBeforeDisplayContent( &$article, &$params, $limitstart )
-	{
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
+	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if(!class_exists('plgSystemmyApiConnect') || ( (!array_key_exists('category',$article) && !isset($params->showK2Plugins) && ($vnum == '1.5')))){ return; }
 		
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
 		{
 			$doc = & JFactory::getDocument();
-			
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiShare');
-
-			// Load plugin params info
-			$myapiparama = new JParameter($plugin->params);
 			
 			$share_sections 	= $this->params->get('share_sections');
 			$share_categories 	= $this->params->get('share_categories');
@@ -72,13 +69,14 @@ class plgContentmyApiShare extends JPlugin
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			
-			if(isset($article->sectionid))
-			{
-				if( is_array($share_sections) )
-				{	foreach($share_sections as $id)
-					{ if($id == $article->sectionid) { $share_show = true; } }
+			if($vnum == '1.5'){
+				if(isset($article->sectionid)){
+					if( is_array($share_sections) )
+					{	foreach($share_sections as $id)
+						{ if($id == $article->sectionid) { $share_show = true; } }
+					}
+					else{ if($share_sections == $article->sectionid) { $share_show = true; } }
 				}
-				else{ if($share_sections == $article->sectionid) { $share_show = true; } }
 			}
 			
 			if(isset($article->category))
@@ -115,7 +113,11 @@ class plgContentmyApiShare extends JPlugin
 				$link = JRoute::_($link,true,-1);
 				$button = '<fb:share-button class="url" href="'.$link.'" type="'.$share_type.'"></fb:share-button>';
 				
-				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				if($vnum == '1.6'){
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}
 				$article->text = myApiButtons::addToTable($article->text,$position,$button);
 			}
 		}
