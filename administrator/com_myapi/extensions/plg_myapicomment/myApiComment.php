@@ -196,13 +196,13 @@ class plgContentmyApiComment extends JPlugin
 				}
 				
 				$dom = new simple_html_dom();
-				$dom->load($article->text);
-		
+				$content = (isset($article->text) && $article->text != '') ? $article->text : $article->introtext;
+				$dom->load($content);
 				$tableEl = $dom->find('.myApiShareBottom',0);
 				if(!$tableEl){
 					$table = '<table class="myApiShareBottom myApiShareTable"></table>';
-					$article->text = $article->text.$table;
-					$dom->load($article->text);
+					$content = $content.$table;
+					$dom->load($content);
 				}
 				
 				switch($this->params->get('comments_view_'.$viewType)){
@@ -233,9 +233,12 @@ class plgContentmyApiComment extends JPlugin
 					$row = $dom->find('.myApiShareBottom',0);
 					$row->innertext .= $tr;
 					
-					$article->text 	= $dom->save();
+					if(isset($article->text) && $article->text != ''){
+						 $article->text = $dom->save();
+					}else{
+						$article->introtext = $dom->save();
+					}
 				}
-				
 				$dom->clear(); unset($dom);
 			}
 		}
