@@ -39,13 +39,11 @@ class plgSystemmyApiOpenGraph extends JPlugin{
  		parent::__construct($subject, $config);
  		$this->loadLanguage();
 		
-		if(!class_exists('plgSystemmyApiConnect')) return;
+		if(!class_exists('plgSystemmyApiConnect') || !$facebook = plgSystemmyApiConnect::getFacebook()) return;
 		
 		$cache = & JFactory::getCache('plgSystemmyApiOpenGraph - FB Admins query');
 		$cache->setCaching( 1 );
 		$config 	=& JFactory::getConfig();
-		$connect_plugin 	=& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$connect_params 	= new JParameter( $connect_plugin->params );
 		
 		$db_admins = $cache->call( array( 'plgSystemmyApiOpenGraph', 'getFbAdmins'));
 		$param_admins = ($this->params->get('fbadmins') != '') ? explode(',',$this->params->get('fbadmins')) : array();
@@ -56,18 +54,23 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		$ogptags_default['og:type'] 		= 'website';
 		$ogptags_default['og:url'] 			= JURI::getInstance()->toString();
 		$ogptags_default['og:site_name']	= $config->getValue( 'config.sitename' );
-		$ogptags_default['fb:app_id'] 		= $connect_params->get('appId');
+		$ogptags_default['fb:app_id'] 		= $facebook->getAppId();
 		$ogptags_default['fb:admins']		= implode(',',$admins);
 		if($this->params->get('ogimage') != '' && $this->params->get('ogimage') != -1) $ogptags_default['og:image'] = JURI::base().'images/'.$this->params->get('ogimage');
 		if($this->params->get('fbpageid') != '') $ogptags_default['fb:page_id'] = $this->params->get('fbpageid');
-		
 		
 		plgSystemmyApiOpenGraph::setTags($ogptags_default);
 	}
 	
 	function getFbAdmins(){
 		$db = JFactory::getDBO();
-		$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__users.id')." WHERE ".$db->nameQuote('#__users.gid')." = ".$db->quote('25');
+		$version = new JVersion;
+   	 	$joomla = $version->getShortVersion();
+    	if(substr($joomla,0,3) == '1.6'){
+			$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__user_usergroup_map')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__user_usergroup_map.user_id')." WHERE ".$db->nameQuote('#__user_usergroup_map.group_id')." = ".$db->quote('8');
+		}else{
+			$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__users.id')." WHERE ".$db->nameQuote('#__users.gid')." = ".$db->quote('25');
+		}
 		$db->setQuery($query);
 		return $db->loadResultArray();
 	}
@@ -90,7 +93,14 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		
 		$buffer = JResponse::getBody();
 		
-		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if($vnum == '1.5'){
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		}else{
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+		}
 		$dom = new simple_html_dom();
 		$dom->load($buffer);
 		$htmlEl = $dom->find('html',0);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="plugin" version="1.6.0" group="system">
+<install version="1.5" type="plugin" group="system">
 	<name>System - myApiOpenGraph</name>
 	<author>Thomas Welton</author>
 	<creationDate>April 2011</creationDate>
@@ -18,9 +18,15 @@
 		<language tag="nb-NO">languages/nb-NO.plg_system_myApiOpenGraph.ini</language>
 	</languages>
 	
+	<params>
+		<param name="ogimage" type="filelist" default="" label="OGIMAGE_LABEL" description="OGIMAGE_DESC" directory="images" />
+		<param name="fbpageid" type="text" label="PARAM_PAGEID_LABEL" description="PARAM_PAGEID_DESC" size="30" />
+		<param name="fbadmins" type="text" label="PARAM_FBADMINS_LABEL" description="PARAM_FBADMINS_DESC" size="30" />
+	</params>
+	
 	<config><fields name="params"><fieldset name="basic">
 		<field name="ogimage" type="filelist" default="" label="OGIMAGE_LABEL" description="OGIMAGE_DESC" directory="images" />
 		<field name="fbpageid" type="text" label="PARAM_PAGEID_LABEL" description="PARAM_PAGEID_DESC" size="30" />
 		<field name="fbadmins" type="text" label="PARAM_FBADMINS_LABEL" description="PARAM_FBADMINS_DESC" size="30" />
 	</fieldset></fields></config>
-</extension>
+</install>

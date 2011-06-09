@@ -30,6 +30,11 @@
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
  *****************************************************************************/
+ 
+$version = new JVersion;
+$joomla = $version->getShortVersion();
+$vnum = substr($joomla,0,3);
+ 
 jimport('joomla.installer.helper');
 
 if(file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php'))
@@ -49,9 +54,7 @@ $language = &JFactory::getLanguage();
 $language->load('com_myapi');
 
 $installer = new JInstaller();
-$installer->_overwrite = true;
-
-
+$installer->setOverwrite(true);
 
 $pkg_path = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'extensions'.DS;
 $pkgs = array('mod_myapi_fblogin'=> array('name' => JText::_('INSTALL_FBLOGIN'), 'db' => ''),
@@ -79,7 +82,12 @@ foreach( $pkgs as $pkg => $pkgarray ){
     		$msgtext  = $pkgarray['name']." ".JText::_('INSTALL_SUCCESS').".";
 			if($pkgarray['db'] != ''){
 				$db = JFactory::getDBO();
-				$query = "UPDATE #__plugins SET published=1 WHERE element='".$pkgarray['db']."'";
+				
+				if($vnum == '1.6')
+					$query = "UPDATE #__extensions SET enabled=1 WHERE element='".$pkgarray['db']."'";
+				else
+					$query = "UPDATE #__plugins SET published=1 WHERE element='".$pkgarray['db']."'";
+				
 				$db->setQuery($query);
 				$db->query();
 				$msgtext = $msgtext. " ".JText::_('INSTALL_PUBLISHED');
@@ -103,26 +111,32 @@ foreach( $pkgs as $pkg => $pkgarray ){
 
 <?php 
 echo $pixelTag;
-$db = JFactory::getDBO();
-$query = array();
-$query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')."  ADD ( `access_token` varchar(255) NOT NULL,  `avatar` varchar(255) default NULL)";
-$query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_pages')."  ADD ( `owner` bigint(255) unsigned DEFAULT NULL )";
-$query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')." MODIFY `uid` bigint(255) unsigned NOT NULL;";
-$query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('userId')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('userId').");";
-$query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('uid')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('uid').");";
-$query[] = "UPDATE ".$db->nameQuote('#__plugins')." SET  ".$db->nameQuote('element')." =  ".$db->quote('myApiUser')." WHERE ".$db->nameQuote('element')." =  ".$db->quote('myapiuser');
-foreach($query as $sql){
-	try{
-		$db->setQuery($sql);
-		$db->query();	
-	}catch(Exception $e){}
+
+if($vnum == '1.5'){
+	//Joomla 1.5 update code
+	
+	$db = JFactory::getDBO();
+	$query = array();
+	$query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')."  ADD ( `access_token` varchar(255) NOT NULL,  `avatar` varchar(255) default NULL)";
+	$query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_pages')."  ADD ( `owner` bigint(255) unsigned DEFAULT NULL )";
+	$query[] = "ALTER TABLE ".$db->nameQuote('#__myapi_users')." MODIFY `uid` bigint(255) unsigned NOT NULL;";
+	$query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('userId')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('userId').");";
+	$query[] = "CREATE UNIQUE INDEX ".$db->nameQuote('uid')." ON ".$db->nameQuote('#__myapi_users')." (".$db->nameQuote('uid').");";
+	$query[] = "UPDATE ".$db->nameQuote('#__plugins')." SET  ".$db->nameQuote('element')." =  ".$db->quote('myApiUser')." WHERE ".$db->nameQuote('element')." =  ".$db->quote('myapiuser');
+	foreach($query as $sql){
+		try{
+			$db->setQuery($sql);
+			$db->query();	
+		}catch(Exception $e){}
+	}
+	
+	$uQuery = "SELECT ".$db->nameQuote('id')." FROM ".$db->nameQuote('#__plugins')." WHERE ".$db->nameQuote('element')." = ".$db->quote('myApiModal');
+	$db->setQuery($uQuery);
+	$id = $db->loadResult();
+	if(!is_null($id)){
+		$installer->uninstall('plugin',$id);
+		JError::raiseNotice(100,'myApi modal uninstalled, merged into the core myApi plugin.');
+	}
 }
 
-$uQuery = "SELECT ".$db->nameQuote('id')." FROM ".$db->nameQuote('#__plugins')." WHERE ".$db->nameQuote('element')." = ".$db->quote('myApiModal');
-$db->setQuery($uQuery);
-$id = $db->loadResult();
-if(!is_null($id)){
-	$installer->uninstall('plugin',$id);
-	JError::raiseNotice(100,'myApi modal uninstalled, merged into the core myApi plugin.');
-}
 ?>

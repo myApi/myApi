@@ -43,7 +43,8 @@ class plgSystemmyApiConnect extends JPlugin
 		try{ 
 			$version = new JVersion;
    			$joomla = $version->getShortVersion();
-    		if(substr($joomla,0,3) == '1.6')
+			$vnum = substr($joomla,0,3);
+    		if($vnum == '1.6')
 				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnectFacebook.php';
 			else
 				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
@@ -52,10 +53,14 @@ class plgSystemmyApiConnect extends JPlugin
 			return JError::raiseError( 100, $e->getMessage());
 		}
 		
-		$plugin = JPluginHelper::getPlugin('system', 'myApiConnect');
-		$params = new JRegistry();
-		$params->loadJSON($plugin->params);
-
+		if($vnum == '1.6'){
+			$plugin = JPluginHelper::getPlugin('system', 'myApiConnect');
+			$params = new JRegistry();
+			$params->loadJSON($plugin->params);
+		}else{
+			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+			$params = new JParameter( $plugin->params );
+		}
 		
 		if( $params->get('appId') == '' || $params->get('secret') == ''){
 			if( !is_object(JError::getError()) || (!is_array(JError::getError()->info)) ||  !(is_array(JError::getError()->info) && JError::getError()->info['myApi'] == 100))

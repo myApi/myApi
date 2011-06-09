@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension  type="plugin" version="1.6.0" client="site" method="upgrade">
+<install version="1.5" type="plugin" group="authentication">
     <name>Authentication - myApiAuth</name>
     <author>Thomas Welton</author>
     <creationDate>March 2011</creationDate>
@@ -16,4 +16,4 @@
 		<language tag="en-GB">languages/en-GB.plg_authentication_myApiAuth.ini</language>
 		<language tag="nb-NO">languages/nb-NO.plg_authentication_myApiAuth.ini</language>
 	</languages>
-</extension>
+</install>

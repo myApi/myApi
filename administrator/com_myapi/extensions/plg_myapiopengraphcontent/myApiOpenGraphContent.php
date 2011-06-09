@@ -12,7 +12,7 @@
  **                       `Y8P'                       o888o            	    **
  **                                                                         **
  **                                                                         **
- **   Joomla! 1.5 Plugin myApimyApiOpenGraphContent                                **
+ **   Joomla! 1.5 Plugin myApimyApiOpenGraphContent                        	**
  **   @Copyright Copyright (C) 2011 - Thomas Welton                         **
  **   @license GNU/GPL http://www.gnu.org/copyleft/gpl.html                 **	
  **                                                                         **	
@@ -39,17 +39,24 @@ class plgContentmyApiOpenGraphContent extends JPlugin
  		$this->loadLanguage();
   	}
 	
-	public function onContentBeforeSave( &$article, $isNew ){
+	public function onContentBeforeSave($context, &$article, $isNew){
 		$result	= $this->onBeforeContentSave( &$article, $isNew );
 		return $result;
 	}
-	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
 		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
 		return $result;
 	}
 	
 	function getContentImage($text){
-		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		$version = new JVersion;
+   	 	$joomla = $version->getShortVersion();
+    	if(substr($joomla,0,3) == '1.6'){
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+		}else{
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		}
+		
 		$dom = new simple_html_dom();
 		$dom->load($text);
 		$dom_image = $dom->find('img',0);
@@ -73,20 +80,35 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 	}
 	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
-		//this may fire fron a component other than com_content
-		
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || ( !array_key_exists('category',$article) && !array_key_exists('showK2Plugins',$params)  )){ return; }
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if(!class_exists('plgSystemmyApiConnect') || ( (!array_key_exists('category',$article) && !isset($params->showK2Plugins) && ($vnum == '1.5')))){ return; }
 		
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '') && class_exists('plgSystemmyApiOpenGraph')){
 			$row = & JTable::getInstance('content');
 			$row->load($article->id);
-			$attribs = new JParameter($row->attribs);
-			if($attribs->get('myapiimage','') == ''){
-				$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
-				$row->attribs = $attribs->toString();
-				$row->bind($row);
-				$row->store();
+			
+			$version = new JVersion;
+   	 		$joomla = $version->getShortVersion();
+    		if(substr($joomla,0,3) == '1.6'){
+				$attribs = new JRegistry();
+				$attribs->loadJSON($row->attribs);
+				if($attribs->get('myapiimage','') == ''){
+					$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
+					$row->attribs = $attribs->toString();
+					$row->store();	
+				}
+			}else{
+				$attribs = new JParameter($row->attribs);
+				if($attribs->get('myapiimage','') == ''){
+					$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
+					$row->attribs = $attribs->toString();
+					$row->bind($row);
+					$row->store();
+				}
 			}
+			
 			//Set open graph tags
 			if(JRequest::getVar('view','','get') == 'article' || (JRequest::getVar('option','','get') == 'com_k2' && JRequest::getVar('view','','get') == 'item')){
 				if(isset($article->slug)){

@@ -39,22 +39,20 @@ class plgContentmyApiSend extends JPlugin
  		$this->loadLanguage();
   	}
 	
-	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
 		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
 		return $result;
 	}
 	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if(!class_exists('plgSystemmyApiConnect') || ( (!array_key_exists('category',$article) && !isset($params->showK2Plugins) && ($vnum == '1.5')))){ return; }
 		
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '')){
 			$doc = & JFactory::getDocument();
-			
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiSend');
-
-			// Load plugin params info
-			$myapiparama = new JParameter($plugin->params);
 			
 			$send_sections 		= $this->params->get('send_sections');
 			$send_categories 	= $this->params->get('send_categories');
@@ -73,13 +71,14 @@ class plgContentmyApiSend extends JPlugin
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			
-			if(isset($article->sectionid)){
-				if( is_array($send_sections) ){	
-					foreach($send_sections as $id){ if($id == $article->sectionid) $send_show = true;  }
+			if($vnum == '1.5'){
+				if(isset($article->sectionid)){
+					if( is_array($send_sections) ){	
+						foreach($send_sections as $id){ if($id == $article->sectionid) $send_show = true;  }
+					}
+					elseif($send_sections == $article->sectionid) $send_show = true;
 				}
-				elseif($send_sections == $article->sectionid) $send_show = true;
 			}
-			
 			if(isset($article->category)){
 				if( is_array($send_categories) ){	
 					foreach($send_categories as $id){ if($id == $article->category) $send_show = true; }
@@ -99,7 +98,6 @@ class plgContentmyApiSend extends JPlugin
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
 				if(isset($article->slug)){
-					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
 				}elseif(method_exists('K2HelperRoute','getItemRoute')){
 					$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
@@ -110,7 +108,12 @@ class plgContentmyApiSend extends JPlugin
 				$link = JRoute::_($link,true,-1);
 				$button	= '<fb:send href="'.$link.'" colorscheme="'.$color_scheme.'" font="'.$font.'" ref="'.$ref.'"></fb:send>';
 		
-				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				if($vnum == '1.6'){
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}
+		
 				$article->text = myApiButtons::addToTable($article->text,$position,$button);
 			}
 		}
