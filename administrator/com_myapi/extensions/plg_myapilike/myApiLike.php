@@ -39,24 +39,23 @@ class plgContentmyApiLike extends JPlugin
  		$this->loadLanguage();
   	}
 	
-	public function onContentBeforeDisplay( &$article, &$params, $limitstart ){
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
 		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
 		return $result;
 	}
 	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
-		
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
-		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if(!class_exists('plgSystemmyApiConnect') || ( (!array_key_exists('category',$article) && !isset($params->showK2Plugins) && ($vnum == '1.5')))){ return; }
+
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '')){
 			$doc = & JFactory::getDocument();
 			
 			$plugin = & JPluginHelper::getPlugin('content', 'myApiLike');
 
-			// Load plugin params info
-			$myapiparama = new JParameter($plugin->params);
-			
 			$like_sections 		= $this->params->get('like_sections');
 			$like_categories 	= $this->params->get('like_categories');
 			$like_show_on 		= $this->params->get('like_show_on');
@@ -109,8 +108,11 @@ class plgContentmyApiLike extends JPlugin
 				$link = JRoute::_($link,true,-1);
 				
 				$button = '<fb:like href="'.$link.'" layout="'.$layout_style.'" show_faces="'.$show_faces.'" width="'.$width.'" action="'.$verb.'" colorscheme="'.$color_scheme.'" font="'.$font.'" send="'.$show_send.'" ref="'.$ref.'"></fb:like>';
-				
-				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				if($vnum == '1.5'){
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+				}
 				$article->text = myApiButtons::addToTable($article->text,$position,$button);
 			}
 		}
