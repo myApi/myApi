@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install type="component" version="1.5.0" method="upgrade">
+<install type="component" version="1.6.0" method="upgrade">
     <name>myApi</name>
     <author>Thomas Welton</author>
-    <creationDate>01/05/2010</creationDate>
+    <creationDate>09/05/2011</creationDate>
     <license>GNU/GPL</license>
-    <version>1.3</version>
+    <version>1.4</version>
     <description>COMPONENT_DESC</description>
 	
     <install>
@@ -44,10 +44,7 @@
 		</queries>
     </install>
 
-    <installfile>install.myapi.php</installfile>
-    <uninstallfile>uninstall.myapi.php</uninstallfile>
-
-    <files folder="components/com_myapi">
+ 	<files folder="components/com_myapi">
         <filename>controller.php</filename>
         <filename>index.html</filename>
         <filename>myapi.php</filename>
@@ -75,10 +72,7 @@
 			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiLike">Like</menu>
 			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiSend">Send</menu>
 		</submenu>
-	
-		<files>
-			<filename>myapi.xml</filename>
-		</files>
+		
 		<files folder="administrator/com_myapi">
 			<filename>config.xml</filename>
 			<filename>controller.php</filename>
