@@ -34,18 +34,18 @@
 
 
     <administration>
-		<menu task="default" img="js/ThemeOffice/component.png">myApi</menu>
+		<menu img="js/ThemeOffice/component.png">myApi</menu>
 		<submenu>
-			<menu link="option=com_myapi&amp;view=users">Users</menu>
-			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiConnect">App Settings</menu>
-			<menu link="option=com_myapi&amp;view=realtime">Real Time</menu>
-			<menu link="option=com_myapi&amp;view=pages">Pages</menu>
-			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiTabs">Tab Application</menu>
-			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiOpenGraph">Open Graph</menu>
-			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiComment">Comment</menu>
-			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiShare">Share</menu>
-			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiLike">Like</menu>
-			<menu link="option=com_myapi&amp;view=plugin&amp;plugin=myApiSend">Send</menu>
+			<menu link="index.php?option=com_myapi&amp;view=users" view="user">Users</menu>
+			<menu link="index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiConnect" view="plugin">App Settings</menu>
+			<menu link="index.php?option=com_myapi&amp;view=realtime" view="realtime">Real Time</menu>
+			<menu link="index.php?option=com_myapi&amp;view=pages" view="pages">Pages</menu>
+			<menu link="index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiTabs" view="plugin">Tab Application</menu>
+			<menu link="index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiOpenGraph" view="plugin">Open Graph</menu>
+			<menu link="index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiComment" view="plugin">Comment</menu>
+			<menu link="index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiShare" view="plugin">Share</menu>
+			<menu link="index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiLike" view="plugin">Like</menu>
+			<menu link="index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiSend" view="plugin">Send</menu>
 		</submenu>
 		
 		<files folder="administrator/com_myapi">

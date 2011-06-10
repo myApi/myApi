@@ -35,8 +35,8 @@
     <input type="hidden" name="option" value="com_myapi" />
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="0" />
-    <input type="hidden" name="id" value="<?php echo $this->plugin->id; ?>" />
-    <input type="hidden" name="cid[]" value="<?php echo $this->plugin->id; ?>" />
+    <input type="hidden" name="id" value="<?php echo $this->pluginID ?>" />
+    <input type="hidden" name="cid[]" value="<?php echo $this->pluginID; ?>" />
     <?php echo JHTML::_( 'form.token' ); ?>
     <input type="hidden" name="controller" value="myapi" />	
 	<table width="100%">
@@ -44,8 +44,8 @@
 			<td colspan="2"><p><?php echo $this->description; ?></p></td>
 		</tr>
     	<tr>
-			<td align="center" valign="top" style="padding-right:20px;"><?php echo $this->params->render( 'params'); ?></td>
-            <td><?php echo @$this->aside; ?></td>
+			<td align="center" valign="top" style="padding-right:20px;" width="50%"><?php echo $this->params->render( 'params'); ?></td>
+            <td width="50%"><?php echo @$this->aside; ?></td>
     	</tr>
     </table>
 </form>

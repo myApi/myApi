@@ -31,18 +31,28 @@
  **                                                                         **			
  *****************************************************************************/
 jimport( 'joomla.application.component.view');
+jimport( 'joomla.html.parameter' );
 
 class MyapiViewPlugin extends JView {
     function display($tpl = null) {
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
 		$db = JFactory::getDBO();
-		$query = "SELECT id FROM #__plugins WHERE element =".$db->quote(JRequest::getVar('plugin'));
+		
+		if($vnum == '1.5'){
+			$query = "SELECT id FROM #__plugins WHERE element =".$db->quote(JRequest::getVar('plugin'));
+			$row 	=& JTable::getInstance('plugin');
+		}else{
+			$query = "SELECT extension_id FROM #__extensions WHERE element =".$db->quote(JRequest::getVar('plugin'));
+			$row 	=& JTable::getInstance('extension');
+		}
 		$db->setQuery($query);
 		$id = $db->loadResult();
 		
-		$row 	=& JTable::getInstance('plugin');
 		$row->load($id);
-		
 		$plugin = & JPluginHelper::getPlugin($row->folder, $row->element);
+		
 		if(is_object($plugin)){
 			$lang =& JFactory::getLanguage();
 			$lang->load( 'plg_' . trim( $row->folder ) . '_' . trim( $row->element ), JPATH_ADMINISTRATOR );
@@ -50,14 +60,17 @@ class MyapiViewPlugin extends JView {
 			$doc =& JFactory::getDocument();
 			$doc->addStyleSheet( JURI::base().'/components/com_myapi/assets/styles.css' );
 			JToolBarHelper::title(JText::_(strtoupper($row->element).'_HEADER'), 'facebook.png');
+			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
+			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
 			
 			$paramsdata = $plugin->params;
-			$paramsdefs = JPATH_SITE.DS.'plugins'.DS.$row->folder.DS.$row->element.'.xml';
+			$paramsdefs = ($vnum == '1.5') ? JPATH_SITE.DS.'plugins'.DS.$row->folder.'.xml' : JPATH_SITE.DS.'plugins'.DS.$row->folder.DS.$row->element.DS.$row->element.'.xml';
 			$params = new JParameter( $paramsdata, $paramsdefs );
 			$this->assignRef('params',$params);
 			$this->assignRef('plugin',$row);
-			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
-			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
+			
+			$pluginID = ($vnum == '1.5') ? $row->id : $row->extension_id;
+			$this->assignRef('pluginID',$pluginID);
 			
 			$funcname = '_'.$row->element.'Side';
 			if(method_exists('MyapiViewPlugin',$funcname)) $this->$funcname();
@@ -69,14 +82,22 @@ class MyapiViewPlugin extends JView {
     }
 	
 	function _myApiConnectSide(){
-		$this->assignRef('aside',JHTML::_('image', 'plugins/system/fbapp.png', null));
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		$img = ($vnum == '1.5') ? 'plugins/system/fbapp.png' : 'plugins/system/myApiConnect/fbapp.png';
+		$this->assignRef('aside',JHTML::_('image', $img, null));
 	}
 	
 	function _myApiTabsSide(){
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		if($facebook){
+			$version = new JVersion;
+   			$joomla = $version->getShortVersion();
+			$vnum = substr($joomla,0,3);
 			$pageLink = 'http://www.facebook.com/apps/application.php?id='.$facebook->getAppId();
-			$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', 'plugins/system/addtab.png', null);
+			$img = ($vnum == '1.5') ? 'plugins/system/addtab.png' : 'plugins/system/myApiConnect/addtab.png';
+			$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', $img, null);
 			$this->assignRef('aside',$sideContent);
 		}
 	}
