@@ -98,7 +98,7 @@ class plgContentmyApiLike extends JPlugin
 			if( (($like_show) || ($like_show_on == 'all'))  && $viewAccess ){
 				if(isset($article->slug)){
 					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+					$link = ($vnum == '1.5') ? ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid) : ContentHelperRoute::getArticleRoute($article->slug, $article->catslug);
 				}elseif(method_exists('K2HelperRoute','getItemRoute')){
 					$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
 				}else{
@@ -113,7 +113,11 @@ class plgContentmyApiLike extends JPlugin
 				}else{
 					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
 				}
-				$article->text = myApiButtons::addToTable($article->text,$position,$button);
+				if(isset($article->text) && $article->text != ''){
+					$article->text = myApiButtons::addToTable($article->text,$position,$button);
+				}else{
+					$article->introtext = myApiButtons::addToTable($article->introtext,$position,$button);
+				}
 			}
 		}
 	}

@@ -88,10 +88,14 @@ class plgContentmyApiComment extends JPlugin
 			if(!$facebook){ return; }
 			
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
+			
+			$version = new JVersion;
+   	 		$joomla = $version->getShortVersion();
+    		$vnum = substr($joomla,0,3);
 				
 			if(isset($article->slug)){
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-				$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+				$link = ($vnum == '1.5') ? ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid) : ContentHelperRoute::getArticleRoute($article->slug, $article->catslug);
 				$xid = urlencode('articlecomment'.$article->id);
 			}elseif(method_exists('K2HelperRoute','getItemRoute')){
 				$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));

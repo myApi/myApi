@@ -95,7 +95,8 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 				$attribs = new JRegistry();
 				$attribs->loadJSON($row->attribs);
 				if($attribs->get('myapiimage','') == ''){
-					$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
+					$content = (isset($article->text)) ? $article->text : $article->introtext;
+					$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($content));
 					$row->attribs = $attribs->toString();
 					$row->store();	
 				}
