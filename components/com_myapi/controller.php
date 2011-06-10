@@ -181,7 +181,7 @@ class MyapiController extends JController {
 		
 		$db 			= JFactory::getDBO();
 		$facebookmodel 	= new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser 		= $facebookmodel->getLoggedInUserLiked();
+		$fbUser 		= $facebookmodel->getLoggedInUser();
 		$query 			= "SELECT COUNT(".$db->nameQuote('id').") FROM ".$db->nameQuote('#__users')." WHERE ".$db->nameQuote('email')." = ".$db->quote($fbUser['email']);
 		
 		$db->setQuery($query);
@@ -197,9 +197,6 @@ class MyapiController extends JController {
 		ob_end_clean();	
 		
 		$data[] = "myApiModal.open('".JText::_('FACEBOOK_CONNECT',true)."','".JText::_('REGISTRATION_PROMPT',true)."','".addslashes($html)."');";
-		if(!$fbUser['liked']){
-			$data[] = "FB.Event.subscribe('edge.create', function(response) { $('myApiNewUserRegForm').submit(); });";
-		}
 		echo json_encode($data);
 		$mainframe =& JFactory::getApplication();
 		$mainframe->close();
@@ -258,7 +255,7 @@ class MyapiController extends JController {
 				$return = ($return == '') ? JURI::base() : $return;
 				$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
 			}else{ 
-				$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$error->message); 
+				$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$error->getMessage()); 
 			}
 		}else{
 			$this->setRedirect($return,JText::_('NO_SESSION'));
@@ -491,9 +488,21 @@ class MyapiController extends JController {
 		
 		// Set some initial user values
 		$user->set('id', 0);
-		$user->set('usertype', $newUsertype);
-		$user->set('gid', $authorize->get_group_id( '', $newUsertype, 'ARO' ));
-
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if($vnum == '1.5'){
+			$user->set('usertype', $newUsertype);
+			$user->set('gid', $authorize->get_group_id( '', $newUsertype, 'ARO' ));
+		}else{
+			jimport('joomla.application.component.helper');
+			$config	= JComponentHelper::getParams('com_users');
+			// Default to Registered.
+			$defaultUserGroup = $config->get('new_usertype', 2);	
+			$user->set('usertype'		, 'deprecated');
+			$user->set('groups'		, array($defaultUserGroup));
+		}
 		$date =& JFactory::getDate();
 		$user->set('registerDate', $date->toMySQL());
 

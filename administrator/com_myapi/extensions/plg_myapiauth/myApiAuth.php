@@ -43,14 +43,15 @@ class plgAuthenticationmyApiAuth extends JPlugin
  		$this->loadLanguage();
   	}
 	
-	public function onUserAuthenticate($uid, $options, &$response ){
-		$result = $this->onAuthenticate($uid, $options, &$response );
+	public function onUserAuthenticate($credentials, $options, &$response){
+		$result = $this->onAuthenticate($credentials, $options, &$response );
 		return $result;
 	}
  	
 	function onAuthenticate($uid, $options, &$response )
     {
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php')){ return; }
+		if(!class_exists('plgSystemmyApiConnect')){ return; }
+	
 		if(isset($options['group'])){
 			if($options['group']!="Public Backend"){
 				return;

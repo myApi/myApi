@@ -7,7 +7,7 @@ var myApiModal = {
 			if(subheader == null)
 				$('dialog_summary').dispose();
 			else
-				$('dialog_summary').setHTML(subheader);
+				$('dialog_summary').set('html',subheader);
 			$('dialog_body').set('html',content);
 			
 			if (typeof buttons != 'undefined'){

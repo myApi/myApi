@@ -114,7 +114,7 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 			if(JRequest::getVar('view','','get') == 'article' || (JRequest::getVar('option','','get') == 'com_k2' && JRequest::getVar('view','','get') == 'item')){
 				if(isset($article->slug)){
 					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+					$link = ($vnum == '1.5') ? ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid) : ContentHelperRoute::getArticleRoute($article->slug, $article->catslug);
 				}elseif(method_exists('K2HelperRoute','getItemRoute')){
 					$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
 				}else{

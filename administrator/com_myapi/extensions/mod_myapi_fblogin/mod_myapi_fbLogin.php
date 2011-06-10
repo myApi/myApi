@@ -31,15 +31,18 @@
  **                                                                         **			
  *****************************************************************************/
 
-if(!class_exists('plgSystemmyApiConnect') || !$this->_facebook = plgSystemmyApiConnect::getFacebook() || !file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php'))
+if(!class_exists('plgSystemmyApiConnect') || !$facebook = plgSystemmyApiConnect::getFacebook() || !file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php'))
 	return;
 	
 require_once JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'myapi.php';
 $myApiModel = new MyapiModelMyapi;
 
+$version = new JVersion;
+$joomla = $version->getShortVersion();
+$vnum = substr($joomla,0,3);
+
 $doc =& JFactory::getDocument();
-$doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi.js');
-$doc->addStylesheet('modules'.DS.'mod_myapi_fbLogin'.DS.'mod_myapi_fbLogin.css');
+$doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi'.'-J'.$vnum.'.js');
 
 $user 				= JFactory::getUser();
 $classSfx 			= $params->get('moduleclass_sfx');
