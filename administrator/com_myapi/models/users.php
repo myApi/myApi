@@ -88,7 +88,7 @@ class MyapiModelUsers extends JModel {
 	
 	function _buildQuery(){  
 	  $db = JFactory::getDBO();
-	  $query = "SELECT * FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__users.id')." ".$this->_buildWhereClause()." ".$this->_buildContentOrderBy();
+	  $query = "SELECT * FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users').".".$db->nameQuote('userId')." = ".$db->nameQuote('#__users').".".$db->nameQuote('id')." ".$this->_buildWhereClause()." ".$this->_buildContentOrderBy();
 	  return $query;
 	}
 	
