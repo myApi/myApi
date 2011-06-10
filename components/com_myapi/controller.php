@@ -621,8 +621,19 @@ class MyapiController extends JController {
 		$db->setQuery($query);
 		$db->query();
 		
-		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-		$commentParams = new JParameter($plugin->params);
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		
+		if($vnum == '1.6'){
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JRegistry();
+			$commentParams->loadJSON($plugin->params);
+		}else{
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JParameter($plugin->params);
+		}
+		
 		$commentSend = $commentParams->get('comments_email',1);
 		
 		if(intval($commentSend) == 1)
@@ -639,24 +650,48 @@ class MyapiController extends JController {
 		$query = "SELECT ".$db->nameQuote('href')." FROM ".$db->nameQuote('#__myapi_comment_mail');
 		$db->setQuery($query);
 		$commentQueue = $db->loadResultArray();
-		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-		$commentParams = new JParameter($plugin->params);
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		
+		if($vnum == '1.6'){
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JRegistry();
+			$commentParams->loadJSON($plugin->params);
+		}else{
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JParameter($plugin->params);
+		}
+		
 		$commentSend = $commentParams->get('comments_email',1);
 		if($db->getAffectedRows() > 0 && intval($commentSend) > 0){
 			$facebook 	= plgSystemmyApiConnect::getFacebook();
 			if($facebook){
 				
 				$component = JComponentHelper::getComponent( 'com_myapi' );
-				$params = new JParameter( $component->params );
+				
+				if($vnum == '1.6'){
+					$params = new JRegistry();
+					$params->loadJSON($component->params );
+				}else{
+					$params = new JParameter( $component->params );
+				}
+				
 				$lastEmailTime = $params->get('commentEmailTime',time()-(60*60*24*7*4));
 				$newEmailTime = time();
 				
 				//Get the admins
 				$db		=& JFactory::getDBO();
-				$query = 'SELECT email' . ' FROM #__users' . ' WHERE LOWER( usertype ) = "super administrator"';
+				
+				if($vnum == '1.6'){
+					$query = "SELECT ".$db->nameQuote('email')." FROM ".$db->nameQuote('#__users')." JOIN ".$db->nameQuote('#__user_usergroup_map')." ON ".$db->nameQuote('#__users').'.'.$db->nameQuote('id')." = ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('user_id')." WHERE ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('group_id')." = ".$db->quote('8');
+				}else{
+					$query = 'SELECT email' . ' FROM #__users' . ' WHERE LOWER( usertype ) = "super administrator"';
+				}
+				
 				$db->setQuery( $query );
 				$recipients = $db->loadResultArray();
-				
 				$emailBody = array();
 				$totalComments = 0;
 				foreach($commentQueue as $index => $eachHref){	
@@ -666,7 +701,6 @@ class MyapiController extends JController {
 					if(isset($xid)){
 						try{
 							$fbQuery = "SELECT fromid, username, text, xid FROM comment WHERE (xid = '".$xid."' OR object_id in (SELECT post_fbid FROM comment WHERE xid = '".$xid."')) AND  time > ".($lastEmailTime)." AND time < ".$newEmailTime." ";
-							error_log($fbQuery);
 							$comments = $facebook->api(array('method' => 'fql.query','query' => $fbQuery,'access_token' => $facebook->getAppId().'|'.$facebook->getApiSecret()));
 						} catch (FacebookApiException $e) { return; }
 						
@@ -747,10 +781,9 @@ class MyapiController extends JController {
 				$mailer->setBody($message_body_html);
 				$mailer->isHTML(true);
 				$mailer->AltBody = $message_body_plain;
-				
 				$send = $mailer->Send();
 				if ( $send !== true ) {
-					error_log($send->message);
+					error_log($send->getMessage());
 				} else {
 					$quoted = array();
 					foreach($commentQueue as $value) $quoted[] = $db->quote($value);

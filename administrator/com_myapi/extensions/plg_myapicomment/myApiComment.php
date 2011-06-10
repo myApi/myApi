@@ -45,7 +45,15 @@ class plgContentmyApiComment extends JPlugin
 		global $myApiCommentJsAdded;
 		if(! $myApiCommentJsAdded == true){
 			global $fbAsyncInitJs;
-			$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Ajax("index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href),{method: "get"}).request(); });';	
+			
+			$version 	= new JVersion;
+   			$joomla		= $version->getShortVersion();
+			$vnum 		= substr($joomla,0,3);
+    		if($vnum == '1.6'){
+				$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Request({url: "index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href), method: "get"}).send(); });';	
+			}else{
+				$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Ajax("index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href),{method: "get"}).request(); });';	
+			}
 			$myApiCommentJsAdded = true;
 		}
 	}
