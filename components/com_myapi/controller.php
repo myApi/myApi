@@ -666,7 +666,6 @@ class MyapiController extends JController {
 					if(isset($xid)){
 						try{
 							$fbQuery = "SELECT fromid, username, text, xid FROM comment WHERE (xid = '".$xid."' OR object_id in (SELECT post_fbid FROM comment WHERE xid = '".$xid."')) AND  time > ".($lastEmailTime)." AND time < ".$newEmailTime." ";
-							error_log($fbQuery);
 							$comments = $facebook->api(array('method' => 'fql.query','query' => $fbQuery,'access_token' => $facebook->getAppId().'|'.$facebook->getApiSecret()));
 						} catch (FacebookApiException $e) { return; }
 						
