@@ -89,10 +89,11 @@ class plgSystemmyApiConnect extends JPlugin
 		
 		$version = new JVersion;
    		$joomla = $version->getShortVersion();
-    	$prefix = (substr($joomla,0,3) == '1.6') ? JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect' : JURI::root().'plugins'.DS.'system'.DS.'myApiConnect';
+		$vnum = substr($joomla,0,3);
+    	$prefix = ($vnum == '1.6') ? JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect' : JURI::root().'plugins'.DS.'system'.DS.'myApiConnect';
 		
 		$doc->addStylesheet($prefix.DS.'myApi.css');
-		$doc->addScript($prefix.DS.'myApiModal.js');
+		$doc->addScript($prefix.DS.'myApiModal'.'-J'.$vnum.'.js');
 	}
 
 	function onAfterRender(){
