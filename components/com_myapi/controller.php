@@ -791,12 +791,28 @@ class MyapiController extends JController {
 					$db->setQuery($query);
 					$db->query();
 					
-					$table =& JTable::getInstance('component');
-					$table->loadByOption('com_myapi');
-					$paramData = array('params' => array('commentEmailTime' => $newEmailTime )); 
-					$table->bind( $paramData );
-					$table->check();
-					$table->store();
+					$paramData = array('params' => array('commentEmailTime' => $newEmailTime ));
+					
+					if($vnum == '1.5'){
+						$table =& JTable::getInstance('component');
+						$table->loadByOption('com_myapi');
+						$table->bind( $paramData );
+						$table->check();
+						$table->store();
+					}else{
+						$table	= JTable::getInstance('extension');
+						$option = 'com_myapi';
+						$id = $table->find(array('element'=>$option));
+						$table->load($id);
+						$data	= array(
+							'params'	=> $paramData,
+							'id'		=> $id,
+							'option'	=> $option
+						);
+						$table->bind( $paramData );
+						$table->check();
+						$table->store();
+					}
 				}
 			}
 		}
