@@ -57,7 +57,7 @@ var myapi = {
 			});   
 		},
 		newLink: function(token,redirect){
-			$ES('.fb_button_text','fbLinkButton')[0].innerHTML = "Linking...";
+			$$('.fb_button_text','fbLinkButton')[0].innerHTML = "Linking...";
 			FB.getLoginStatus(function(response) {
 				if (response.session) {
 					window.location = redirect;

@@ -68,6 +68,7 @@ class MyapiViewPlugin extends JView {
 				$this->assignRef('pluginID',$row->extension_id);
 			}
 			
+			$this->assignRef('vnum',$vnum);
 			$this->assignRef('plugin',$row);
 			$lang =& JFactory::getLanguage();
 			$lang->load( 'plg_' . trim( $row->folder ) . '_' . trim( $row->element ), JPATH_ADMINISTRATOR );
@@ -103,7 +104,7 @@ class MyapiViewPlugin extends JView {
    			$joomla = $version->getShortVersion();
 			$vnum = substr($joomla,0,3);
 			$pageLink = 'http://www.facebook.com/apps/application.php?id='.$facebook->getAppId();
-			$img = ($vnum == '1.5') ? 'plugins/system/addtab.png' : 'plugins/system/myApiConnect/addtab.png';
+			$img = ($vnum == '1.5') ? 'plugins/system/addtab.png' : 'plugins/system/myApiTabs/addtab.png';
 			$sideContent = JText::sprintf('MYAPITABS_SIDE',$pageLink).'<br />'.JHTML::_('image', $img, null);
 			$this->assignRef('aside',$sideContent);
 		}

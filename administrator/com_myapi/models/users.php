@@ -143,18 +143,24 @@ class MyapiModelUsers extends JModel {
 	
 	function getUserTypesList(){
 		$mainframe =& JFactory::getApplication();
-		$db = JFactory::getDBO();
-		
-		$query = 'SELECT name AS value, name AS text'
-			. ' FROM #__core_acl_aro_groups'
-			. ' WHERE name != "ROOT"'
-			. ' AND name != "USERS"';
-		
-		$db->setQuery( $query );
-		$types[]	= JHTML::_('select.option',  '0', '- '. JText::_( 'Select Group' ) .' -' );
-		foreach( $db->loadObjectList() as $obj ) $types[] = JHTML::_('select.option',  $obj->value, JText::_( $obj->text ) );
-		
-		return JHTML::_('select.genericlist',   $types, 'filter_type', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text',  $mainframe->getUserStateFromRequest( 'myapi_users_filter_type', 'filter_type', 0, 'string' ));	
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if($vnum == '1.5'){
+			$db = JFactory::getDBO();
+			$query = 'SELECT name AS value, name AS text'
+				. ' FROM #__core_acl_aro_groups'
+				. ' WHERE name != "ROOT"'
+				. ' AND name != "USERS"';
+			
+			$db->setQuery( $query );
+			$types[]	= JHTML::_('select.option',  '0', '- '. JText::_( 'Select Group' ) .' -' );
+			foreach( $db->loadObjectList() as $obj ) $types[] = JHTML::_('select.option',  $obj->value, JText::_( $obj->text ) );
+			
+			return JHTML::_('select.genericlist',   $types, 'filter_type', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text',  $mainframe->getUserStateFromRequest( 'myapi_users_filter_type', 'filter_type', 0, 'string' ));	
+		}else{
+			return;	
+		}
 	}
 	
 }
