@@ -54,6 +54,21 @@ class MyapiViewPlugin extends JView {
 		$plugin = & JPluginHelper::getPlugin($row->folder, $row->element);
 		
 		if(is_object($plugin)){
+			if($vnum == '1.5'){
+				$paramsdata = $plugin->params;
+				$paramsdefs = JPATH_SITE.DS.'plugins'.DS.$row->folder.'.xml';
+				$params = new JParameter( $paramsdata, $paramsdefs );
+				$this->assignRef('params',$params);
+				$this->assignRef('pluginID', $row->id);
+			}else{
+				$model = $this->getModel('plugin');
+				$form = $model->getForm(array('folder' => $row->folder, 'element' => $row->element, 'id' => $row->extension_id));
+				$fields = $form->getFieldset('basic');
+				$this->assignRef('fields',$fields);	
+				$this->assignRef('pluginID',$row->extension_id);
+			}
+			
+			$this->assignRef('plugin',$row);
 			$lang =& JFactory::getLanguage();
 			$lang->load( 'plg_' . trim( $row->folder ) . '_' . trim( $row->element ), JPATH_ADMINISTRATOR );
 			
@@ -63,14 +78,6 @@ class MyapiViewPlugin extends JView {
 			$this->assignRef('description',JText::_(strtoupper($row->element).'_DESC'));
 			JToolbarHelper::save('savePlugin',JText::_('SAVE'));
 			
-			$paramsdata = $plugin->params;
-			$paramsdefs = ($vnum == '1.5') ? JPATH_SITE.DS.'plugins'.DS.$row->folder.'.xml' : JPATH_SITE.DS.'plugins'.DS.$row->folder.DS.$row->element.DS.$row->element.'.xml';
-			$params = new JParameter( $paramsdata, $paramsdefs );
-			$this->assignRef('params',$params);
-			$this->assignRef('plugin',$row);
-			
-			$pluginID = ($vnum == '1.5') ? $row->id : $row->extension_id;
-			$this->assignRef('pluginID',$pluginID);
 			
 			$funcname = '_'.$row->element.'Side';
 			if(method_exists('MyapiViewPlugin',$funcname)) $this->$funcname();

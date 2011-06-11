@@ -44,8 +44,29 @@
 			<td colspan="2"><p><?php echo $this->description; ?></p></td>
 		</tr>
     	<tr>
-			<td align="center" valign="top" style="padding-right:20px;" width="50%"><?php echo $this->params->render( 'params'); ?></td>
+			<td align="center" valign="top" style="padding-right:20px;" width="50%">
+				<?php if($this->vnum == '1.5'): echo $this->params->render( 'params'); ?>
+                <?php else: ?>
+                	<fieldset class="panelform">
+						<?php $hidden_fields = ''; ?>
+                        <ul class="adminformlist">
+                            <?php foreach ($this->fields as $field) : ?>
+                            <?php if (!$field->hidden) : ?>
+                            <li>
+                                <?php echo $field->label; ?>
+                                <?php echo $field->input; ?>
+                            </li>
+                            <?php else : $hidden_fields.= $field->input; ?>
+                            <?php endif; ?>
+                            <?php endforeach; ?>
+                        </ul>
+                        <?php echo $hidden_fields; ?>
+                    </fieldset>
+                <?php endif; ?>
+           	</td>
             <td width="50%"><?php echo @$this->aside; ?></td>
     	</tr>
     </table>
 </form>
+
+

@@ -141,15 +141,18 @@ class MyapiController extends JController {
 			$row  	=& JTable::getInstance('plugin');
 		}else{
 			$row  	=& JTable::getInstance('extension');
+			JPluginHelper::importPlugin('extension');
+			
 		}
+		$post = JRequest::get('post');
+	  	$data = ($vnum == '1.5') ? $post : $post['jform'];
 		
 		$row->load(JRequest::getVar('id','','post'));
 		$client = JRequest::getWord( 'filter_client', 'site' );
-
-		if (!$row->bind(JRequest::get('post'))) JError::raiseError(500, $row->getError() );
+		
+		if (!$row->bind($data)) JError::raiseError(500, $row->getError() );
 		if (!$row->check()) JError::raiseError(500, $row->getError() );
 		if (!$row->store()) JError::raiseError(500, $row->getError() );
-		
 		
 		$row->checkin();
 		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( "client_id=0" )' );
@@ -182,16 +185,21 @@ class MyapiController extends JController {
 		global $postFacebook;
 		$postFacebook = false;
 		try{
-			if($vnum == '1.5')
+			if($vnum == '1.5'){
 				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
-			else
+				$appId =  $post['params']['appId']; 
+				$secret = $post['params']['secret'];
+			}else{
 				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnectFacebook.php';
+				$appId =  $post['jform']['params']['appId']; 
+				$secret = $post['jform']['params']['secret'];
+			}
 			
 			$postFacebook = new myApiFacebook(array(
-				'appId'  => $post['params']['appId'],
-				'secret' => $post['params']['secret']
+				'appId'  => $appId,
+				'secret' => $secret
 			));
-			$app_update = $postFacebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
+			$app_update = $postFacebook->api(array('method' => 'admin.setAppProperties','access_token' => $appId.'|'.$secret,'properties'=> json_encode($data)));
 		}catch (FacebookApiException $e) {
 			$postFacebook = null;
 			JError::raiseWarning( 100, JText::_('APP_SAVED_ERROR').$e);
