@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install type="component" version="1.5" method="upgrade">
-    <name>COM_MYAPI</name>
+    <name>myApi</name>
     <author>Thomas Welton</author>
     <creationDate>09/05/2011</creationDate>
     <license>GNU/GPL</license>
     <version>1.4</version>
-    <description>COM_MYAPI_DESC</description>
+    <description>myApi - Combining the power of the Facebook platform with the ease and simplicity of Joomla.</description>
 	
 	<install>
 		<sql>
