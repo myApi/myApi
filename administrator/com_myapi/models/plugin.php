@@ -44,8 +44,8 @@ class MyapiModelPlugin extends JModelAdmin {
 
 		// Get the form.
 		jimport('joomla.form.form'); 
-		JForm::addFormPath('/Users/thomaswelton/Sites/joomla16/administrator/components/com_plugins/models/forms');
-		JForm::addFieldPath('/Users/thomaswelton/Sites/joomla16/administrator/components/com_plugins/models/fields');
+		JForm::addFormPath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_plugins'.DS.'models'.DS.'forms');
+		JForm::addFieldPath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_plugins'.DS.'models'.DS.'fields');
 
 		$form = $this->loadForm('com_plugins.plugin', 'plugin', array('control' => 'jform', 'load_data' => $loadData = true),$a=true);
 		if (empty($form)) {

@@ -67,7 +67,7 @@ class plgSystemmyApiOpenGraph extends JPlugin{
 		$version = new JVersion;
    	 	$joomla = $version->getShortVersion();
     	if(substr($joomla,0,3) == '1.6'){
-			$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__user_usergroup_map')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__user_usergroup_map.user_id')." WHERE ".$db->nameQuote('#__user_usergroup_map.group_id')." = ".$db->quote('8');
+			$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__user_usergroup_map')." ON ".$db->nameQuote('#__myapi_users').".".$db->nameQuote('userId')." = ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('user_id')." WHERE ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('group_id')." = ".$db->quote('8');
 		}else{
 			$query = "SELECT ".$db->nameQuote('uid')." FROM ".$db->nameQuote('#__myapi_users')." JOIN ".$db->nameQuote('#__users')." ON ".$db->nameQuote('#__myapi_users.userId')." = ".$db->nameQuote('#__users.id')." WHERE ".$db->nameQuote('#__users.gid')." = ".$db->quote('25');
 		}
