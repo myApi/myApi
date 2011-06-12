@@ -17,6 +17,7 @@
 		<filename>tmpl/default.php</filename>
 		<filename>tmpl/index.html</filename>
 		<folder>elements</folder>
+		<folder>fields</folder>
 	</files>
 	
 	<languages>

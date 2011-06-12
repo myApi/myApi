@@ -33,9 +33,12 @@
  
 class JFormFieldColor extends JFormField{
 	protected function getInput(){
+		$startColor = ($this->value == '') ? '#CCC' :$this->value;
 		$js = "window.addEvent('domready',function(){
+				var startValue = new Color('".$startColor."');
 				var r = new MooRainbow('".$this->name."', { 
-					imgPath: '".JURI::root()."modules/mod_myapi_fbFan/fields/moorainbow/images/',
+					imgPath: '".JURI::root()."modules/mod_myapi_fbActivity/fields/moorainbow/images/',
+					startColor: startValue,
 					onChange: function(color) { 
 						this.element.value = color.hex; 
 					} 
