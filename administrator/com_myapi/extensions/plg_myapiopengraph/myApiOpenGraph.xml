@@ -23,4 +23,10 @@
 		<param name="fbpageid" type="text" label="PARAM_PAGEID_LABEL" description="PARAM_PAGEID_DESC" size="30" />
 		<param name="fbadmins" type="text" label="PARAM_FBADMINS_LABEL" description="PARAM_FBADMINS_DESC" size="30" />
 	</params>
+	
+	<config><fields name="params"><fieldset name="basic">
+		<field name="ogimage" type="filelist" default="" label="OGIMAGE_LABEL" description="OGIMAGE_DESC" directory="images" />
+		<field name="fbpageid" type="text" label="PARAM_PAGEID_LABEL" description="PARAM_PAGEID_DESC" size="30" />
+		<field name="fbadmins" type="text" label="PARAM_FBADMINS_LABEL" description="PARAM_FBADMINS_DESC" size="30" />
+	</fieldset></fields></config>
 </install>

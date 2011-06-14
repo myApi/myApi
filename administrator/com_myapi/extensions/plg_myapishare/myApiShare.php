@@ -39,36 +39,44 @@ jimport( 'joomla.plugin.plugin' );
 class plgContentmyApiShare extends JPlugin
 {
 
-	function onBeforeDisplayContent( &$article, &$params, $limitstart )
-	{
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
+	
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
+		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
+		return $result;
+	}
+	
+	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if(!class_exists('plgSystemmyApiConnect') || ( (!array_key_exists('category',$article) && !isset($params->showK2Plugins) && ($vnum == '1.5')))){ return; }
 		
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == ''))
 		{
 			$doc = & JFactory::getDocument();
 			
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiShare');
-
-			// Load plugin params info
-			$myapiparama = new JParameter($plugin->params);
-			
-			$share_sections 	= $myapiparama->get('share_sections');
-			$share_categories 	= $myapiparama->get('share_categories');
-			$share_show_on 		= $myapiparama->get('share_show_on');
-			$share_type 		= $myapiparama->get('share_type');
-			$position			= $myapiparama->get('position','myApiShareTop');
+			$share_sections 	= $this->params->get('share_sections');
+			$share_categories 	= $this->params->get('share_categories');
+			$share_show_on 		= $this->params->get('share_show_on');
+			$share_type 		= $this->params->get('share_type');
+			$position			= $this->params->get('position','myApiShareTop');
 			$share_show 		= false;
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			
-			if(isset($article->sectionid))
-			{
-				if( is_array($share_sections) )
-				{	foreach($share_sections as $id)
-					{ if($id == $article->sectionid) { $share_show = true; } }
+			if($vnum == '1.5'){
+				if(isset($article->sectionid)){
+					if( is_array($share_sections) )
+					{	foreach($share_sections as $id)
+						{ if($id == $article->sectionid) { $share_show = true; } }
+					}
+					else{ if($share_sections == $article->sectionid) { $share_show = true; } }
 				}
-				else{ if($share_sections == $article->sectionid) { $share_show = true; } }
 			}
 			
 			if(isset($article->category))
@@ -82,11 +90,11 @@ class plgContentmyApiShare extends JPlugin
 			}
 			
 			if(JRequest::getCmd('view','','get') == 'article'){	
-				$viewAccess = $myapiparama->get("share_view_article","1");
+				$viewAccess = $this->params->get("share_view_article","1");
 			}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
-				$viewAccess = $myapiparama->get("share_view_blog","1");
+				$viewAccess = $this->params->get("share_view_blog","1");
 			}else{
-				$viewAccess = $myapiparama->get("share_view_list","1");
+				$viewAccess = $this->params->get("share_view_list","1");
 			}
 			
 			if((($share_show) || ($share_show_on == 'all')) && ($viewAccess ))
@@ -95,7 +103,7 @@ class plgContentmyApiShare extends JPlugin
 				
 				if(isset($article->slug)){
 					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+					$link = ($vnum == '1.5') ? ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid) : ContentHelperRoute::getArticleRoute($article->slug, $article->catslug);
 				}elseif(method_exists('K2HelperRoute','getItemRoute')){
 					$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
 				}else{
@@ -105,8 +113,16 @@ class plgContentmyApiShare extends JPlugin
 				$link = JRoute::_($link,true,-1);
 				$button = '<fb:share-button class="url" href="'.$link.'" type="'.$share_type.'"></fb:share-button>';
 				
-				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
-				$article->text = myApiButtons::addToTable($article->text,$position,$button);
+				if($vnum == '1.6'){
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}
+				if(isset($article->text) && $article->text != ''){
+					$article->text = myApiButtons::addToTable($article->text,$position,$button);
+				}else{
+					$article->introtext = myApiButtons::addToTable($article->introtext,$position,$button);
+				}
 			}
 		}
 

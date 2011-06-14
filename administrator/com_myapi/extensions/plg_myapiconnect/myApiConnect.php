@@ -34,22 +34,36 @@ jimport( 'joomla.plugin.plugin');
 
 class plgSystemmyApiConnect extends JPlugin
 {
-	function plgSystemmyApiConnect(&$subject, $config){
-		parent::__construct($subject, $config);
-	}
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
 	
 	function getFacebook(){
-		$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$params = new JParameter( $plugin->params );
-		
 		try{ 
-			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+			$version = new JVersion;
+   			$joomla = $version->getShortVersion();
+			$vnum = substr($joomla,0,3);
+    		if($vnum == '1.6')
+				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnectFacebook.php';
+			else
+				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+			
 		}catch(Exception $e){
 			return JError::raiseError( 100, $e->getMessage());
 		}
 		
+		if($vnum == '1.6'){
+			$plugin = JPluginHelper::getPlugin('system', 'myApiConnect');
+			$params = new JRegistry();
+			$params->loadJSON($plugin->params);
+		}else{
+			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+			$params = new JParameter( $plugin->params );
+		}
+		
 		if( $params->get('appId') == '' || $params->get('secret') == ''){
-			if( !is_object(JError::getError()) || (!is_array(JError::getError()->info)) ||  !(is_array(JError::getError()->info) && JError::getError()->info['myApi'] == 100))
+			if( !is_object(JError::getError()) || (is_object(JError::getError()) && JError::getError()->getCode() != '100') )
 				JError::raiseWarning( 100, 'myApi requires a Facebook Application ID',array('myApi' =>'100'));
 				return  false;
 			return
@@ -59,38 +73,41 @@ class plgSystemmyApiConnect extends JPlugin
 				'appId'  => $params->get('appId'),
 				'secret' => $params->get('secret'),
 				'cookie' => true, // enable optional cookie support
-			));	
+			));
 			return $facebook;
 		}
 	}
 
 	function onAfterDispatch(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$document=& JFactory::getDocument(); 
 		if($document->getType() != 'html')
 			return;
 			
 		JHTML::_('behavior.mootools');
 		$doc = & JFactory::getDocument();
-		$doc->addStylesheet(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');
-		$doc->addScript(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiModal.js');
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+    	$prefix = ($vnum == '1.6') ? JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect' : JURI::root().'plugins'.DS.'system'.DS.'myApiConnect';
+		
+		$doc->addStylesheet($prefix.DS.'myApi.css');
+		$doc->addScript($prefix.DS.'myApiModal'.'-J'.$vnum.'.js');
 	}
 
 	function onAfterRender(){
-		global $mainframe, $fbAsyncInitJs;
+		$mainframe =& JFactory::getApplication();
+		global $fbAsyncInitJs;
 		$document=& JFactory::getDocument();   
 		
 		if($document->getType() != 'html' || ($mainframe->isAdmin() && JRequest::getCmd('option') != 'com_myapi')) 
 			return;
 			
-
-		$plugin	=& JPluginHelper::getPlugin('system', 'myApiConnect');
-		$params = new JParameter( $plugin->params );  
-		
 		$u =& JURI::getInstance( JURI::root() );
 		$port 	= ($u->getPort() == '') ? '' : ":".$u->getPort();
 		$xdPath	= $u->getScheme().'://'.$u->getHost().$port.$u->getPath().'plugins/system/facebookXD.html';
-		$locale = ($params->get("locale") == '') ? 'en_US' : $params->get("locale");	
+		$locale = ($this->params->get("locale") == '') ? 'en_US' : $this->params->get("locale");	
 		
 		$js 	= <<<EOD
 /* <![CDATA[ */		
@@ -103,7 +120,7 @@ window.addEvent('domready',function(){
 	}());
 });
 window.fbAsyncInit = function() {
-     FB.init({appId: "{$params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
+     FB.init({appId: "{$this->params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
 	 {$fbAsyncInitJs}
 };
 /* ]]> */
@@ -111,7 +128,15 @@ EOD;
 		unset($fbAsyncInitJs);
 		
 		$buffer = JResponse::getBody();
-		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+    	if(substr($joomla,0,3) == '1.6')
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+		else
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		
+		
 		$dom = new simple_html_dom();
 		$dom->load($buffer);
 		

@@ -31,7 +31,7 @@
  **                                                                         **			
  *************************************************************************/ ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_myapi&view=users'); ?>" method="post" name="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_myapi&view=users'); ?>" method="post" id="adminForm" name="adminForm">
     <input type="hidden" name="option" value="com_myapi" />
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="boxchecked" value="0" />

@@ -44,8 +44,9 @@
                 <td><p><?php echo JText::_('REGISTRATION_LINK_HEADER'); ?></p></td>
                 <td><p><?php echo JText::_('REGISTRATION_CREATE_HEADER'); ?></p></td>
             </tr>
+            <tr><td colspan="2" height="10"></td></tr>
             <tr>
-                <td>
+                <td valign="top" >
                 	<form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
                         <table>
                             <tr>
@@ -71,7 +72,7 @@
                         <?php echo $formToken; ?>
                     </form>
               	</td>
-                <td>
+                <td valign="top" >
                 	<form action="index.php?option=com_myapi&task=newUser" method="post" id="myApiNewUserRegForm" class="myapiAjaxForm">
                         <table class="myapi">
                             <input type="hidden" name="option" value="com_myapi" />
@@ -99,11 +100,12 @@
             <tr >
                 <td colspan="3" class="headers"><?php echo JText::_('LOGIN'); ?></td>
             </tr>
+            <tr><td colspan="3" height="10"></td></tr>
             <tr>
-                <td width="120"><fb:profile-pic uid="loggedinuser" facebook-logo="false" linked="false" size="s"></fb:profile-pic></td>
-                <td width="300"><p><?php echo JText::_('EMAIL_REGISTERED'); ?></p>
+                <td valign="top"  width="120"><fb:profile-pic uid="loggedinuser" facebook-logo="false" linked="false" size="s"></fb:profile-pic></td>
+                <td valign="top" width="300"><p><?php echo JText::_('EMAIL_REGISTERED'); ?></p>
                     <p><?php echo JText::_('EMAIL_REGISTERED_LOGIN'); ?></p></td>
-                <td><form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
+                <td valign="top"><form action="index.php?option=com_myapi&task=login" method="post" id="myapiLogin" class="myapiAjaxForm">
                         <table align="right">
                             <tr>
                                 <td><label for="username"><span><?php echo JText::_('USERNAME'); ?></span></label></td>

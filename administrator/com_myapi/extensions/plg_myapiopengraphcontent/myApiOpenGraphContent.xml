@@ -17,8 +17,4 @@
 		<language tag="en-GB">languages/en-GB.plg_content_myApiOpenGraphContent.ini</language>
 		<language tag="nb-NO">languages/nb-NO.plg_content_myApiOpenGraphContent.ini</language>
 	</languages>
-	
-	<params>
-	</params>
-	
 </install>

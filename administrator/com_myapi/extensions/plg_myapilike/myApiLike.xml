@@ -96,4 +96,82 @@
 		<param name="like_ref" type="text" default="" label="PARAM_REF_LABEL" description="PARAM_REF_DESC" size="30" />
 	</params>
 	
+	<config><fields name="params"><fieldset name="basic">
+		<field name="show_faces" type="radio" default="0" label="PARAM_FACES_LABEL" description="PARAM_FACES_DESC">
+			<option value="0">NO</option>
+		  	<option value="1">YES</option>
+		</field>
+		
+		<field name="show_send" type="radio" default="0" label="PARAM_SEND_LABEL" description="PARAM_SEND_DESC">
+			<option value="0">NO</option>
+		  	<option value="1">YES</option>
+		</field>
+		
+		<field name="layout_style" type="list" default="button_count" label="PARAM_LAYOUT_LABEL" description="PARAM_LAYOUT_DESC">
+ 	 		<option value="standard">PARAM_LAYOUT_STANDARD</option>
+			<option value="button_count">PARAM_LAYOUT_COUNT</option>
+			<option value="box_count">PARAM_LAYOUT_BOX</option>
+		</field>
+		
+		<field name="color_scheme" type="list" default="light" label="PARAM_SCHEME_LABEL" description="PARAM_SCHEME_DESC">
+		  	<option value="light">PARAM_SCHEME_LIGHT</option>
+			<option value="dark">PARAM_SCHEME_DARK</option>
+		</field>
+		
+		<field name="position" type="list" default="myApiShareTop" label="PARAM_POSITION_LABEL" description="PARAM_POSITION_DESC">
+		  	<option value="myApiShareTop">PARAM_POSITION_TOP</option>
+			<option value="myApiShareBottom">PARAM_POSITION_BOTTOM</option>
+		</field>
+		
+		<field name="verb" type="list" default="like" label="PARAM_ACTION_LABEL" description="PARAM_ACTION_DESC">
+ 	 		<option value="like">PARAM_ACTION_LIKE</option>
+			<option value="recommend">PARAM_ACTION_RECOMMEND</option>
+		</field>
+		
+		<field name="like_font" type="list" default="arial" label="PARAM_FONT_LABEL" description="PARAM_FONT_DESC">
+		  	<option value="arial">Arial</option>
+			<option value="lucida grande">Lucida Grande</option>
+			<option value="segoe ui">Segoe Ui</option>
+			<option value="tahoma">Tahoma</option>
+			<option value="trebuchet ms">Trebuchet ms</option>
+			<option value="verdana">Verdana</option>
+		</field>
+		
+		
+		<field name="width" type="text" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" default="40" size="30" />
+		
+		
+		<field name="like_show_on" type="radio" default="all" label="PARAM_SHOW_LABEL" description="PARAM_SHOW_DESC">
+			<option value="all">PARAM_SHOW_ALL</option>
+		  	<option value="selected">PARAM_SHOW_SELECT</option>
+		</field>
+		
+		<field name="like_categories" type="SQL" class="inputbox" label="PARAM_CAT_LABEL" multiple="true" translate="true" 
+           		query="SELECT * FROM #__categories" 
+			   key_field="title" 
+			   value_field="title" 
+			   description="PARAM_MULTI" 
+			   default="-1"> 
+        	<option value="-1"></option>
+    	</field>
+		
+		<field name="like_view_article" type="radio" default="1" label="PARAM_ARTICLE_LABEL" description="PARAM_VIEW_DESC">
+		  	<option value="1">SHOW</option>
+			<option value="0">HIDE</option>
+		</field>
+		
+		<field name="like_view_list" type="radio" default="1" label="PARAM_LIST_LABEL" description="PARAM_VIEW_DESC">
+		 	<option value="1">SHOW</option>
+			<option value="0">HIDE</option>
+		</field>
+		
+		<field name="like_view_blog" type="radio" default="1" label="PARAM_BLOG_LABEL" description="PARAM_VIEW_DESC">
+		  	 	<option value="1">SHOW</option>
+				<option value="0">HIDE</option>
+		</field>
+		
+		
+		<field name="like_ref" type="text" default="" label="PARAM_REF_LABEL" description="PARAM_REF_DESC" size="30" />
+	</fieldset></fields></config>
+	
 </install>

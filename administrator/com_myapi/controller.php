@@ -38,6 +38,22 @@ class MyapiController extends JController {
             JRequest::setVar('view', 'users');
         }
         $this->item_type = 'Users';
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if($vnum == '1.6'){
+			JSubMenuHelper::addEntry(JText::_('USERS'), 'index.php?option=com_myapi&amp;view=users');
+			JSubMenuHelper::addEntry(JText::_('APP_SETTINGS'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiConnect');
+			JSubMenuHelper::addEntry(JText::_('REAL_TIME'), 'index.php?option=com_myapi&amp;view=realtime');
+			JSubMenuHelper::addEntry(JText::_('PAGES'), 'index.php?option=com_myapi&amp;view=pages');
+			JSubMenuHelper::addEntry(JText::_('TAB_APP'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiTabs');
+			JSubMenuHelper::addEntry(JText::_('OPEN_GRAPH'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiOpenGraph');
+			JSubMenuHelper::addEntry(JText::_('COMMENT'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiComment');
+			JSubMenuHelper::addEntry(JText::_('SHARE'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiShare');
+			JSubMenuHelper::addEntry(JText::_('LIKE'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiLike');
+			JSubMenuHelper::addEntry(JText::_('SEND'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiSend');
+		}
 		parent::__construct();
     }
 	
@@ -116,16 +132,27 @@ class MyapiController extends JController {
 	
 	function savePlugin(){
 		JRequest::checkToken() or jexit( 'Invalid Token' );
-		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
 		$db   	=& JFactory::getDBO();
-		$row  	=& JTable::getInstance('plugin');
+		
+		if($vnum == '1.5'){
+			$row  	=& JTable::getInstance('plugin');
+		}else{
+			$row  	=& JTable::getInstance('extension');
+			JPluginHelper::importPlugin('extension');
+			
+		}
+		$post = JRequest::get('post');
+	  	$data = ($vnum == '1.5') ? $post : $post['jform'];
+		
 		$row->load(JRequest::getVar('id','','post'));
 		$client = JRequest::getWord( 'filter_client', 'site' );
-
-		if (!$row->bind(JRequest::get('post'))) JError::raiseError(500, $row->getError() );
+		
+		if (!$row->bind($data)) JError::raiseError(500, $row->getError() );
 		if (!$row->check()) JError::raiseError(500, $row->getError() );
 		if (!$row->store()) JError::raiseError(500, $row->getError() );
-		
 		
 		$row->checkin();
 		$row->reorder( 'folder = '.$db->Quote($row->folder).' AND ordering > -10000 AND ordering < 10000 AND ( "client_id=0" )' );
@@ -147,6 +174,10 @@ class MyapiController extends JController {
 		$connectURL = $u->getScheme().'://'.$host.$port.$u->getPath();
 		$baseDomain = $host;
 		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		
 		$data['base_domain'] 	= $baseDomain;
 		$data['uninstall_url'] 	= JURI::root().'index.php?option=com_myapi&task=deauthorizeCallback';
 		$data['connect_url'] 	= $connectURL;
@@ -154,12 +185,21 @@ class MyapiController extends JController {
 		global $postFacebook;
 		$postFacebook = false;
 		try{
-			require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+			if($vnum == '1.5'){
+				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+				$appId =  $post['params']['appId']; 
+				$secret = $post['params']['secret'];
+			}else{
+				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnectFacebook.php';
+				$appId =  $post['jform']['params']['appId']; 
+				$secret = $post['jform']['params']['secret'];
+			}
+			
 			$postFacebook = new myApiFacebook(array(
-				'appId'  => $post['params']['appId'],
-				'secret' => $post['params']['secret']
+				'appId'  => $appId,
+				'secret' => $secret
 			));
-			$app_update = $postFacebook->api(array('method' => 'admin.setAppProperties','access_token' => $post['params']['appId'].'|'.$post['params']['secret'],'properties'=> json_encode($data)));
+			$app_update = $postFacebook->api(array('method' => 'admin.setAppProperties','access_token' => $appId.'|'.$secret,'properties'=> json_encode($data)));
 		}catch (FacebookApiException $e) {
 			$postFacebook = null;
 			JError::raiseWarning( 100, JText::_('APP_SAVED_ERROR').$e);

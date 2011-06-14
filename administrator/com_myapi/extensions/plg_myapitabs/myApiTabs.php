@@ -35,13 +35,13 @@ class plgSystemmyApiTabs extends JPlugin{
 	
 	static $ogptags = array();
 
-	function plgSystemmyApiTabs(&$subject, $config){
-		parent::__construct($subject, $config);
-		
-	}
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
 	
 	function onAfterInitialise(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		if(!class_exists('plgSystemmyApiConnect') || $mainframe->isAdmin()) 
 			return;
 		
@@ -54,7 +54,7 @@ class plgSystemmyApiTabs extends JPlugin{
 				if(isset($signedRequest['user_id'])){
 					$user = JFactory::getUser();
 					if($user->guest){
-						global $mainframe;
+						$mainframe =& JFactory::getApplication();
 						$options['uid'] = $signedRequest['user_id'];
 						$mainframe->login($signedRequest['user_id'],$options);
 					}
@@ -82,7 +82,7 @@ class plgSystemmyApiTabs extends JPlugin{
 	}
 	
 	function onAfterRender(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$document=& JFactory::getDocument();   
 		
 		$session =& JFactory::getSession();

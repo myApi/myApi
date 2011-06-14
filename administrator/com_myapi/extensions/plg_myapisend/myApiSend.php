@@ -34,42 +34,51 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiSend extends JPlugin
 {
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
+	
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
+		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
+		return $result;
+	}
+	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart ){
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || !class_exists('plgSystemmyApiConnect') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if(!class_exists('plgSystemmyApiConnect') || ( (!array_key_exists('category',$article) && !isset($params->showK2Plugins) && ($vnum == '1.5')))){ return; }
 		
 		//this may fire fron a component other than com_content
 		if((@$article->id != '') && (@$_POST['fb_sig_api_key'] == '')){
 			$doc = & JFactory::getDocument();
 			
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiSend');
-
-			// Load plugin params info
-			$myapiparama = new JParameter($plugin->params);
-			
-			$send_sections 		= $myapiparama->get('send_sections');
-			$send_categories 	= $myapiparama->get('send_categories');
-			$send_show_on 		= $myapiparama->get('send_show_on');
-			$layout_style 		= $myapiparama->get('layout_style');
-			$show_faces 		= $myapiparama->get('show_faces');
-			$color_scheme 		= $myapiparama->get('color_scheme');
-			$verb 				= $myapiparama->get('verb');
-			$width 				= $myapiparama->get('width');
-			$send_style 		= $myapiparama->get('send_style');
-			$font 				= $myapiparama->get('send_font');
-			$ref 				= $myapiparama->get('send_ref');
-			$show_send 			= $myapiparama->get('send_send');
-			$position			= $myapiparama->get('position','myApiShareTop');
+			$send_sections 		= $this->params->get('send_sections');
+			$send_categories 	= $this->params->get('send_categories');
+			$send_show_on 		= $this->params->get('send_show_on');
+			$layout_style 		= $this->params->get('layout_style');
+			$show_faces 		= $this->params->get('show_faces');
+			$color_scheme 		= $this->params->get('color_scheme');
+			$verb 				= $this->params->get('verb');
+			$width 				= $this->params->get('width');
+			$send_style 		= $this->params->get('send_style');
+			$font 				= $this->params->get('send_font');
+			$ref 				= $this->params->get('send_ref');
+			$show_send 			= $this->params->get('send_send');
+			$position			= $this->params->get('position','myApiShareTop');
 			$send_show 			= false;
 		
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			
-			if(isset($article->sectionid)){
-				if( is_array($send_sections) ){	
-					foreach($send_sections as $id){ if($id == $article->sectionid) $send_show = true;  }
+			if($vnum == '1.5'){
+				if(isset($article->sectionid)){
+					if( is_array($send_sections) ){	
+						foreach($send_sections as $id){ if($id == $article->sectionid) $send_show = true;  }
+					}
+					elseif($send_sections == $article->sectionid) $send_show = true;
 				}
-				elseif($send_sections == $article->sectionid) $send_show = true;
 			}
-			
 			if(isset($article->category)){
 				if( is_array($send_categories) ){	
 					foreach($send_categories as $id){ if($id == $article->category) $send_show = true; }
@@ -78,19 +87,18 @@ class plgContentmyApiSend extends JPlugin
 			}
 			
 			if(JRequest::getVar('view','','get') == 'article'){	
-				$viewAccess = $myapiparama->get("send_view_article","1");
+				$viewAccess = $this->params->get("send_view_article","1");
 			}elseif((JRequest::getVar('layout','','get') == 'blog') || (JRequest::getVar('view','','get') == 'frontpage')){
-				$viewAccess = $myapiparama->get("send_view_blog","1");
+				$viewAccess = $this->params->get("send_view_blog","1");
 			}else{
-				$viewAccess = $myapiparama->get("send_view_list","1");
+				$viewAccess = $this->params->get("send_view_list","1");
 			}
 			
 			if( (($send_show) || ($send_show_on == 'all')) && ($viewAccess)){
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
 				
 				if(isset($article->slug)){
-					require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-					$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+					$link = ($vnum == '1.5') ? ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid) : ContentHelperRoute::getArticleRoute($article->slug, $article->catslug);
 				}elseif(method_exists('K2HelperRoute','getItemRoute')){
 					$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
 				}else{
@@ -100,8 +108,17 @@ class plgContentmyApiSend extends JPlugin
 				$link = JRoute::_($link,true,-1);
 				$button	= '<fb:send href="'.$link.'" colorscheme="'.$color_scheme.'" font="'.$font.'" ref="'.$ref.'"></fb:send>';
 		
-				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
-				$article->text = myApiButtons::addToTable($article->text,$position,$button);
+				if($vnum == '1.6'){
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}
+		
+				if(isset($article->text) && $article->text != ''){
+					$article->text = myApiButtons::addToTable($article->text,$position,$button);
+				}else{
+					$article->introtext = myApiButtons::addToTable($article->introtext,$position,$button);
+				}
 			}
 		}
 	}

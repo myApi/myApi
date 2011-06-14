@@ -31,20 +31,16 @@
  **                                                                         **			
  *****************************************************************************/
 
-if(!class_exists('plgSystemmyApiConnect'))
+if(!class_exists('plgSystemmyApiConnect') || !$facebook = plgSystemmyApiConnect::getFacebook())
 	return;
 	
-$plugin 	=& JPluginHelper::getPlugin('system', 'myApiConnect');
-$com_params = new JParameter( $plugin->params );
-
-$app_id 		= $com_params->get('appId');	
+$app_id 		= $facebook->getAppId();	
 $classSfx 		= $params->get('moduleclass_sfx');
 $width 			= $params->get('live_width');
 $height 		= $params->get('live_height');
 $xid			= $params->get('live_xid');
 $always_post	= $params->get('live_always_post');
-
-$via_url = JURI::getInstance()->toString();
+$via_url 		= JURI::getInstance()->toString();
 
 require(JModuleHelper::getLayoutPath('mod_myapi_fbLive','default'));
 

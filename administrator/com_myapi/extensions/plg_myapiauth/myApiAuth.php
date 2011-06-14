@@ -38,14 +38,20 @@ jimport('joomla.event.plugin');
 
 class plgAuthenticationmyApiAuth extends JPlugin
 {
-    function plgAuthenticationmyApiAuth(& $subject, $config)
-	{
-		parent::__construct($subject, $config);
+    public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
+	
+	public function onUserAuthenticate($credentials, $options, &$response){
+		$result = $this->onAuthenticate($credentials, $options, &$response );
+		return $result;
 	}
  	
 	function onAuthenticate($uid, $options, &$response )
     {
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php')){ return; }
+		if(!class_exists('plgSystemmyApiConnect')){ return; }
+	
 		if(isset($options['group'])){
 			if($options['group']!="Public Backend"){
 				return;

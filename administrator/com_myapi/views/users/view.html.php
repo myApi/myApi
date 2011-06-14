@@ -34,7 +34,7 @@
 jimport( 'joomla.application.component.view');
 class MyapiViewUsers extends JView {
     function display($tpl = null) {
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$model 		= $this->getModel('users');
 		$items 				= $model->getData();      
 		$pagination			= $model->getPagination();
@@ -53,8 +53,15 @@ class MyapiViewUsers extends JView {
 		$this->assignRef("users", $items);
 		
 		$doc =& JFactory::getDocument();
-		$doc->addStyleSheet( JURI::root().'plugins/system/myApiConnect/myApi.css' );
-		$doc->addScript(JURI::root().'components/com_myapi/assets/js/myApi.js');
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+    	$prefix = ($vnum == '1.6') ? JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect' : JURI::root().'plugins'.DS.'system'.DS.'myApiConnect';
+		
+		$doc->addStylesheet($prefix.DS.'myApi.css');
+		$doc->addScript($prefix.DS.'myApiModal'.'-J'.$vnum.'.js');
+		$doc->addScript(JURI::root().'components/com_myapi/assets/js/myApi'.'-J'.$vnum.'.js');
+		
 		JToolBarHelper::title(JText::_('USERS_HEADER'), 'facebook.png');
 		JToolBarHelper::deleteList(JText::_('UNLINK_USER_DESC'),'unlinkUser', JText::_('UNLINK_USER'));
 

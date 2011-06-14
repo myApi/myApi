@@ -38,10 +38,16 @@ jimport('joomla.plugin.plugin');
 
 class plgUsermyApiUser extends JPlugin {
 	
-	function plgUsermyApiUser(& $subject, $config) {
-		parent::__construct($subject, $config);
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  	}
+	
+	public function onUserAfterDelete($user, $succes, $msg)	{
+ 	    $result = $this->onAfterDeleteUser($user, $succes, $msg);
+ 	    return $result;
 	}
-
+	
 	function onAfterDeleteUser($user, $succes, $msg){
 		$db =& JFactory::getDBO();
 		$db->setQuery('DELETE FROM #__myapi_users WHERE userId ='.$db->quote($user['id']));

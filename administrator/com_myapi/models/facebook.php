@@ -70,10 +70,8 @@ class MyapiModelFacebook extends JModel {
 	function getLoggedInUserLiked(){
 		  $facebook = plgSystemmyApiConnect::getFacebook();
 		try {
-			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-			$com_params = new JParameter( $plugin->params );
 		  $fql['email'] =   "SELECT email FROM user WHERE uid = me()";
-		  $fql['like'] = "SELECT uid FROM page_fan WHERE uid = me() AND page_id = ".$com_params->get('appId');
+		  $fql['like'] = "SELECT uid FROM page_fan WHERE uid = me() AND page_id = ".$facebook->getAppId();
 		  
 		  $param  =   array(
 		   'method'    => 'fql.multiquery',

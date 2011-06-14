@@ -23,4 +23,9 @@
 		<param name="tab_name" type="text" default="" label="PARAM_TAB_NAME_LABEL" description="PARAM_TAB_NAME_DESC" />
 		<param name="tab_url" type="menuitem" default="" label="PARAM_TAB_URL_LABEL" description="PARAM_TAB_URL_DESC" />
 	</params>
+	
+	<config><fields name="params"><fieldset name="basic">
+		<field name="tab_name" type="text" default="" label="PARAM_TAB_NAME_LABEL" description="PARAM_TAB_NAME_DESC" />
+		<field name="tab_url" type="menuitem" default="" label="PARAM_TAB_URL_LABEL" description="PARAM_TAB_URL_DESC" />
+	</fieldset></fields></config>
 </install>

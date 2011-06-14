@@ -85,7 +85,7 @@ class MyapiModelRealtime extends JModel {
 	}
 	
 	function deleteSubscriptions(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		try{
 			foreach($_POST['cid'] as $object){

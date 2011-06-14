@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install type="module" version="1.5">
+<install type="module" version="1.5" client="site" method="upgrade">
 	<name>Facebook Connect Login Box</name> 
 	<author>Thomas Welton</author> 
 	<creationDate>March 2011</creationDate> 
@@ -53,5 +53,35 @@
 			<option value="1">YES</option>
 		</param>
 	</params>
+	
+	<config><fields name="params"><fieldset name="basic">
+		<field name="moduleclass_sfx" type="text" default="" label="PARAM_CLASS_SFX_LABEL" description="PARAM_CLASS_SFX_DESC" />
+		<field name="login_facepile" type="radio" default="1" label="PARAM_FACE_LABEL" description="PARAM_FACE_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</field>
+		<field name="login_width" type="text" default="200" label="PARAM_WIDTH_LABEL" description="PARAM_WIDTH_DESC" size="30" />
+		<field name="login_facepileRows" type="text" default="1" label="PARAM_ROWS_LABEL" description="PARAM_ROWS_DESC" />
+
+		<field name="login_button_text" type="text" default="Connect with Facebook" label="PARAM_LOGIN_LABEL" description="PARAM_LOGIN_DESC" size="30" />
+		<field name="login_link_text" type="text" default="Link Accounts" label="PARAM_LINK_LABEL" description="PARAM_LINK_DESC" size="30" />
+			
+		<field name="login_userRedirect" type="radio" default="0" label="PARAM_REDIRECT_LABEL" description="PARAM_REDIRECT_DESC">
+			<option value="0">PARAM_REDIRECT_SAME</option>
+			<option value="1">PARAM_REDIRECT_MENU</option>
+		</field>
+		<field name="login_userRedirectTo" type="menuitem" default="" label="PARAM_REDIRECT_TO_LABEL" description="PARAM_REDIRECT_TO_DESC" />
+		
+		
+		<field name="login_joomlaLogin" type="radio" default="0" label="PARAM_JOOMLA_LABEL" description="PARAM_JOOMLA_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</field>
+		
+		<field name="login_unlink" type="radio" default="0" label="PARAM_UNLINK_LABEL" description="PARAM_UNLINK_DESC">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</field>
+	</fieldset></fields></config>
 		
 </install>

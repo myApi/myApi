@@ -38,16 +38,31 @@ jimport( 'joomla.plugin.plugin' );
 
 class plgContentmyApiComment extends JPlugin
 {	
-	function plgContentmyApiComment( &$subject, $params ){
-		parent::__construct( $subject, $params );
-		
+	public function __construct(& $subject, $config) {
+ 		parent::__construct($subject, $config);
+ 		$this->loadLanguage();
+  		
 		global $myApiCommentJsAdded;
 		if(! $myApiCommentJsAdded == true){
 			global $fbAsyncInitJs;
-			$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Ajax("index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href),{method: "get"}).request(); });';	
+			
+			$version 	= new JVersion;
+   			$joomla		= $version->getShortVersion();
+			$vnum 		= substr($joomla,0,3);
+    		if($vnum == '1.6'){
+				$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Request({url: "index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href), method: "get"}).send(); });';	
+			}else{
+				$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Ajax("index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href),{method: "get"}).request(); });';	
+			}
 			$myApiCommentJsAdded = true;
 		}
 	}
+	
+	public function onContentBeforeDisplay($context, &$article, &$params, $limitstart){
+		$result	= $this->onBeforeDisplayContent( &$article, &$params, $limitstart );
+		return $result;
+	}
+	
 	function getComments($xid){
 		$params  =   array(
 		 'method'    => 'fql.query',
@@ -65,8 +80,6 @@ class plgContentmyApiComment extends JPlugin
 	
 	function onBeforeDisplayContent( &$article, &$params, $limitstart )
 	{
-		if(!file_exists(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php') || (!array_key_exists('category',$article) && !isset($params->showK2Plugins)  )){ return; }
-		
 		//this may fire fron a component other than com_content
 		if(is_object($article) && (@$article->id != '') && (@$_POST['fb_sig_api_key'] == '') && class_exists('plgSystemmyApiConnect'))
 		{
@@ -75,10 +88,14 @@ class plgContentmyApiComment extends JPlugin
 			if(!$facebook){ return; }
 			
 			require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
+			
+			$version = new JVersion;
+   	 		$joomla = $version->getShortVersion();
+    		$vnum = substr($joomla,0,3);
 				
 			if(isset($article->slug)){
 				require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
-				$link = ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid);
+				$link = ($vnum == '1.5') ? ContentHelperRoute::getArticleRoute($article->slug, $article->catslug, $article->sectionid) : ContentHelperRoute::getArticleRoute($article->slug, $article->catslug);
 				$xid = urlencode('articlecomment'.$article->id);
 			}elseif(method_exists('K2HelperRoute','getItemRoute')){
 				$link = K2HelperRoute::getItemRoute($article->id.':'.urlencode($article->alias),$article->catid.':'.urlencode($article->category->alias));
@@ -92,23 +109,18 @@ class plgContentmyApiComment extends JPlugin
 			$base = JURI::base();
 			$doc = & JFactory::getDocument();
 			JHTML::_('behavior.mootools');
-			
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-
-			// Load plugin params info
-			$myapiparama = new JParameter($plugin->params);
 					
-			$comment_sections = $myapiparama->get('comment_sections');
-			$comment_categories = $myapiparama->get('comment_categories');
-			$comments_show_on = $myapiparama->get('comments_show_on');
-			$comments_access = $myapiparama->get('comments_access');
-			$comments_width = (JRequest::getVar('tmpl') == 'component') ? '520' : $myapiparama->get('comments_width');
-			$comments_numposts = $myapiparama->get('comments_numposts');
-			$comments_scheme = $myapiparama->get('comments_scheme');
+			$comment_sections = $this->params->get('comment_sections');
+			$comment_categories = $this->params->get('comment_categories');
+			$comments_show_on = $this->params->get('comments_show_on');
+			$comments_access = $this->params->get('comments_access');
+			$comments_width = (JRequest::getVar('tmpl') == 'component') ? '520' : $this->params->get('comments_width');
+			$comments_numposts = $this->params->get('comments_numposts');
+			$comments_scheme = $this->params->get('comments_scheme');
 			
-			$comments_view_article = $myapiparama->get('comments_view_article');
-			$comments_view_list = $myapiparama->get('comments_view_list');
-			$comments_view_blog = $myapiparama->get('comments_view_blog');
+			$comments_view_article = $this->params->get('comments_view_article');
+			$comments_view_list = $this->params->get('comments_view_list');
+			$comments_view_blog = $this->params->get('comments_view_blog');
 			
 			$comment_show = false;
 			if(isset($article->sectionid))
@@ -134,22 +146,27 @@ class plgContentmyApiComment extends JPlugin
 			
 			//After checking categories and sections reset to fasle is not in articel view
 			
-			$user = JFactory::getUser();
-			
-			
-			if($comments_access == '29'){
-				$hasAccess = true;
-			}elseif($comments_access == '30'){
-				if(($user->gid == '23') || ($user->gid == '24') || ($user->gid == '25'))
+			$version = new JVersion;
+        	$joomla = $version->getShortVersion();
+        	if(substr($joomla,0,3) == '1.6'){
+				//will be adding ACL to do this,untill then remove it.
+				$hasAccess = true;	
+			}else{
+				$user = JFactory::getUser();
+				if($comments_access == '29'){
+					$hasAccess = true;
+				}elseif($comments_access == '30'){
+					if(($user->gid == '23') || ($user->gid == '24') || ($user->gid == '25'))
+						$hasAccess = true;
+				}
+				else{
+					if($user->gid >= $comments_access)
+						$hasAccess = true;
+				}
+					
+				if(($comments_access == $user->gid) || ($comments_access == '29') )
 					$hasAccess = true;
 			}
-			else{
-				if($user->gid >= $comments_access)
-					$hasAccess = true;
-			}
-				
-			if(($comments_access == $user->gid) || ($comments_access == '29') )
-				$hasAccess = true;
 			
 			if($comments_show_on == 'all')
 				$comment_show = true;
@@ -182,18 +199,25 @@ class plgContentmyApiComment extends JPlugin
 					$viewType = 'list';
 				}
 				
-				require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				$version = new JVersion;
+        		$joomla = $version->getShortVersion();
+        		if(substr($joomla,0,3) == '1.6'){
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}
+				
 				$dom = new simple_html_dom();
-				$dom->load($article->text);
-		
+				$content = (isset($article->text) && $article->text != '') ? $article->text : $article->introtext;
+				$dom->load($content);
 				$tableEl = $dom->find('.myApiShareBottom',0);
 				if(!$tableEl){
 					$table = '<table class="myApiShareBottom myApiShareTable"></table>';
-					$article->text = $article->text.$table;
-					$dom->load($article->text);
+					$content = $content.$table;
+					$dom->load($content);
 				}
 				
-				switch($myapiparama->get('comments_view_'.$viewType)){
+				switch($this->params->get('comments_view_'.$viewType)){
 					case 1:
 						$commentEl = $comment_box;	
 					break;
@@ -221,9 +245,12 @@ class plgContentmyApiComment extends JPlugin
 					$row = $dom->find('.myApiShareBottom',0);
 					$row->innertext .= $tr;
 					
-					$article->text 	= $dom->save();
+					if(isset($article->text) && $article->text != ''){
+						 $article->text = $dom->save();
+					}else{
+						$article->introtext = $dom->save();
+					}
 				}
-				
 				$dom->clear(); unset($dom);
 			}
 		}

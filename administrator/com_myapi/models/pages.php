@@ -47,7 +47,7 @@ class MyapiModelPages extends MyapiModelMyapi {
 	
 	function __construct() {
 		parent::__construct();
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		 
         $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');		
 		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
@@ -96,7 +96,7 @@ class MyapiModelPages extends MyapiModelMyapi {
 	}
 	
 	function _buildWhereClause(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$db = JFactory::getDBO();
 		
 		$category 	= $mainframe->getUserStateFromRequest( 'myapi_pages_filter_category', 'filter_category', '0', 'string');
@@ -122,7 +122,7 @@ class MyapiModelPages extends MyapiModelMyapi {
 	}
   
   	function _buildContentOrderBy(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$orderby = '';
 		$filter_order     = $mainframe->getUserStateFromRequest( 'myapi_pages_filter_order', 'filter_order');
 		$filter_order_Dir = $mainframe->getUserStateFromRequest( 'myapi_pages_filter_order_Dir', 'filter_order_Dir');
@@ -141,7 +141,7 @@ class MyapiModelPages extends MyapiModelMyapi {
 	}
 	
 	function getCategoriesList(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$cats = $this->getCategories();
 		$catOptions = array(JHTML::_('select.option', 0, '- '.JText::_('CATEGORY_SELECT').' -' ));
 		foreach($cats as $cat){

@@ -35,8 +35,8 @@ jimport( 'joomla.application.component.view');
 
 class MyapiViewPages extends JView {
     function display($tpl = null) {
-		global $mainframe, $option;
-		
+		$mainframe =& JFactory::getApplication();
+		$option = JRequest::getCmd('option');
 		
 		$model 	= $this->getModel('pages');
 		

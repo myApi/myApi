@@ -36,7 +36,7 @@ class MyapiController extends JController {
 	function facebookRealTime(){
 		$integrations 	= array('users' => 'id','k2_users' => 'userID','community_users' => 'userid');
 		$method 		= $_SERVER['REQUEST_METHOD'];  
-		global $mainframe;    
+		$mainframe =& JFactory::getApplication();  
 		
 		//Callback verification                                                 
 		if ($method == 'GET' && JRequest::getVar('hub_mode','','get') == 'subscribe' && JRequest::getVar('hub_verify_token','','get') == $mainframe->getCfg( 'secret' )) {
@@ -171,7 +171,7 @@ class MyapiController extends JController {
 		$db->setQuery($query);
 		$db->query();
 		
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$mainframe->close();
 	}
 	
@@ -181,7 +181,7 @@ class MyapiController extends JController {
 		
 		$db 			= JFactory::getDBO();
 		$facebookmodel 	= new myapiModelfacebook;  //Bring the myAPI facebook model
-		$fbUser 		= $facebookmodel->getLoggedInUserLiked();
+		$fbUser 		= $facebookmodel->getLoggedInUser();
 		$query 			= "SELECT COUNT(".$db->nameQuote('id').") FROM ".$db->nameQuote('#__users')." WHERE ".$db->nameQuote('email')." = ".$db->quote($fbUser['email']);
 		
 		$db->setQuery($query);
@@ -197,23 +197,27 @@ class MyapiController extends JController {
 		ob_end_clean();	
 		
 		$data[] = "myApiModal.open('".JText::_('FACEBOOK_CONNECT',true)."','".JText::_('REGISTRATION_PROMPT',true)."','".addslashes($html)."');";
-		if(!$fbUser['liked']){
-			$data[] = "FB.Event.subscribe('edge.create', function(response) { $('myApiNewUserRegForm').submit(); });";
-		}
 		echo json_encode($data);
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$mainframe->close();
 	}
 	
 	function syncPhoto($uid){
 		jimport( 'joomla.filesystem.folder' );
-		if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
-			JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
+		jimport('joomla.client.helper');
+		jimport( 'joomla.filesystem.file' );
+		JClientHelper::setCredentials('ftp');
+			
+		$path = JPath::clean(JPATH_SITE.DS.'images'.DS.'comprofiler');
+		if (!is_dir($path) && !is_file($path)){
+			JFolder::create($path);
+			$data = "<html>\n<body bgcolor=\"#FFFFFF\">\n</body>\n</html>";
+			JFile::write($path.DS."index.html", $data);
+		}
 			
 		$dest	= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
 		$avatar	= 'facebookUID'.$uid.'.jpg';
 		$buffer	= file_get_contents('https://graph.facebook.com/'.$uid.'/picture',$dest);
-		jimport( 'joomla.filesystem.file' );
 		JFile::write($dest,$buffer);
 		
 		$db 	=& JFactory::getDBO();
@@ -250,7 +254,7 @@ class MyapiController extends JController {
 		$uid 		= $session['uid'];
 		
 		if($uid){
-			global $mainframe;
+			$mainframe =& JFactory::getApplication();
 			$options['return'] = $return;
 			$options['uid'] = $uid;
 			$error = $mainframe->login($uid,$options);
@@ -258,7 +262,7 @@ class MyapiController extends JController {
 				$return = ($return == '') ? JURI::base() : $return;
 				$this->setRedirect($return,JText::_( 'LOGGED_IN_FACEBOOK' ));
 			}else{ 
-				$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$error->message); 
+				$this->setRedirect(JURI::base(),JText::_( 'LOGIN_ERROR' )." - ".$error->getMessage()); 
 			}
 		}else{
 			$this->setRedirect($return,JText::_('NO_SESSION'));
@@ -267,7 +271,7 @@ class MyapiController extends JController {
 	}
 	
 	function logout(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		$mainframe->logout();
 		$facebook->setSession(null);
@@ -276,7 +280,7 @@ class MyapiController extends JController {
 	}
 	//Joomla user login task
 	function login(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$facebook = plgSystemmyApiConnect::getFacebook();
 
 		$options 				= array();
@@ -292,7 +296,7 @@ class MyapiController extends JController {
 		$error = $mainframe->login($credentials, $options);
 		
 		if(JError::isError($error)){
-			JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$error->message );
+			JError::raiseWarning( 100, $error->message );
 		}else{
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			$facebookSession = $facebook->getSession();
@@ -302,9 +306,11 @@ class MyapiController extends JController {
 			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
 			$db->setQuery($query);
 			$db->query();
+			
 			if($db->getErrorNum()){
-				JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$db->getErrorMsg() );	
+				JError::raiseWarning( 100, $db->getErrorMsg() );	
 			}else{
+				MyapiController::syncPhoto($facebookSession['uid']);
 				JFactory::getApplication()->enqueueMessage(JText::_( 'LOGGED_IN_FACEBOOK'));
 			}
 			
@@ -332,7 +338,7 @@ class MyapiController extends JController {
 	
 	//A function called via ajax to see is a Facebook user is linked to a Joomla user
 	function isLinked(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		JRequest::checkToken( 'get' ) or die( 'Invalid Token' );
 		$db 	= JFactory::getDBO();
@@ -420,7 +426,7 @@ class MyapiController extends JController {
 	//New user
 	function newUser()
 	{
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 
 		$return = base64_decode(JRequest::getVar('return',''));
 		// Get required system objects
@@ -491,9 +497,21 @@ class MyapiController extends JController {
 		
 		// Set some initial user values
 		$user->set('id', 0);
-		$user->set('usertype', $newUsertype);
-		$user->set('gid', $authorize->get_group_id( '', $newUsertype, 'ARO' ));
-
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		if($vnum == '1.5'){
+			$user->set('usertype', $newUsertype);
+			$user->set('gid', $authorize->get_group_id( '', $newUsertype, 'ARO' ));
+		}else{
+			jimport('joomla.application.component.helper');
+			$config	= JComponentHelper::getParams('com_users');
+			// Default to Registered.
+			$defaultUserGroup = $config->get('new_usertype', 2);	
+			$user->set('usertype'		, 'deprecated');
+			$user->set('groups'		, array($defaultUserGroup));
+		}
 		$date =& JFactory::getDate();
 		$user->set('registerDate', $date->toMySQL());
 
@@ -512,10 +530,14 @@ class MyapiController extends JController {
 			$db->setQuery($query);
 			$db->query();
 			
-			//Sync Community Builder
-			$sql_sync = "INSERT IGNORE INTO #__comprofiler(id,user_id) SELECT id,id FROM #__users WHERE #__users.id =".$db->Quote($user->id);
-			$db->setQuery($sql_sync);
-			$db->query();
+			MyapiController::syncPhoto($fbUser['id']);
+			
+			try{
+				//Sync Community Builder
+				$sql_sync = "INSERT IGNORE INTO #__comprofiler(id,user_id) SELECT id,id FROM #__users WHERE #__users.id =".$db->Quote($user->id);
+				$db->setQuery($sql_sync);
+				$db->query();
+			}catch(Exception $e){}
 			
 			// Send registration confirmation mail
 			$cleanPassword = preg_replace('/[\x00-\x1F\x7F]/', '', $randomPassword); //Disallow control chars in the email
@@ -536,7 +558,6 @@ class MyapiController extends JController {
 			$dispatcher =& JDispatcher::getInstance();
 			$dispatcher->trigger('onAfterStoreUser', array($user->getProperties(), true, $result,''));
 			
-			MyapiController::syncPhoto($fbUser['id']);
 			$this->setRedirect($return,$message);
 		}else{
 			$this->setRedirect($return,JText::_('NO_UID_FOUND'));
@@ -544,7 +565,7 @@ class MyapiController extends JController {
 	}
 	
 	function _sendMail(&$user, $password,$fbUser){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$db		=& JFactory::getDBO();
 		
 		
@@ -614,15 +635,26 @@ class MyapiController extends JController {
 	}
 	
 	function commentCreate(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		$href 	= JRequest::getVar('commentlink',NULL,'get');
 		$db		=& JFactory::getDBO();
 		$query 	= "INSERT IGNORE INTO ".$db->nameQuote('#__myapi_comment_mail')." (".$db->nameQuote('href').") VALUES (".$db->quote($href).");"; 
 		$db->setQuery($query);
 		$db->query();
 		
-		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-		$commentParams = new JParameter($plugin->params);
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		
+		if($vnum == '1.6'){
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JRegistry();
+			$commentParams->loadJSON($plugin->params);
+		}else{
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JParameter($plugin->params);
+		}
+		
 		$commentSend = $commentParams->get('comments_email',1);
 		
 		if(intval($commentSend) == 1)
@@ -633,30 +665,54 @@ class MyapiController extends JController {
 	
 	
 	function commentQueueSend(){
-		global $mainframe;
+		$mainframe =& JFactory::getApplication();
 		//get the comment queue
 		$db = JFactory::getDBO();
 		$query = "SELECT ".$db->nameQuote('href')." FROM ".$db->nameQuote('#__myapi_comment_mail');
 		$db->setQuery($query);
 		$commentQueue = $db->loadResultArray();
-		$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-		$commentParams = new JParameter($plugin->params);
+		
+		$version = new JVersion;
+   		$joomla = $version->getShortVersion();
+		$vnum = substr($joomla,0,3);
+		
+		if($vnum == '1.6'){
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JRegistry();
+			$commentParams->loadJSON($plugin->params);
+		}else{
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JParameter($plugin->params);
+		}
+		
 		$commentSend = $commentParams->get('comments_email',1);
 		if($db->getAffectedRows() > 0 && intval($commentSend) > 0){
 			$facebook 	= plgSystemmyApiConnect::getFacebook();
 			if($facebook){
 				
 				$component = JComponentHelper::getComponent( 'com_myapi' );
-				$params = new JParameter( $component->params );
+				
+				if($vnum == '1.6'){
+					$params = new JRegistry();
+					$params->loadJSON($component->params );
+				}else{
+					$params = new JParameter( $component->params );
+				}
+				
 				$lastEmailTime = $params->get('commentEmailTime',time()-(60*60*24*7*4));
 				$newEmailTime = time();
 				
 				//Get the admins
 				$db		=& JFactory::getDBO();
-				$query = 'SELECT email' . ' FROM #__users' . ' WHERE LOWER( usertype ) = "super administrator"';
+				
+				if($vnum == '1.6'){
+					$query = "SELECT ".$db->nameQuote('email')." FROM ".$db->nameQuote('#__users')." JOIN ".$db->nameQuote('#__user_usergroup_map')." ON ".$db->nameQuote('#__users').'.'.$db->nameQuote('id')." = ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('user_id')." WHERE ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('group_id')." = ".$db->quote('8');
+				}else{
+					$query = 'SELECT email' . ' FROM #__users' . ' WHERE LOWER( usertype ) = "super administrator"';
+				}
+				
 				$db->setQuery( $query );
 				$recipients = $db->loadResultArray();
-				
 				$emailBody = array();
 				$totalComments = 0;
 				foreach($commentQueue as $index => $eachHref){	
@@ -746,10 +802,9 @@ class MyapiController extends JController {
 				$mailer->setBody($message_body_html);
 				$mailer->isHTML(true);
 				$mailer->AltBody = $message_body_plain;
-				
 				$send = $mailer->Send();
 				if ( $send !== true ) {
-					error_log($send->message);
+					error_log($send->getMessage());
 				} else {
 					$quoted = array();
 					foreach($commentQueue as $value) $quoted[] = $db->quote($value);
@@ -757,12 +812,28 @@ class MyapiController extends JController {
 					$db->setQuery($query);
 					$db->query();
 					
-					$table =& JTable::getInstance('component');
-					$table->loadByOption('com_myapi');
-					$paramData = array('params' => array('commentEmailTime' => $newEmailTime )); 
-					$table->bind( $paramData );
-					$table->check();
-					$table->store();
+					$paramData = array('params' => array('commentEmailTime' => $newEmailTime ));
+					
+					if($vnum == '1.5'){
+						$table =& JTable::getInstance('component');
+						$table->loadByOption('com_myapi');
+						$table->bind( $paramData );
+						$table->check();
+						$table->store();
+					}else{
+						$table	= JTable::getInstance('extension');
+						$option = 'com_myapi';
+						$id = $table->find(array('element'=>$option));
+						$table->load($id);
+						$data	= array(
+							'params'	=> $paramData,
+							'id'		=> $id,
+							'option'	=> $option
+						);
+						$table->bind( $paramData );
+						$table->check();
+						$table->store();
+					}
 				}
 			}
 		}
