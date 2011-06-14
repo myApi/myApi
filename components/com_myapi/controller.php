@@ -204,13 +204,20 @@ class MyapiController extends JController {
 	
 	function syncPhoto($uid){
 		jimport( 'joomla.filesystem.folder' );
-		if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
-			JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
+		jimport('joomla.client.helper');
+		jimport( 'joomla.filesystem.file' );
+		JClientHelper::setCredentials('ftp');
+			
+		$path = JPath::clean(JPATH_SITE.DS.'images'.DS.'comprofiler');
+		if (!is_dir($path) && !is_file($path)){
+			JFolder::create($path);
+			$data = "<html>\n<body bgcolor=\"#FFFFFF\">\n</body>\n</html>";
+			JFile::write($path.DS."index.html", $data);
+		}
 			
 		$dest	= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
 		$avatar	= 'facebookUID'.$uid.'.jpg';
 		$buffer	= file_get_contents('https://graph.facebook.com/'.$uid.'/picture',$dest);
-		jimport( 'joomla.filesystem.file' );
 		JFile::write($dest,$buffer);
 		
 		$db 	=& JFactory::getDBO();
@@ -289,7 +296,7 @@ class MyapiController extends JController {
 		$error = $mainframe->login($credentials, $options);
 		
 		if(JError::isError($error)){
-			JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$error->message );
+			JError::raiseWarning( 100, $error->message );
 		}else{
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			$facebookSession = $facebook->getSession();
@@ -299,9 +306,11 @@ class MyapiController extends JController {
 			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
 			$db->setQuery($query);
 			$db->query();
+			
 			if($db->getErrorNum()){
-				JError::raiseWarning( 100, JText::_('PAGES_ADDED_ERROR').' '.$db->getErrorMsg() );	
+				JError::raiseWarning( 100, $db->getErrorMsg() );	
 			}else{
+				MyapiController::syncPhoto($facebookSession['uid']);
 				JFactory::getApplication()->enqueueMessage(JText::_( 'LOGGED_IN_FACEBOOK'));
 			}
 			
@@ -521,10 +530,14 @@ class MyapiController extends JController {
 			$db->setQuery($query);
 			$db->query();
 			
-			//Sync Community Builder
-			$sql_sync = "INSERT IGNORE INTO #__comprofiler(id,user_id) SELECT id,id FROM #__users WHERE #__users.id =".$db->Quote($user->id);
-			$db->setQuery($sql_sync);
-			$db->query();
+			MyapiController::syncPhoto($fbUser['id']);
+			
+			try{
+				//Sync Community Builder
+				$sql_sync = "INSERT IGNORE INTO #__comprofiler(id,user_id) SELECT id,id FROM #__users WHERE #__users.id =".$db->Quote($user->id);
+				$db->setQuery($sql_sync);
+				$db->query();
+			}catch(Exception $e){}
 			
 			// Send registration confirmation mail
 			$cleanPassword = preg_replace('/[\x00-\x1F\x7F]/', '', $randomPassword); //Disallow control chars in the email
@@ -545,7 +558,6 @@ class MyapiController extends JController {
 			$dispatcher =& JDispatcher::getInstance();
 			$dispatcher->trigger('onAfterStoreUser', array($user->getProperties(), true, $result,''));
 			
-			MyapiController::syncPhoto($fbUser['id']);
 			$this->setRedirect($return,$message);
 		}else{
 			$this->setRedirect($return,JText::_('NO_UID_FOUND'));
