@@ -16,8 +16,7 @@ CREATE TABLE IF NOT EXISTS `#__myapi_pages` (
 	`link` varchar(255) DEFAULT NULL,
 	`category` varchar(255) DEFAULT NULL,
 	`owner` bigint(255) unsigned DEFAULT NULL,
-	PRIMARY KEY (`pageId`),
-	FULLTEXT KEY `name` (`name`)
+	PRIMARY KEY (`pageId`)
 );
 CREATE TABLE IF NOT EXISTS `#__myapi_comment_mail` (
 	`href` varchar(255) NOT NULL DEFAULT '',
