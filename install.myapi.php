@@ -30,7 +30,42 @@
  **   along with myApi.  If not, see <http://www.gnu.org/licenses/>.	    **
  **                                                                         **			
  *****************************************************************************/
- 
+
+$db = JFactory::getDBO();
+$installsql[] = "CREATE TABLE IF NOT EXISTS ".$db->nameQuote('#__myapi_users')." (
+	`userId` int(255) NOT NULL auto_increment,
+	`uid` bigint(255) unsigned NOT NULL,
+	`update_status` int(1) NOT NULL,
+	`status_text` text NOT NULL,
+	`access_token` varchar(255) NOT NULL,
+	`avatar` varchar(255) default NULL,
+	PRIMARY KEY  (`userId`),
+	UNIQUE KEY `userId` (`userId`),
+	UNIQUE KEY `uid` (`uid`)
+);";
+$installsql[] = "CREATE TABLE IF NOT EXISTS ".$db->nameQuote('#__myapi_pages')." (
+	`pageId` bigint(255) unsigned NOT NULL DEFAULT '0',
+	`access_token` varchar(255) DEFAULT NULL,
+	`name` varchar(255) DEFAULT NULL,
+	`link` varchar(255) DEFAULT NULL,
+	`category` varchar(255) DEFAULT NULL,
+	`owner` bigint(255) unsigned DEFAULT NULL,
+	PRIMARY KEY (`pageId`)
+);";
+$installsql[] = "CREATE TABLE IF NOT EXISTS ".$db->nameQuote('#__myapi_comment_mail')." (
+	`href` varchar(255) NOT NULL DEFAULT '',
+	PRIMARY KEY (`href`),
+	UNIQUE KEY `href` (`href`)
+);";
+
+foreach($installsql as $query){
+	$db->setQuery($query);
+	$db->query();
+	if($db->getErrorNum()){
+		JError::raiseWarning( 100, $db->getErrorMsg() );	
+	}
+}
+
 $version = new JVersion;
 $joomla = $version->getShortVersion();
 $vnum = substr($joomla,0,3);
