@@ -258,10 +258,14 @@ class plgContentmyApiComment extends JPlugin
 	}
 	
 	function addFbJs($xid){
+		$version = new JVersion;
+   	 	$joomla = $version->getShortVersion();
+    	$vnum = substr($joomla,0,3);
+		
 		global $fbAsyncInitJs;
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		$app_id = $facebook->getAppId();
-		$fbAsyncInitJs .= "var query".$xid." = FB.Data.query('select id from comment where xid=\"$xid\" ; '); query".$xid.".wait(function(result) { if(result.length > 0){ $('".$xid."commentLink').setHTML('".JText::_('ADD_COMMENT')." ('+result.length+')'); } });";	
+		$fbAsyncInitJs .= ($vnum == '1.5') ? "var query".$xid." = FB.Data.query('select id from comment where xid=\"$xid\" ; '); query".$xid.".wait(function(result) { if(result.length > 0){ $('".$xid."commentLink').setHTML('".JText::_('ADD_COMMENT')." ('+result.length+')'); } });" : "var query".$xid." = FB.Data.query('select id from comment where xid=\"$xid\" ; '); query".$xid.".wait(function(result) { if(result.length > 0){ $('".$xid."commentLink').set('html','".JText::_('ADD_COMMENT')." ('+result.length+')'); } });";	
 	}
 
     function bind( $array, $ignore = '' )
