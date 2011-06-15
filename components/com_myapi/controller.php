@@ -296,7 +296,7 @@ class MyapiController extends JController {
 		$error = $mainframe->login($credentials, $options);
 		
 		if(JError::isError($error)){
-			JError::raiseWarning( 100, $error->message );
+			JError::raiseWarning( 100, $error->getMessage() );
 		}else{
 			$facebook = plgSystemmyApiConnect::getFacebook();
 			$facebookSession = $facebook->getSession();
