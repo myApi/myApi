@@ -214,10 +214,11 @@ class MyapiController extends JController {
 			$data = "<html>\n<body bgcolor=\"#FFFFFF\">\n</body>\n</html>";
 			JFile::write($path.DS."index.html", $data);
 		}
-			
-		$dest	= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
-		$avatar	= 'facebookUID'.$uid.'.jpg';
-		$buffer	= file_get_contents('https://graph.facebook.com/'.$uid.'/picture',$dest);
+		
+		$dest		= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
+		$avatar		= 'facebookUID'.$uid.'.jpg';
+		$avatarData = $facebook->api(array('method' => 'fql.query','query' => 'SELECT pic FROM user WHERE uid = "'.$uid.'";'));
+		$buffer		= file_get_contents($avatarData[0]['pic']);
 		JFile::write($dest,$buffer);
 		
 		$db 	=& JFactory::getDBO();
