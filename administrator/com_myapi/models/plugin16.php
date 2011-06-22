@@ -33,7 +33,7 @@
 
 jimport('joomla.application.component.modeladmin');
 
-class MyapiModelPlugin extends JModelAdmin {
+class MyapiModelPlugin16 extends JModelAdmin {
   	
 	var $pluginid = null;
 	protected $_cache;

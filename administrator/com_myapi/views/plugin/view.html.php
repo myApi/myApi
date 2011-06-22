@@ -52,16 +52,17 @@ class MyapiViewPlugin extends JView {
 		
 		$row->load($id);
 		$plugin = & JPluginHelper::getPlugin($row->folder, $row->element);
-		
 		if(is_object($plugin)){
 			if($vnum == '1.5'){
 				$paramsdata = $plugin->params;
-				$paramsdefs = JPATH_SITE.DS.'plugins'.DS.$row->folder.'.xml';
+				$paramsdefs = JPATH_SITE.DS.'plugins'.DS.$row->folder.DS.$row->element.'.xml';
 				$params = new JParameter( $paramsdata, $paramsdefs );
 				$this->assignRef('params',$params);
 				$this->assignRef('pluginID', $row->id);
 			}else{
-				$model = $this->getModel('plugin');
+				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'models'.DS.'plugin16.php');
+				$model = new MyapiModelPlugin16();
+				
 				$form = $model->getForm(array('folder' => $row->folder, 'element' => $row->element, 'id' => $row->extension_id));
 				$fields = $form->getFieldset('basic');
 				$this->assignRef('fields',$fields);	
