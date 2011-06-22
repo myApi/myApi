@@ -54,7 +54,7 @@ var myapi = {
 						}
 					}).send();	
 				}
-			});   
+			}, true);   
 		},
 		newLink: function(token,redirect){
 			$$('.fb_button_text','fbLinkButton')[0].innerHTML = "Linking...";

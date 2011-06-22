@@ -52,7 +52,7 @@ var myapi = {
 							  }catch(e){}
 							
 						}
-					}).request();	
+					}, true).request();	
 				}
 			});   
 		},
