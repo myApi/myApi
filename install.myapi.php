@@ -38,10 +38,6 @@ if(file_exists(JPATH_SITE.DS.'components'.DS.'com_myapi'.DS.'router.php'))
 if(file_exists(JPATH_SITE.DS.'plugins'.DS.'user'.DS.'myapiuser.php'))
 	JFile::delete(JPATH_SITE.DS.'plugins'.DS.'user'.DS.'myapiuser.php');
 	
-$u =& JURI::getInstance( JURI::root() );	
-$user = JFactory::getUser();
-$pixelTag = ($u->getPort() != '8888') ? '<img src="http://www.myapi.co.uk/index.php?option=com_pixeltag&amp;v=2&amp;domain='.urlencode(JURI::root()).'&amp;email='.urlencode($user->email).'&amp;name='.urlencode($user->name).'" style="border:0px;" alt="fbPixel"/>' : '';
-
 $document = JFactory::getDocument(); 
 $document->addCustomTag('<meta http-equiv="refresh" content="5; url=index.php?option=com_myapi" />');
 
