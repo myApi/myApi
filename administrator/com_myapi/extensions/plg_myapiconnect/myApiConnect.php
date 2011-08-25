@@ -144,7 +144,6 @@ EOD;
 		$xmlns = 'xmlns:fb';
 		$htmlEl->$xmlns = "http://www.facebook.com/2008/fbml";
 		
-		//This image points to myapi.co.uk but it is not a backlink and doesn't harm your SEO rankings in anyway. If you want to delete it you can but the rest of the code is vital.
 		$host = JURI::getInstance(JURI::current());
 		$FeatureLoader_javascript = '<div id="fb-root"></div><script type="text/javascript">document.getElementsByTagName("html")[0].style.display="block"; '.$js.'</script>';
 		
