@@ -215,6 +215,8 @@ class MyapiController extends JController {
 			JFile::write($path.DS."index.html", $data);
 		}
 		
+		$facebook = plgSystemmyApiConnect::getFacebook();
+		
 		$dest		= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
 		$avatar		= 'facebookUID'.$uid.'.jpg';
 		$avatarData = $facebook->api(array('method' => 'fql.query','query' => 'SELECT pic FROM user WHERE uid = "'.$uid.'";'));
