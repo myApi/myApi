@@ -30,14 +30,14 @@ var myapi = {
 		},
 		checkAndLogin: function(token,redirect){
 			FB.getLoginStatus(function(response) {
-				if (response.session) {
-					var uid = response.session.uid;
+				if (response.authResponse) {
+					var uid = response.authResponse.userID;
 					try{
 					$ES('.fb_button_text','myApiLoginWrapper')[0].innerHTML = "Connecting";
 					}catch(e){}
 					
 					var isLinkedAjax = new Request.JSON({
-						url: 'index.php?option=com_myapi&task=isLinked&'+token+'=1&fbId='+uid+'&return='+redirect+'&'+Object.toQueryString(response.session),
+						url: 'index.php?option=com_myapi&task=isLinked&'+token+'=1&fbId='+uid+'&return='+redirect,
 						method: 'get',
 						onRequest: function() { 
 							

@@ -120,7 +120,7 @@ window.addEvent('domready',function(){
 	}());
 });
 window.fbAsyncInit = function() {
-     FB.init({appId: "{$this->params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}"});
+     FB.init({appId: "{$this->params->get('appId')}", status: true, cookie: true, xfbml: true, channelUrl: "{$xdPath}", oauth: true});
 	 {$fbAsyncInitJs}
 };
 /* ]]> */

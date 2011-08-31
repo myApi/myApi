@@ -30,13 +30,13 @@ var myapi = {
 		},
 		checkAndLogin: function(token,redirect){
 			FB.getLoginStatus(function(response) {
-				if (response.session) {
-					var uid = response.session.uid;
+				if (response.authResponse) {
+					var uid = response.authResponse.userID;
 					try{
-					$ES('.fb_button_text','myApiLoginWrapper')[0].innerHTML = "Connecting";
+						$ES('.fb_button_text','myApiLoginWrapper')[0].innerHTML = "Connecting";
 					}catch(e){}
 					
-					var isLinkedAjax = new Ajax('index.php?option=com_myapi&task=isLinked&'+token+'=1&fbId='+uid+'&return='+redirect+'&'+Object.toQueryString(response.session),{
+					var isLinkedAjax = new Ajax('index.php?option=com_myapi&task=isLinked&'+token+'=1&fbId='+uid+'&return='+redirect,{
 						method: 'get',
 						onRequest: function() { 
 							
@@ -54,7 +54,7 @@ var myapi = {
 						}
 					}, true).request();	
 				}
-			});   
+			},true);   
 		},
 		newLink: function(token,redirect){
 			$ES('.fb_button_text','fbLinkButton')[0].innerHTML = "Linking...";

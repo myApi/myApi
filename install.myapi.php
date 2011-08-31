@@ -144,8 +144,6 @@ foreach( $pkgs as $pkg => $pkgarray ){
 <?php } ?>
 
 <?php 
-echo $pixelTag;
-
 if($vnum == '1.5'){
 	//Joomla 1.5 update code
 	

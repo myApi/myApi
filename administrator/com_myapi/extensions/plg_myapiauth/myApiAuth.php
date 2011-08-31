@@ -70,8 +70,7 @@ class plgAuthenticationmyApiAuth extends JPlugin
 				if($id != ''){      
 					if($result['access_token'] == ''){
 						$facebook = plgSystemmyApiConnect::getFacebook();
-						$facebookSession = $facebook->getSession();
-						$query = "UPDATE ".$db->nameQuote('#__myapi_users')." SET ".$db->nameQuote('access_token')." = ".$db->nameQuote($facebookSession['access_token'])." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
+						$query = "UPDATE ".$db->nameQuote('#__myapi_users')." SET ".$db->nameQuote('access_token')." = ".$db->nameQuote($facebook->getAccessToken())." WHERE ".$db->nameQuote('uid')." = ".$db->quote($uid);
 						$db->setQuery($query);
 						$db->query();	
 					}

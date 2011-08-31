@@ -32,7 +32,7 @@
  *************************************************************************/ ?>
 
 <div id="myApiLoginWrapper" class="<?php echo $classSfx; ?>">
-		<fb:login-button id="fbLoginButton" onlogin="myapi.auth.checkAndLogin('<?php echo JUtility::getToken(); ?>','<?php echo $redirect_login; ?>');" perms="<?php echo $permissions; ?>"><?php echo $loginText; ?></fb:login-button>
+		<fb:login-button id="fbLoginButton" onlogin="myapi.auth.checkAndLogin('<?php echo JUtility::getToken(); ?>','<?php echo $redirect_login; ?>');" scope="<?php echo $permissions; ?>"><?php echo $loginText; ?></fb:login-button>
 		
 		<?php if($show_faces == '1') : ?>
 			<div class="myApiFacepile" style="overflow:hidden;"><fb:facepile width="<?php echo $width; ?>" max-rows="<?php echo $max_rows; ?>"></fb:facepile></div>

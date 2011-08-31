@@ -260,8 +260,8 @@ class MyapiController extends JController {
 		$endUrl = base64_decode(JRequest::getVar('endUrl',base64_encode($end)));
 		if($facebook){
 			$login = $facebook->getLoginUrl(array("req_perms" => "manage_pages,read_stream,publish_stream","next" => JURI::base().'index.php?option=com_myapi&task=addPages&endUrl='.base64_encode($end),"cancel" => JURI::base()));
-			$user = $facebook->getSession();
-			if($user){
+			$uid = $facebook->getUser();
+			if($uid){
 				$permissions = null;
 				try{
 					$permissions = $facebook->api("/me/permissions",'get',array('access_token' => $facebook->getAccessToken()));
@@ -277,8 +277,8 @@ class MyapiController extends JController {
 					foreach($pages['data'] as $page){
 						if($page['category'] != 'Website'){
 							$pageLink = $facebook->api('/'.$page['id']);
-							$query = "INSERT INTO ".$db->nameQuote('#__myapi_pages')." (".$db->nameQuote('pageId').",".$db->nameQuote('access_token').",".$db->nameQuote('name').",".$db->nameQuote('link').",".$db->nameQuote('category').",".$db->nameQuote('owner').") VALUES (".$db->quote($page['id']).",".$db->quote($page['access_token']).",".$db->quote($page['name']).",".$db->quote($pageLink['link']).",".$db->quote($page['category']).",".$db->quote($user['uid']).") ".
-											"ON DUPLICATE KEY UPDATE ".$db->nameQuote('access_token')." = ".$db->quote($page['access_token'])." , ".$db->nameQuote('name')." = ".$db->quote($page['name'])." , ".$db->nameQuote('owner')." = ".$db->quote($user['uid'])."; ";
+							$query = "INSERT INTO ".$db->nameQuote('#__myapi_pages')." (".$db->nameQuote('pageId').",".$db->nameQuote('access_token').",".$db->nameQuote('name').",".$db->nameQuote('link').",".$db->nameQuote('category').",".$db->nameQuote('owner').") VALUES (".$db->quote($page['id']).",".$db->quote($page['access_token']).",".$db->quote($page['name']).",".$db->quote($pageLink['link']).",".$db->quote($page['category']).",".$db->quote($uid).") ".
+											"ON DUPLICATE KEY UPDATE ".$db->nameQuote('access_token')." = ".$db->quote($page['access_token'])." , ".$db->nameQuote('name')." = ".$db->quote($page['name'])." , ".$db->nameQuote('owner')." = ".$db->quote($uid)."; ";
 							$db->setQuery($query);
 							$db->query();
 							if($db->getErrorNum()){

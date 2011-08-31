@@ -206,7 +206,6 @@ class MyapiController extends JController {
 		jimport( 'joomla.filesystem.folder' );
 		jimport('joomla.client.helper');
 		jimport( 'joomla.filesystem.file' );
-		JClientHelper::setCredentials('ftp');
 			
 		$path = JPath::clean(JPATH_SITE.DS.'images'.DS.'comprofiler');
 		if (!is_dir($path) && !is_file($path)){
@@ -247,14 +246,20 @@ class MyapiController extends JController {
 		return;
 	}
 	
+	function debug($array){
+		echo "<pre>";
+		print_r($array);
+		echo "</pre>";
+		die;
+	}
+	
 	//This task logs in a user
 	function facebookLogin() {
 		$user 		= JFactory::getUser();
 		$return 	= base64_decode(JRequest::getVar('return',''));
 		
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		$session	= $facebook->getSession();
-		$uid 		= $session['uid'];
+		$uid	= $facebook->getUser();
 		
 		if($uid){
 			$mainframe =& JFactory::getApplication();
@@ -289,10 +294,9 @@ class MyapiController extends JController {
 		$options 				= array();
 		$credentials 			= array();
 		$return 				= base64_decode(JRequest::getVar('return','','post'));
-		$session 				= $facebook->getSession();
 		$options['remember']	= JRequest::getBool('remember', false);
 		$options['return'] 		= $return;
-		$options['uid'] 		= $session['uid'];
+		$options['uid'] 		= $facebook->getUser();
 		$credentials['username'] = JRequest::getVar('username', '', 'method', 'username');
 		$credentials['password'] = JRequest::getString('passwd', '', 'post', JREQUEST_ALLOWRAW);
  
@@ -302,18 +306,17 @@ class MyapiController extends JController {
 			JError::raiseWarning( 100, $error->getMessage() );
 		}else{
 			$facebook = plgSystemmyApiConnect::getFacebook();
-			$facebookSession = $facebook->getSession();
-			$avatar = 'facebookUID'.$facebookSession['uid'].'.jpg';
+			$avatar = 'facebookUID'.$facebook->getUser().'.jpg';
 			$user = JFactory::getUser();
 			$db		= JFactory::getDBO();
-			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
+			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebook->getUser()).",".$db->quote($facebook->getAccessToken()).",".$db->quote($avatar).")";
 			$db->setQuery($query);
 			$db->query();
 			
 			if($db->getErrorNum()){
 				JError::raiseWarning( 100, $db->getErrorMsg() );	
 			}else{
-				MyapiController::syncPhoto($facebookSession['uid']);
+				MyapiController::syncPhoto($facebook->getUser());
 				JFactory::getApplication()->enqueueMessage(JText::_( 'LOGGED_IN_FACEBOOK'));
 			}
 			
@@ -354,9 +357,6 @@ class MyapiController extends JController {
 		$num_rows = $db->getNumRows();
 		$result = $db->loadAssoc();
 		
-		$facebook->setSession(array('access_token' => JRequest::getVar('access_token'), 'sig' => JRequest::getVar('sig'), 'uid' => JRequest::getVar('uid'),'expires' => JRequest::getVar('expires'),'secret' => JRequest::getVar('secret'),'session_key' => JRequest::getVar('session_key'),'base_domain' => JRequest::getVar('base_domain')));
-		$session = $facebook->getSession();
-		
 		if($num_rows > 0 && $result['id'] != $result['userId']){
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_myapi'.DS.'tables');
 			$row =& JTable::getInstance('myapiusers', 'Table');
@@ -394,8 +394,8 @@ class MyapiController extends JController {
 	function newLink(){
 		// Check for request forgeries
 		$facebook = plgSystemmyApiConnect::getFacebook();
-		$facebookSession = $facebook->getSession();
-		if($facebookSession['uid'] != ''){
+		$uid = $facebook->getUser();
+		if($uid != ''){
 			$user	= JFactory::getUser();
 			$db 	= JFactory::getDBO();
 			
@@ -404,13 +404,13 @@ class MyapiController extends JController {
 			if(!JFolder::exists(JPATH_SITE.DS.'images'.DS.'comprofiler'))
 				JFolder::create(JPATH_SITE.DS.'images'.DS.'comprofiler');
 				
-			$dest 	= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$facebookSession['uid'].'.jpg';
-			$avatar = 'facebookUID'.$facebookSession['uid'].'.jpg';
-			$buffer = file_get_contents('https://graph.facebook.com/'.$facebookSession['uid'].'/picture',$dest);
+			$dest 	= JPATH_SITE.DS.'images'.DS.'comprofiler'.DS.'tn'.'facebookUID'.$uid.'.jpg';
+			$avatar = 'facebookUID'.$uid.'.jpg';
+			$buffer = file_get_contents('https://graph.facebook.com/'.$uid.'/picture',$dest);
 			JFile::write($dest,$buffer);
 			
 			$db		= JFactory::getDBO();
-			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($facebookSession['uid']).",".$db->quote($facebookSession['access_token']).",".$db->quote($avatar).")";
+			$query	= "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token,avatar) VALUES(".$db->quote($user->id).",".$db->quote($uid).",".$db->quote($facebook->getAccessToken()).",".$db->quote($avatar).")";
 			$db->setQuery($query);
 			$db->query();
 			
@@ -528,8 +528,8 @@ class MyapiController extends JController {
 		}elseif($fbUser['id'] != ''){
 			$db = JFactory::getDBO();
 			$facebook = plgSystemmyApiConnect::getFacebook();
-			$facebookSession = $facebook->getSession();
-			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($fbUser['id']).",".$db->quote($facebookSession['access_token']).")";
+			
+			$query = "INSERT INTO ".$db->nameQuote('#__myapi_users')." (userId,uid,access_token) VALUES(".$db->quote($user->id).",".$db->quote($fbUser['id']).",".$db->quote($facebook->getAccessToken()).")";
 			$db->setQuery($query);
 			$db->query();
 			
