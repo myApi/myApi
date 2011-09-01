@@ -91,7 +91,14 @@ class plgSystemmyApiTabs extends JPlugin{
 		if( !class_exists('plgSystemmyApiConnect') || $document->getType() != 'html' || $mainframe->isAdmin() || JRequest::getVar('tmpl') != 'component') return;
 	
 		$buffer = JResponse::getBody();
-		require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		
+		$version = new JVersion;
+		$joomla = $version->getShortVersion();
+		if(substr($joomla,0,3) == '1.5'){
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		}else{	
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
+		}
 		$dom = new simple_html_dom();
 		$dom->load($buffer);
 		

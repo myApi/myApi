@@ -42,7 +42,11 @@ $joomla = $version->getShortVersion();
 $vnum = substr($joomla,0,3);
 
 $doc =& JFactory::getDocument();
-$doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi'.'-J'.$vnum.'.js');
+if($vnum == '1.5')
+	$doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi'.'-J1.5.js');
+else
+	$doc->addScript('components'.DS.'com_myapi'.DS.'assets'.DS.'js'.DS.'myApi.js');
+	
 
 $user 				= JFactory::getUser();
 $classSfx 			= $params->get('moduleclass_sfx');

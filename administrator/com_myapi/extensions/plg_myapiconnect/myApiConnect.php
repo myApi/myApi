@@ -44,22 +44,22 @@ class plgSystemmyApiConnect extends JPlugin
 			$version = new JVersion;
    			$joomla = $version->getShortVersion();
 			$vnum = substr($joomla,0,3);
-    		if($vnum == '1.6')
-				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnectFacebook.php';
-			else
+    		if($vnum == '1.5')
 				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnectFacebook.php';
+			else
+				require_once JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnectFacebook.php';
 			
 		}catch(Exception $e){
 			return JError::raiseError( 100, $e->getMessage());
 		}
 		
-		if($vnum == '1.6'){
+		if($vnum == '1.5'){
+			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
+			$params = new JParameter( $plugin->params );
+		}else{
 			$plugin = JPluginHelper::getPlugin('system', 'myApiConnect');
 			$params = new JRegistry();
 			$params->loadJSON($plugin->params);
-		}else{
-			$plugin =& JPluginHelper::getPlugin('system', 'myApiConnect');
-			$params = new JParameter( $plugin->params );
 		}
 		
 		if( $params->get('appId') == '' || $params->get('secret') == ''){
@@ -90,10 +90,14 @@ class plgSystemmyApiConnect extends JPlugin
 		$version = new JVersion;
    		$joomla = $version->getShortVersion();
 		$vnum = substr($joomla,0,3);
-    	$prefix = ($vnum == '1.6') ? JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect' : JURI::root().'plugins'.DS.'system'.DS.'myApiConnect';
+		if($vnum == '1.5'){
+			$doc->addStylesheet(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');
+			$doc->addScript(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiModal'.'-J'.$vnum.'.js');
+		}else{
+			$doc->addStylesheet(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect'.DS.'myApi.css');
+			$doc->addScript(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect'.DS.'myApiModal.js');
+		}
 		
-		$doc->addStylesheet($prefix.DS.'myApi.css');
-		$doc->addScript($prefix.DS.'myApiModal'.'-J'.$vnum.'.js');
 	}
 
 	function onAfterRender(){
@@ -131,10 +135,10 @@ EOD;
 		
 		$version = new JVersion;
    		$joomla = $version->getShortVersion();
-    	if(substr($joomla,0,3) == '1.6')
-			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
-		else
+    	if(substr($joomla,0,3) == '1.5')
 			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		else
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
 		
 		
 		$dom = new simple_html_dom();

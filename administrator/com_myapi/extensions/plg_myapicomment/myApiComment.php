@@ -49,10 +49,10 @@ class plgContentmyApiComment extends JPlugin
 			$version 	= new JVersion;
    			$joomla		= $version->getShortVersion();
 			$vnum 		= substr($joomla,0,3);
-    		if($vnum == '1.6'){
-				$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Request({url: "index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href), method: "get"}).send(); });';	
-			}else{
+    		if($vnum == '1.5'){
 				$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Ajax("index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href),{method: "get"}).request(); });';	
+			}else{	
+				$fbAsyncInitJs .= 'FB.Event.subscribe("comment.create", function(response) { var ajax = new Request({url: "index.php?option=com_myapi&task=commentCreate&commentlink=" + escape(response.href), method: "get"}).send(); });';
 			}
 			$myApiCommentJsAdded = true;
 		}
@@ -148,10 +148,7 @@ class plgContentmyApiComment extends JPlugin
 			
 			$version = new JVersion;
         	$joomla = $version->getShortVersion();
-        	if(substr($joomla,0,3) == '1.6'){
-				//will be adding ACL to do this,untill then remove it.
-				$hasAccess = true;	
-			}else{
+        	if(substr($joomla,0,3) == '1.5'){
 				$user = JFactory::getUser();
 				if($comments_access == '29'){
 					$hasAccess = true;
@@ -165,7 +162,10 @@ class plgContentmyApiComment extends JPlugin
 				}
 					
 				if(($comments_access == $user->gid) || ($comments_access == '29') )
-					$hasAccess = true;
+					$hasAccess = true;	
+			}else{
+				//will be adding ACL to do this,untill then remove it.
+				$hasAccess = true;
 			}
 			
 			if($comments_show_on == 'all')
@@ -201,10 +201,10 @@ class plgContentmyApiComment extends JPlugin
 				
 				$version = new JVersion;
         		$joomla = $version->getShortVersion();
-        		if(substr($joomla,0,3) == '1.6'){
-					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
-				}else{
+        		if(substr($joomla,0,3) == '1.5'){
 					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}else{	
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
 				}
 				
 				$dom = new simple_html_dom();

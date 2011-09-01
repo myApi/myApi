@@ -117,10 +117,10 @@ foreach( $pkgs as $pkg => $pkgarray ){
 			if($pkgarray['db'] != ''){
 				$db = JFactory::getDBO();
 				
-				if($vnum == '1.6')
-					$query = "UPDATE #__extensions SET enabled=1 WHERE element='".$pkgarray['db']."'";
-				else
+				if($vnum == '1.5')
 					$query = "UPDATE #__plugins SET published=1 WHERE element='".$pkgarray['db']."'";
+				else
+					$query = "UPDATE #__extensions SET enabled=1 WHERE element='".$pkgarray['db']."'";
 				
 				$db->setQuery($query);
 				$db->query();

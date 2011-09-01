@@ -56,11 +56,17 @@ class MyapiViewUsers extends JView {
 		$version = new JVersion;
    		$joomla = $version->getShortVersion();
 		$vnum = substr($joomla,0,3);
-    	$prefix = ($vnum == '1.6') ? JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect' : JURI::root().'plugins'.DS.'system'.DS.'myApiConnect';
 		
-		$doc->addStylesheet($prefix.DS.'myApi.css');
-		$doc->addScript($prefix.DS.'myApiModal'.'-J'.$vnum.'.js');
-		$doc->addScript(JURI::root().'components/com_myapi/assets/js/myApi'.'-J'.$vnum.'.js');
+		if($vnum == '1.5'){
+			$doc->addStylesheet(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApi.css');
+			$doc->addScript(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiModal'.'-J'.$vnum.'.js');
+			$doc->addScript(JURI::root().'components/com_myapi/assets/js/myApi'.'-J'.$vnum.'.js');
+		}else{
+			$doc->addStylesheet(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect'.DS.'myApi.css');
+			$doc->addScript(JURI::root().'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiConnect'.DS.'myApiModal.js');
+			$doc->addScript(JURI::root().'components/com_myapi/assets/js/myApi.js');
+		}
+		
 		
 		JToolBarHelper::title(JText::_('USERS_HEADER'), 'facebook.png');
 		JToolBarHelper::deleteList(JText::_('UNLINK_USER_DESC'),'unlinkUser', JText::_('UNLINK_USER'));

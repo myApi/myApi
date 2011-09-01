@@ -649,13 +649,13 @@ class MyapiController extends JController {
    		$joomla = $version->getShortVersion();
 		$vnum = substr($joomla,0,3);
 		
-		if($vnum == '1.6'){
+		if($vnum == '1.5'){
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JParameter($plugin->params);
+		}else{
 			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
 			$commentParams = new JRegistry();
 			$commentParams->loadJSON($plugin->params);
-		}else{
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-			$commentParams = new JParameter($plugin->params);
 		}
 		
 		$commentSend = $commentParams->get('comments_email',1);
@@ -679,13 +679,13 @@ class MyapiController extends JController {
    		$joomla = $version->getShortVersion();
 		$vnum = substr($joomla,0,3);
 		
-		if($vnum == '1.6'){
+		if($vnum == '1.5'){
+			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
+			$commentParams = new JParameter($plugin->params);
+		}else{
 			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
 			$commentParams = new JRegistry();
 			$commentParams->loadJSON($plugin->params);
-		}else{
-			$plugin = & JPluginHelper::getPlugin('content', 'myApiComment');
-			$commentParams = new JParameter($plugin->params);
 		}
 		
 		$commentSend = $commentParams->get('comments_email',1);
@@ -695,11 +695,11 @@ class MyapiController extends JController {
 				
 				$component = JComponentHelper::getComponent( 'com_myapi' );
 				
-				if($vnum == '1.6'){
+				if($vnum == '1.5'){
+					$params = new JParameter( $component->params );
+				}else{
 					$params = new JRegistry();
 					$params->loadJSON($component->params );
-				}else{
-					$params = new JParameter( $component->params );
 				}
 				
 				$lastEmailTime = $params->get('commentEmailTime',time()-(60*60*24*7*4));
@@ -708,10 +708,10 @@ class MyapiController extends JController {
 				//Get the admins
 				$db		=& JFactory::getDBO();
 				
-				if($vnum == '1.6'){
-					$query = "SELECT ".$db->nameQuote('email')." FROM ".$db->nameQuote('#__users')." JOIN ".$db->nameQuote('#__user_usergroup_map')." ON ".$db->nameQuote('#__users').'.'.$db->nameQuote('id')." = ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('user_id')." WHERE ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('group_id')." = ".$db->quote('8');
-				}else{
+				if($vnum == '1.5'){
 					$query = 'SELECT email' . ' FROM #__users' . ' WHERE LOWER( usertype ) = "super administrator"';
+				}else{
+					$query = "SELECT ".$db->nameQuote('email')." FROM ".$db->nameQuote('#__users')." JOIN ".$db->nameQuote('#__user_usergroup_map')." ON ".$db->nameQuote('#__users').'.'.$db->nameQuote('id')." = ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('user_id')." WHERE ".$db->nameQuote('#__user_usergroup_map').".".$db->nameQuote('group_id')." = ".$db->quote('8');
 				}
 				
 				$db->setQuery( $query );

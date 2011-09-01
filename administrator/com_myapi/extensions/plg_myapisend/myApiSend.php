@@ -108,10 +108,10 @@ class plgContentmyApiSend extends JPlugin
 				$link = JRoute::_($link,true,-1);
 				$button	= '<fb:send href="'.$link.'" colorscheme="'.$color_scheme.'" font="'.$font.'" ref="'.$ref.'"></fb:send>';
 		
-				if($vnum == '1.6'){
-					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
-				}else{
+				if($vnum == '1.5'){
 					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}else{
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
 				}
 		
 				if(isset($article->text) && $article->text != ''){

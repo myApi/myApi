@@ -51,10 +51,10 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 	function getContentImage($text){
 		$version = new JVersion;
    	 	$joomla = $version->getShortVersion();
-    	if(substr($joomla,0,3) == '1.6'){
-			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
-		}else{
+    	if(substr($joomla,0,3) == '1.5'){
 			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+		}else{
+			require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
 		}
 		
 		$dom = new simple_html_dom();
@@ -91,7 +91,15 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 			
 			$version = new JVersion;
    	 		$joomla = $version->getShortVersion();
-    		if(substr($joomla,0,3) == '1.6'){
+    		if(substr($joomla,0,3) == '1.5'){
+				$attribs = new JParameter($row->attribs);
+				if($attribs->get('myapiimage','') == ''){
+					$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
+					$row->attribs = $attribs->toString();
+					$row->bind($row);
+					$row->store();
+				}
+			}else{
 				$attribs = new JRegistry();
 				$attribs->loadJSON($row->attribs);
 				if($attribs->get('myapiimage','') == ''){
@@ -99,14 +107,6 @@ class plgContentmyApiOpenGraphContent extends JPlugin
 					$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($content));
 					$row->attribs = $attribs->toString();
 					$row->store();	
-				}
-			}else{
-				$attribs = new JParameter($row->attribs);
-				if($attribs->get('myapiimage','') == ''){
-					$attribs->set('myapiimage',plgContentmyApiOpenGraphContent::getContentImage($article->text));
-					$row->attribs = $attribs->toString();
-					$row->bind($row);
-					$row->store();
 				}
 			}
 			

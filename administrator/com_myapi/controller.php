@@ -42,7 +42,7 @@ class MyapiController extends JController {
 		$version = new JVersion;
    		$joomla = $version->getShortVersion();
 		$vnum = substr($joomla,0,3);
-		if($vnum == '1.6'){
+		if($vnum !== '1.5'){
 			JSubMenuHelper::addEntry(JText::_('USERS'), 'index.php?option=com_myapi&amp;view=users');
 			JSubMenuHelper::addEntry(JText::_('APP_SETTINGS'), 'index.php?option=com_myapi&amp;view=plugin&amp;plugin=myApiConnect');
 			JSubMenuHelper::addEntry(JText::_('REAL_TIME'), 'index.php?option=com_myapi&amp;view=realtime');

@@ -113,10 +113,10 @@ class plgContentmyApiShare extends JPlugin
 				$link = JRoute::_($link,true,-1);
 				$button = '<fb:share-button class="url" href="'.$link.'" type="'.$share_type.'"></fb:share-button>';
 				
-				if($vnum == '1.6'){
-					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
-				}else{
+				if($vnum == '1.5'){
 					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiDom.php');
+				}else{	
+					require_once(JPATH_SITE.DS.'plugins'.DS.'system'.DS.'myApiConnect'.DS.'myApiDom.php');
 				}
 				if(isset($article->text) && $article->text != ''){
 					$article->text = myApiButtons::addToTable($article->text,$position,$button);
