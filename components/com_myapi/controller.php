@@ -228,7 +228,7 @@ class MyapiController extends JController {
 		$db->query();
 		
 		try{
-		  $query = "UPDATE #__comprofiler JOIN #__myapi_users ON #__comprofiler.user_id = #__myapi_users.userId  SET #__comprofiler.avatar =".$db->quote($avatar)." WHERE #__myapi_users.uid =".$db->quote($uid)."";
+		  $query = "UPDATE #__comprofiler JOIN #__myapi_users ON #__comprofiler.user_id = #__myapi_users.userId  SET #__comprofiler.avatar =".$db->quote('tn'.$avatar)." WHERE #__myapi_users.uid =".$db->quote($uid)."";
 		  $db->setQuery($query);
 		  $db->query();
 		}catch(Exception $e){}
