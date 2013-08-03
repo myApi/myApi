@@ -66,7 +66,7 @@ class plgContentmyApiComment extends JPlugin
 	function getComments($xid){
 		$params  =   array(
 		 'method'    => 'fql.query',
-		 'query'     => "SELECT username,fromid,text,time FROM comment WHERE xid='".$xid."';"
+		 'query'     => "SELECT username,fromid,text,time FROM comment WHERE id='".$xid."';"
 		);
 		$facebook = plgSystemmyApiConnect::getFacebook();
 		$fqlResult   =   $facebook->api($params);
